@@ -6,8 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "Sandesh Portfolio API"
+    app_description: str = "Backend API for Sandesh developer workspace portfolio."
+    app_version: str = "0.1.0"
     environment: str = "development"
     api_v1_prefix: str = "/api/v1"
+    docs_url: str = "/docs"
+    redoc_url: str = "/redoc"
+    openapi_url: str = "/openapi.json"
     backend_cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/sandesh_portfolio"
     jwt_secret_key: str = "change-me"
@@ -15,6 +20,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
     upload_root: str = "uploads"
+    max_upload_size_mb: int = 10
+    rate_limit_requests: int = 120
+    rate_limit_window_seconds: int = 60
     github_username: str | None = None
     github_token: str | None = None
 

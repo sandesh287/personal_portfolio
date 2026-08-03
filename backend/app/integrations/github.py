@@ -27,3 +27,14 @@ class GitHubClient:
 
     async def close(self) -> None:
         await self.client.aclose()
+
+
+class GitHubService:
+    def __init__(self, client: GitHubClient | None = None) -> None:
+        self.client = client or GitHubClient()
+
+    async def get_configured_profile(self) -> GitHubProfile | None:
+        if not settings.github_username:
+            return None
+
+        return await self.client.get_profile(settings.github_username)
