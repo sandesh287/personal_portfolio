@@ -1,0 +1,14 @@
+{
+  "name": "sandesh-portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm --workspace frontend run dev",
+    "build": "npm --workspace frontend run build",
+    "lint": "npm --workspace frontend run lint",
+    "format": "npm --workspace frontend run format"
+  }
+}
