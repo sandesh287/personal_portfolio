@@ -5,8 +5,17 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
+def to_camel(value: str) -> str:
+    words = value.split("_")
+    return words[0] + "".join(word.capitalize() for word in words[1:])
+
+
 class ApiSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        from_attributes=True,
+        populate_by_name=True,
+    )
 
 
 class EntitySchema(ApiSchema):

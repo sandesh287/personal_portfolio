@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     openapi_url: str = "/openapi.json"
     backend_cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/sandesh_portfolio"
-    jwt_secret_key: str = "change-me"
+    jwt_secret_key: str = "dev-only-change-this-jwt-secret-key-32-plus-characters"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
