@@ -61,6 +61,14 @@ $env:ADMIN_PASSWORD="replace-with-a-secure-admin-password"
 
 The seed command creates the admin user only if the email does not already exist.
 
+Seed project categories, technologies, and starter projects:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.cli.seed_projects
+```
+
+The project seed command is idempotent and updates existing seed records by slug.
+
 Run only the frontend:
 
 ```powershell
