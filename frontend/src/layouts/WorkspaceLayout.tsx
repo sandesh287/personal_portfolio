@@ -9,7 +9,7 @@ import { workspaceNavigation } from "@/constants/navigation";
 export function WorkspaceLayout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <Sidebar title="Sandesh" subtitle="Developer Workspace" items={workspaceNavigation} />
+      <Sidebar title="Sandesh Panthee" subtitle="Developer Workspace" items={workspaceNavigation} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Toolbar>
           <ToolbarGroup>

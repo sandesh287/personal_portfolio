@@ -37,10 +37,10 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import {
+  useAdminProjects,
   useCreateProject,
   useDeleteProject,
   useProjectCategories,
-  useProjects,
   useTechnologies,
   useUpdateProject,
 } from "@/features/projects";
@@ -55,6 +55,7 @@ import { cn } from "@/utils/cn";
 import { getErrorMessage } from "@/utils/errors";
 
 const ADMIN_PAGE_SIZE = 10;
+type StatusFilter = "all" | ProjectStatus;
 
 const projectFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters.").max(180),
@@ -78,12 +79,12 @@ const projectFormSchema = z.object({
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
 type ProjectFormInput = z.input<typeof projectFormSchema>;
 
-const statusOptions: ProjectStatus[] = ["published", "draft", "archived"];
+const statusOptions: StatusFilter[] = ["all", "published", "draft", "archived"];
 
 export function AdminProjectsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<ProjectStatus>("published");
+  const [status, setStatus] = useState<StatusFilter>("all");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -91,12 +92,12 @@ export function AdminProjectsPage() {
     page,
     pageSize: ADMIN_PAGE_SIZE,
     search: search.trim() || undefined,
-    status,
+    status: status === "all" ? undefined : status,
     sort: "updatedAt" as const,
     order: "desc" as const,
   };
 
-  const projectsQuery = useProjects(queryParams);
+  const projectsQuery = useAdminProjects(queryParams);
   const categoriesQuery = useProjectCategories();
   const technologiesQuery = useTechnologies();
   const deleteProject = useDeleteProject();
@@ -176,14 +177,13 @@ export function AdminProjectsPage() {
             <SelectField
               value={status}
               onChange={(event) => {
-                setStatus(event.target.value as ProjectStatus);
+                setStatus(event.target.value as StatusFilter);
                 setPage(1);
               }}
             >
               {statusOptions.map((option) => (
                 <option key={option} value={option}>
-                  {option[0].toUpperCase()}
-                  {option.slice(1)}
+                  {formatStatusOption(option)}
                 </option>
               ))}
             </SelectField>
@@ -203,8 +203,8 @@ export function AdminProjectsPage() {
 
           {!projectsQuery.isLoading && !projectsQuery.isError && projects.length === 0 ? (
             <EmptyState
-              title="No projects in this status"
-              description="Create a project or choose a different status filter."
+              title="No projects found"
+              description="Create a project or adjust the search and status filters."
             />
           ) : null}
 
@@ -246,21 +246,21 @@ export function AdminProjectsPage() {
                           <Button
                             type="button"
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            leftIcon={<Edit3 className="h-4 w-4" />}
                             onClick={() => openEditForm(project)}
                           >
-                            <Edit3 className="h-4 w-4" />
-                            Edit project
+                            Edit
                           </Button>
                           <Button
                             type="button"
-                            variant="ghost"
-                            size="icon"
+                            variant="danger"
+                            size="sm"
+                            leftIcon={<Trash2 className="h-4 w-4" />}
                             onClick={() => void handleDelete(project)}
                             isLoading={deleteProject.isPending}
                           >
-                            <Trash2 className="h-4 w-4" />
-                            Delete project
+                            Delete
                           </Button>
                         </div>
                       </TableCell>
@@ -388,8 +388,8 @@ function ProjectFormModal({
       onClose={onClose}
       className="max-w-3xl"
     >
-      <form className="space-y-4" onSubmit={(event) => void handleSubmit(onSubmit)(event)}>
-        <div className="grid gap-4 md:grid-cols-2">
+      <form className="space-y-3" onSubmit={(event) => void handleSubmit(onSubmit)(event)}>
+        <div className="grid gap-3 md:grid-cols-2">
           <FormField label="Title" error={errors.title?.message}>
             <TextInput {...register("title")} hasError={Boolean(errors.title)} />
           </FormField>
@@ -406,7 +406,7 @@ function ProjectFormModal({
           <Textarea {...register("description")} hasError={Boolean(errors.description)} />
         </FormField>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <FormField label="Category" error={errors.categoryId?.message}>
             <SelectField {...register("categoryId")}>
               <option value="">Unassigned</option>
@@ -434,7 +434,7 @@ function ProjectFormModal({
 
         <fieldset className="rounded-md border border-border p-3">
           <legend className="px-1 text-sm font-medium text-foreground">Technologies</legend>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-3 grid max-h-40 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
             {technologies.map((technology) => (
               <label
                 key={technology.id}
@@ -457,7 +457,7 @@ function ProjectFormModal({
           </div>
         </fieldset>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <FormField label="Repository URL" error={errors.repositoryUrl?.message}>
             <TextInput {...register("repositoryUrl")} hasError={Boolean(errors.repositoryUrl)} />
           </FormField>
@@ -507,6 +507,14 @@ function StatusBadge({ status }: { status: ProjectStatus }) {
       {status}
     </span>
   );
+}
+
+function formatStatusOption(status: StatusFilter) {
+  if (status === "all") {
+    return "All statuses";
+  }
+
+  return `${status[0].toUpperCase()}${status.slice(1)}`;
 }
 
 function getDefaultValues(project: Project | null): ProjectFormValues {

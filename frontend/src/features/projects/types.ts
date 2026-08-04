@@ -81,6 +81,8 @@ export interface ProjectListParams {
   order?: SortDirection;
 }
 
+export type AdminProjectListParams = ProjectListParams;
+
 export interface FeaturedProjectsParams {
   limit?: number;
 }

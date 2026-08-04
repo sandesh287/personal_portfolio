@@ -3,6 +3,7 @@ import { httpClient } from "@/services/httpClient";
 import type { ApiResponse } from "@/types/api";
 
 import type {
+  AdminProjectListParams,
   FeaturedProjectsParams,
   Project,
   ProjectCreatePayload,
@@ -31,6 +32,12 @@ function compactParams<TParams extends object>(params?: TParams) {
 export const projectsApi = {
   list(params?: ProjectListParams) {
     return getApiData<ProjectListResponse>(PROJECTS_ENDPOINT, {
+      params: compactParams(params),
+    });
+  },
+
+  adminList(params?: AdminProjectListParams) {
+    return getApiData<ProjectListResponse>(`${PROJECTS_ENDPOINT}/admin`, {
       params: compactParams(params),
     });
   },

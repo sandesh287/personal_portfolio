@@ -1,15 +1,39 @@
+import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
 
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { WorkspaceLayout } from "@/layouts/WorkspaceLayout";
-import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
-import { AdminProjectsPage } from "@/pages/admin/AdminProjectsPage";
-import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
-import { ProjectsPage } from "@/pages/projects/ProjectsPage";
+import { LazyRoute } from "@/routes/LazyRoute";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
+
+const AdminLoginPage = lazy(() =>
+  import("@/pages/admin/AdminLoginPage").then((module) => ({
+    default: module.AdminLoginPage,
+  })),
+);
+
+const AdminProjectsPage = lazy(() =>
+  import("@/pages/admin/AdminProjectsPage").then((module) => ({
+    default: module.AdminProjectsPage,
+  })),
+);
+
+const NotFoundPage = lazy(() =>
+  import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
+);
+
+const ProjectDetailsPage = lazy(() =>
+  import("@/pages/projects/ProjectDetailsPage").then((module) => ({
+    default: module.ProjectDetailsPage,
+  })),
+);
+
+const ProjectsPage = lazy(() =>
+  import("@/pages/projects/ProjectsPage").then((module) => ({ default: module.ProjectsPage })),
+);
 
 export const router = createBrowserRouter([
   {
@@ -19,8 +43,8 @@ export const router = createBrowserRouter([
         element: <WorkspaceLayout />,
         children: [
           { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
-          { path: "/projects", element: <ProjectsPage /> },
-          { path: "/projects/:slug", element: <ProjectDetailsPage /> },
+          { path: "/projects", element: <LazyRoute component={ProjectsPage} /> },
+          { path: "/projects/:slug", element: <LazyRoute component={ProjectDetailsPage} /> },
           { path: "/blog", element: <PlaceholderPage title="Engineering Notes" /> },
           { path: "/blog/:slug", element: <PlaceholderPage title="Engineering Note" /> },
           { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
@@ -34,7 +58,7 @@ export const router = createBrowserRouter([
   },
   {
     element: <AuthLayout />,
-    children: [{ path: "/admin/login", element: <PlaceholderPage title="Admin Login" /> }],
+    children: [{ path: "/admin/login", element: <LazyRoute component={AdminLoginPage} /> }],
   },
   {
     element: <ProtectedRoute />,
@@ -44,7 +68,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <PlaceholderPage title="Admin Dashboard" /> },
-          { path: "projects", element: <AdminProjectsPage /> },
+          { path: "projects", element: <LazyRoute component={AdminProjectsPage} /> },
           { path: "blog", element: <PlaceholderPage title="Blog Admin" /> },
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
           { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },
@@ -56,5 +80,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: "*", element: <NotFoundPage /> },
+  { path: "*", element: <LazyRoute component={NotFoundPage} /> },
 ]);

@@ -42,11 +42,12 @@ export function Modal({ title, description, isOpen, onClose, children, className
         aria-modal="true"
         role="dialog"
         className={cn(
-          "relative w-full max-w-lg rounded-md border border-border bg-surface text-foreground shadow-xl",
+          "relative flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col rounded-md",
+          "border border-border bg-surface text-foreground shadow-xl",
           className,
         )}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-border p-4">
+        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border p-4">
           <div>
             <h2 className="text-base font-semibold">{title}</h2>
             {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
@@ -56,7 +57,7 @@ export function Modal({ title, description, isOpen, onClose, children, className
             Close modal
           </Button>
         </header>
-        <div className="p-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
       </section>
     </div>,
     document.body,

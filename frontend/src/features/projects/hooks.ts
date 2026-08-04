@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectsApi } from "./api";
 import { projectQueryKeys } from "./queryKeys";
 import type {
+  AdminProjectListParams,
   FeaturedProjectsParams,
   ProjectCreatePayload,
   ProjectImageUploadPayload,
@@ -15,6 +16,13 @@ export function useProjects(params?: ProjectListParams) {
   return useQuery({
     queryKey: projectQueryKeys.list(params),
     queryFn: () => projectsApi.list(params),
+  });
+}
+
+export function useAdminProjects(params?: AdminProjectListParams) {
+  return useQuery({
+    queryKey: projectQueryKeys.adminList(params),
+    queryFn: () => projectsApi.adminList(params),
   });
 }
 
@@ -54,6 +62,7 @@ export function useCreateProject() {
     mutationFn: (payload: ProjectCreatePayload) => projectsApi.create(payload),
     onSuccess: async (project) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.featured() });
       queryClient.setQueryData(projectQueryKeys.detail(project.slug), project);
     },
@@ -67,6 +76,7 @@ export function useUpdateProject(projectId: string) {
     mutationFn: (payload: ProjectUpdatePayload) => projectsApi.update(projectId, payload),
     onSuccess: async (project) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.featured() });
       queryClient.setQueryData(projectQueryKeys.detail(project.slug), project);
     },

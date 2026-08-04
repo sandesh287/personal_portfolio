@@ -1,5 +1,6 @@
 export { projectsApi } from "./api";
 export {
+  useAdminProjects,
   useCreateProject,
   useDeleteProject,
   useFeaturedProjects,
@@ -12,6 +13,7 @@ export {
 } from "./hooks";
 export { projectQueryKeys } from "./queryKeys";
 export type {
+  AdminProjectListParams,
   FeaturedProjectsParams,
   Project,
   ProjectCategory,

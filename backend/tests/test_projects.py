@@ -83,6 +83,52 @@ def test_public_list_only_returns_published_projects(
     assert payload["items"][0]["slug"] == "published-project"
 
 
+def test_admin_list_returns_all_statuses(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    db_session.add_all(
+        [
+            Project(
+                title="Published Project",
+                slug="published-project",
+                summary="Visible",
+                status="published",
+                sort_order=1,
+            ),
+            Project(
+                title="Draft Project",
+                slug="draft-project",
+                summary="Editable",
+                status="draft",
+                sort_order=2,
+            ),
+        ]
+    )
+    db_session.commit()
+
+    response = client.get(
+        "/api/v1/projects/admin",
+        params={"sort": "sortOrder", "order": "asc"},
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert payload["meta"]["totalItems"] == 2
+    assert [project["slug"] for project in payload["items"]] == [
+        "published-project",
+        "draft-project",
+    ]
+
+
+def test_admin_list_requires_admin(client: TestClient) -> None:
+    response = client.get("/api/v1/projects/admin")
+
+    assert response.status_code == 401
+
+
 def test_list_projects_supports_search_filter_sort_and_pagination(
     client: TestClient,
     db_session: Session,

@@ -238,6 +238,15 @@ Paginated data:
 - Response `200`: `Project`
 - Errors: `404`, `429`
 
+### Admin List Projects
+
+- Method: `GET`
+- URL: `/api/v1/projects/admin`
+- Authorization: admin
+- Query: `page`, `pageSize`, `search`, `categoryId`, `technologyId`, `featured`, `status`, `sort`, `order`
+- Response `200`: paginated `Project[]`
+- Errors: `401`, `403`, `422`, `429`
+
 ### Create Project
 
 - Method: `POST`

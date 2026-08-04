@@ -74,6 +74,34 @@ async def list_technologies(
     return ApiResponse(data=project_service.list_technologies(category))
 
 
+@router.get("/admin", response_model=ApiResponse[PaginatedPayload[ProjectPayload]])
+async def list_admin_projects(
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(alias="pageSize", ge=1, le=100)] = 20,
+    search: str | None = None,
+    category_id: Annotated[UUID | None, Query(alias="categoryId")] = None,
+    technology_id: Annotated[UUID | None, Query(alias="technologyId")] = None,
+    status: ProjectStatus | None = None,
+    featured: bool | None = None,
+    sort: ProjectSortField = ProjectSortField.UPDATED_AT,
+    order: SortDirection = SortDirection.DESC,
+) -> ApiResponse[PaginatedPayload[ProjectPayload]]:
+    filters = ProjectFilters(
+        page=page,
+        page_size=page_size,
+        search=search,
+        category_id=category_id,
+        technology_id=technology_id,
+        status=status,
+        featured=featured,
+        sort=sort,
+        order=order,
+    )
+    return ApiResponse(data=project_service.list_projects(filters))
+
+
 @router.get("/{slug}", response_model=ApiResponse[ProjectPayload])
 async def get_project_details(
     slug: str,
