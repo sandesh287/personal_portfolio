@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS Component Library | Storybook</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f9f9fb",
+                    "on-primary-fixed-variant": "#004493",
+                    "tertiary-container": "#c64f00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#fefcff",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "secondary": "#5f5e5e",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-tint": "#005bc1",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "secondary-container": "#e2dfde",
+                    "primary": "#0058bc",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "outline": "#717786",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#474746",
+                    "surface-container-highest": "#e2e2e4",
+                    "outline-variant": "#c1c6d7",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2f3132",
+                    "on-tertiary-container": "#fffbff",
+                    "surface-container": "#eeeef0",
+                    "surface": "#f9f9fb",
+                    "on-error": "#ffffff",
+                    "on-background": "#1a1c1d",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f3f5",
+                    "primary-container": "#0070eb",
+                    "inverse-primary": "#adc6ff",
+                    "surface-bright": "#f9f9fb",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-primary-fixed": "#001a41",
+                    "on-secondary-container": "#636262",
+                    "surface-dim": "#d9dadc",
+                    "surface-container-high": "#e8e8ea",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-on-surface": "#f0f0f2",
+                    "surface-variant": "#e2e2e4",
+                    "on-surface": "#1a1c1d",
+                    "tertiary": "#9e3d00",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-tertiary-fixed": "#351000",
+                    "on-surface-variant": "#414755",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "sidebar-width": "260px",
+                    "sm": "8px",
+                    "container-max": "1200px",
+                    "base": "4px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Geist"],
+                    "h2": ["Geist"],
+                    "display": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "code": ["JetBrains Mono"],
+                    "h1": ["Geist"],
+                    "body-sm": ["Geist"]
+            },
+            "fontSize": {
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .ghost-border {
+            border: 1px solid rgba(113, 119, 134, 0.15);
+        }
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c1c6d7; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #414755; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation (JSON Anchor Mapping) -->
+<aside class="hidden md:flex flex-col h-screen p-md space-y-md bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant w-[280px] shrink-0">
+<div class="flex items-center gap-md px-sm py-xs">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-md">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-bold">Core Engine</h1>
+<p class="text-on-surface-variant font-label-md text-label-md">v4.2.0-stable</p>
+</div>
+</div>
+<div class="flex-1 space-y-xs overflow-y-auto pt-md">
+<div class="text-on-surface-variant font-label-caps text-label-caps px-sm mb-xs opacity-50">DOCUMENTATION</div>
+<nav class="space-y-1">
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high transition-all text-primary font-bold border-r-2 border-primary" href="#core-ui">
+<span class="material-symbols-outlined text-md">desktop_windows</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high transition-all text-on-surface-variant" href="#os-elements">
+<span class="material-symbols-outlined text-md">source</span>
+<span class="font-label-md text-label-md">Repository</span>
+</a>
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high transition-all text-on-surface-variant" href="#data-viz">
+<span class="material-symbols-outlined text-md">inventory_2</span>
+<span class="font-label-md text-label-md">Packages</span>
+</a>
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high transition-all text-on-surface-variant" href="#feedback">
+<span class="material-symbols-outlined text-md">monitoring</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+</nav>
+</div>
+<div class="pt-md border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-sm px-md rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+                    New Instance
+                </button>
+</div>
+<div class="space-y-1">
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-md">description</span>
+<span class="font-label-md text-label-md">Documentation</span>
+</a>
+<a class="group cursor-pointer flex items-center gap-sm p-sm rounded hover:bg-surface-container-high text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-md">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Stage -->
+<main class="flex-1 flex flex-col overflow-hidden relative">
+<!-- Top App Bar (JSON Anchor Mapping) -->
+<header class="flex justify-between items-center w-full px-lg h-12 bg-surface-container dark:bg-surface-container border-b border-outline-variant shrink-0 z-30">
+<div class="flex items-center gap-lg">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">OS_Dev_Kernel</div>
+<nav class="hidden lg:flex items-center gap-md">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer font-body-sm text-body-sm">System</a>
+<a class="text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors cursor-pointer font-body-sm text-body-sm">Build</a>
+<a class="text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors cursor-pointer font-body-sm text-body-sm">Debug</a>
+<a class="text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors cursor-pointer font-body-sm text-body-sm">Deploy</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search/Command Palette trigger -->
+<div class="relative group cursor-pointer hidden md:block" onclick="document.getElementById('command-palette').classList.toggle('hidden')">
+<div class="flex items-center gap-sm bg-surface-container-high px-md py-1 rounded border border-outline-variant text-on-surface-variant w-64">
+<span class="material-symbols-outlined text-md">search</span>
+<span class="font-body-sm text-body-sm">Quick find...</span>
+<span class="ml-auto text-[10px] bg-surface-container-lowest px-1 border border-outline-variant rounded">⌘K</span>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors" id="theme-toggle">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer active:opacity-80">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer active:opacity-80">power_settings_new</span>
+<div class="w-7 h-7 rounded-full bg-secondary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a software engineer with soft lighting and a minimalist tech background, following the DevOS light mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB10xgeVpl0l5gy25JyS2uChxbVCZ-2lYzNOCAsVBHfZ3MVKlOvz9SjMI-Z1-E5GAU7pJy7i2VGXPFD9Uaq_EMRjmfMOPZsK4mSGObLqinZHG2vLOFuYrqee8jUnvvIyqRypVlAlr_hHE_SkRDTpeCrH8asHitl7A_TezmUgmBsec8KpvDRM0MURUQjg7-q8Wox5bHpp6aCMBuhpw3NchNxvQvx_lgrLIIAHFzp644Ra1J9nteBgCL"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-xl space-y-xl bg-background scroll-smooth" id="scroll-canvas">
+<!-- Hero Section -->
+<section class="max-w-screen-xl mx-auto space-y-md">
+<div class="space-y-xs">
+<div class="flex items-center gap-sm">
+<span class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded text-[10px] font-bold tracking-wider uppercase">COMPONENT LIBRARY</span>
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-on-surface-variant font-label-md text-label-md">Active Sync</span>
+</div>
+<h2 class="font-display text-display text-on-surface leading-tight">Build at the speed of thought.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">The modular UI framework for DevOS. High-density, engineering-first components designed for professional workflow environments.</p>
+</div>
+</section>
+<!-- Core UI Section -->
+<section class="max-w-screen-xl mx-auto space-y-lg pt-xl" id="core-ui">
+<div class="flex items-center justify-between border-b border-outline-variant pb-md">
+<h3 class="font-h1 text-h1 text-on-surface">Core UI</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">01 — Foundations</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Buttons Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">BUTTONS</span>
+<span class="material-symbols-outlined text-on-surface-variant text-md">smart_button</span>
+</div>
+<div class="flex flex-wrap gap-md">
+<button class="px-md py-sm bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-sm active:scale-95 transition-all">Primary Action</button>
+<button class="px-md py-sm bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl font-label-md text-label-md hover:bg-surface-container-low active:scale-95 transition-all">Secondary</button>
+<button class="px-md py-sm text-primary hover:bg-primary/5 rounded-xl font-label-md text-label-md transition-all">Ghost Btn</button>
+<button class="px-md py-sm bg-error/10 text-error hover:bg-error hover:text-on-error rounded-xl font-label-md text-label-md transition-all">Destructive</button>
+</div>
+</div>
+<!-- Form Inputs Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-lg lg:col-span-2">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">INPUTS &amp; SELECTS</span>
+<span class="material-symbols-outlined text-on-surface-variant text-md">edit_note</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant">Default Input</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-md py-sm font-code text-code focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Enter repository name..." type="text"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant">Active Dropdown</label>
+<select class="w-full bg-background border border-outline-variant rounded-lg px-md py-sm font-body-sm text-body-sm focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none appearance-none">
+<option>Select Branch (main)</option>
+<option>dev-alpha</option>
+<option>hotfix-0.1</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- OS Elements Section -->
+<section class="max-w-screen-xl mx-auto space-y-lg pt-xl" id="os-elements">
+<div class="flex items-center justify-between border-b border-outline-variant pb-md">
+<h3 class="font-h1 text-h1 text-on-surface">OS Elements</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">02 — Platform</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Terminal Component -->
+<div class="lg:col-span-8 bg-[#1A1A1A] rounded-xl border border-white/10 overflow-hidden flex flex-col shadow-2xl">
+<div class="flex items-center justify-between px-md py-xs bg-white/5 border-b border-white/5">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+</div>
+<div class="text-[11px] font-code text-white/40 tracking-wide uppercase">ZSH — kernel-process</div>
+<div class="w-12"></div>
+</div>
+<div class="p-lg font-code text-code text-[#D4D4D4] h-64 overflow-y-auto space-y-1">
+<p><span class="text-[#27C93F]">➜</span> <span class="text-[#519ABA]">~/devos-kernel</span> <span class="text-white/40">git:(</span><span class="text-[#FF5F56]">main</span><span class="text-white/40">)</span> node run scripts/build.js</p>
+<p class="text-white/60">Initializing build sequence...</p>
+<p class="text-white/60">[1/4] Resolving dependencies...</p>
+<p class="text-white/60">[2/4] Fetching remote packages...</p>
+<p class="text-[#27C93F]">Done in 4.23s.</p>
+<p><span class="text-[#27C93F]">➜</span> <span class="text-[#519ABA]">~/devos-kernel</span> <span class="animate-pulse bg-primary inline-block w-2 h-4 align-middle"></span></p>
+</div>
+</div>
+<!-- Icons & Folders -->
+<div class="lg:col-span-4 grid grid-cols-2 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm group cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">folder</span>
+<span class="font-label-md text-label-md text-on-surface">Projects</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm group cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">description</span>
+<span class="font-label-md text-label-md text-on-surface">Config.yaml</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm group cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">settings_ethernet</span>
+<span class="font-label-md text-label-md text-on-surface">Networking</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm group cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">cloud_done</span>
+<span class="font-label-md text-label-md text-on-surface">Sync_Logs</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Data & Tables Section -->
+<section class="max-w-screen-xl mx-auto space-y-lg pt-xl" id="data-viz">
+<div class="flex items-center justify-between border-b border-outline-variant pb-md">
+<h3 class="font-h1 text-h1 text-on-surface">Data Components</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">03 — Intelligence</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">REPOSITORY</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">COMMIT</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">LATENCY</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-md">api</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface font-bold">core-identity-service</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-xs px-2 py-0.5 w-fit rounded-full bg-green-100 text-green-700 text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            STABLE
+                                        </div>
+</td>
+<td class="px-lg py-md font-code text-code text-on-surface-variant">#f29e3a1</td>
+<td class="px-lg py-md font-body-sm text-body-sm text-on-surface-variant">24ms</td>
+<td class="px-lg py-md text-right">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">more_vert</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-md">database</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface font-bold">distributed-ledger-v2</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-xs px-2 py-0.5 w-fit rounded-full bg-primary-fixed text-primary text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                            SYNCING
+                                        </div>
+</td>
+<td class="px-lg py-md font-code text-code text-on-surface-variant">#a11b02c</td>
+<td class="px-lg py-md font-body-sm text-body-sm text-on-surface-variant">118ms</td>
+<td class="px-lg py-md text-right">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Feedback & States Section -->
+<section class="max-w-screen-xl mx-auto space-y-lg pt-xl pb-xl" id="feedback">
+<div class="flex items-center justify-between border-b border-outline-variant pb-md">
+<h3 class="font-h1 text-h1 text-on-surface">Feedback &amp; States</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">04 — Interaction</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Skeleton Loading -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">SKELETON LOADER</span>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest animate-pulse"></div>
+<div class="flex-1 space-y-2">
+<div class="h-4 w-1/3 bg-surface-container-highest rounded animate-pulse"></div>
+<div class="h-3 w-full bg-surface-container-highest/60 rounded animate-pulse"></div>
+</div>
+</div>
+<div class="h-24 w-full bg-surface-container-highest/30 rounded-lg animate-pulse"></div>
+</div>
+<!-- Empty State -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center text-center space-y-md">
+<div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant opacity-30">
+<span class="material-symbols-outlined text-4xl">inbox</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-bold">No active instances found</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Deploy a new container to see telemetry data here.</p>
+</div>
+<button class="px-md py-1.5 border border-outline-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                                View Documentation
+                            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Overlays -->
+<!-- Toast Notification -->
+<div class="fixed bottom-lg right-lg z-50 transform translate-y-0 opacity-100 transition-all duration-500" id="toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-lg py-md rounded-xl shadow-2xl flex items-center gap-md border border-white/10">
+<span class="material-symbols-outlined text-primary-fixed">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold">Build Successful</span>
+<span class="text-[11px] opacity-70">Production artifact deployed to 'us-east-1'</span>
+</div>
+<button class="ml-lg opacity-40 hover:opacity-100" onclick="this.parentElement.parentElement.classList.add('translate-y-12', 'opacity-0')">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</div>
+<!-- Command Palette Modal (Hidden by Default) -->
+<div class="hidden fixed inset-0 z-50 flex items-start justify-center pt-[153px] px-md" id="command-palette">
+<div class="absolute inset-0 bg-on-background/20 backdrop-blur-sm" onclick="this.parentElement.classList.add('hidden')"></div>
+<div class="relative bg-surface-container-lowest border border-outline-variant w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+<div class="flex items-center px-lg py-md border-b border-outline-variant gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="flex-1 bg-transparent border-none outline-none font-body-md text-body-md text-on-surface" placeholder="Type a command or search..." type="text"/>
+<span class="text-[10px] bg-surface-container-high px-1.5 py-0.5 rounded text-on-surface-variant font-bold">ESC</span>
+</div>
+<div class="p-sm max-h-96 overflow-y-auto">
+<div class="px-md py-xs font-label-caps text-label-caps text-on-surface-variant opacity-50">RECENT COMMANDS</div>
+<div class="group flex items-center justify-between p-md rounded-lg hover:bg-primary-container hover:text-on-primary-container cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">restart_alt</span>
+<span class="font-body-sm text-body-sm">Restart Kernel Environment</span>
+</div>
+<span class="text-[10px] opacity-60">System</span>
+</div>
+<div class="group flex items-center justify-between p-md rounded-lg hover:bg-primary-container hover:text-on-primary-container cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-body-sm text-body-sm">Open Floating Terminal</span>
+</div>
+<span class="text-[10px] opacity-60">Window</span>
+</div>
+<div class="px-md py-xs mt-md font-label-caps text-label-caps text-on-surface-variant opacity-50">COMPONENTS</div>
+<div class="group flex items-center justify-between p-md rounded-lg hover:bg-primary-container hover:text-on-primary-container cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">buttons_alt</span>
+<span class="font-body-sm text-body-sm">Go to Buttons Section</span>
+</div>
+<span class="text-[10px] opacity-60">Nav</span>
+</div>
+</div>
+<div class="bg-surface-container-low px-lg py-sm flex items-center justify-between border-t border-outline-variant">
+<div class="flex gap-md">
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant"><span class="bg-surface-container-highest px-1 rounded border border-outline-variant">↑↓</span> Navigate</div>
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant"><span class="bg-surface-container-highest px-1 rounded border border-outline-variant">Enter</span> Select</div>
+</div>
+<div class="text-[10px] text-on-surface-variant">DevOS v4.2</div>
+</div>
+</div>
+</div>
+<!-- FAB (JSON Anchor Mapping) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+<!-- Bottom Navigation (Mobile Only) (JSON Anchor Mapping) -->
+<nav class="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center h-16 bg-surface-container-highest/80 backdrop-blur-xl rounded-xl border border-outline-variant shadow-xl px-md gap-sm w-[90%]">
+<div class="bg-primary-container text-on-primary-container rounded-lg p-2 scale-110 flex items-center gap-sm transition-transform cursor-pointer">
+<span class="material-symbols-outlined">folder</span>
+<span class="font-label-md text-label-md">Finder</span>
+</div>
+<div class="text-on-surface-variant p-2 flex items-center gap-sm hover:scale-125 transition-transform cursor-pointer">
+<span class="material-symbols-outlined">code</span>
+<span class="font-label-md text-label-md">Editor</span>
+</div>
+<div class="text-on-surface-variant p-2 flex items-center gap-sm hover:scale-125 transition-transform cursor-pointer">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md text-label-md">Git</span>
+</div>
+<div class="text-on-surface-variant p-2 flex items-center gap-sm hover:scale-125 transition-transform cursor-pointer">
+<span class="material-symbols-outlined">layers</span>
+<span class="font-label-md text-label-md">Docker</span>
+</div>
+</nav>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeToggle.innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+            } else {
+                html.classList.add('dark');
+                themeToggle.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+            }
+        });
+
+        // Command Palette Keyboard Shortcut
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('command-palette').classList.toggle('hidden');
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('command-palette').classList.add('hidden');
+            }
+        });
+
+        // Sticky Header Effect
+        const canvas = document.getElementById('scroll-canvas');
+        canvas.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (canvas.scrollTop > 10) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>

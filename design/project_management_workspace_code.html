@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS Admin Dashboard - Project Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for high-density feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e2e4;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c1c6d7;
+        }
+        .ghost-border {
+            border: 1px solid rgba(113, 119, 134, 0.15);
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            width: 2px;
+            height: 16px;
+            background-color: #0058bc;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f9f9fb",
+                        "outline": "#717786",
+                        "on-secondary-container": "#636262",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-fixed-variant": "#004493",
+                        "outline-variant": "#c1c6d7",
+                        "on-surface": "#1a1c1d",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#c64f00",
+                        "surface-container-high": "#e8e8ea",
+                        "background": "#f9f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "secondary-container": "#e2dfde",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary": "#5f5e5e",
+                        "surface-dim": "#d9dadc",
+                        "on-background": "#1a1c1d",
+                        "inverse-on-surface": "#f0f0f2",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-surface-variant": "#414755",
+                        "tertiary": "#9e3d00",
+                        "surface": "#f9f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "on-primary-fixed": "#001a41",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e2e2e4",
+                        "inverse-surface": "#2f3132",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-tint": "#005bc1",
+                        "on-error-container": "#93000a",
+                        "primary": "#0058bc",
+                        "surface-variant": "#e2e2e4",
+                        "on-primary-container": "#fefcff",
+                        "surface-container-low": "#f3f3f5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-container": "#eeeef0",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "primary-container": "#0070eb",
+                        "tertiary-fixed": "#ffdbcc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "base": "4px",
+                        "sidebar-width": "260px",
+                        "container-max": "1200px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xl": "40px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Geist"],
+                        "display": ["Geist"],
+                        "h1": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "h2": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "body-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest flex justify-between items-center px-lg w-full sticky top-0 z-50 w-full h-14 border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center gap-xl">
+<span class="font-h2 text-h2 font-bold text-on-surface dark:text-on-surface">ProjectOS</span>
+<nav class="hidden md:flex items-center gap-md">
+<a class="text-primary dark:text-primary border-b-2 border-primary pb-1 font-body-md text-body-md hover:text-primary dark:hover:text-primary transition-colors" href="#">Portfolio</a>
+<a class="text-on-secondary-container dark:text-on-secondary-container font-body-md text-body-md hover:text-primary dark:hover:text-primary transition-colors" href="#">Insights</a>
+<a class="text-on-secondary-container dark:text-on-secondary-container font-body-md text-body-md hover:text-primary dark:hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-1.5 text-body-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search projects..." type="text"/>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</button>
+</div>
+<button class="bg-primary-container text-on-primary-container px-md py-1.5 rounded-lg font-bold text-body-sm active:opacity-80 transition-opacity">
+                Deploy
+            </button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen sticky left-0 top-0 pt-md pb-md px-md w-sidebar-width bg-surface-container-low border-r border-outline-variant">
+<div class="flex items-center gap-sm mb-lg px-2">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold">PM</div>
+<div>
+<div class="font-body-sm font-bold text-on-surface">Project Manager</div>
+<div class="text-[10px] text-outline uppercase tracking-wider">v1.0.4-stable</div>
+</div>
+</div>
+<button class="mb-lg w-full bg-primary text-on-primary py-2 px-4 rounded-lg font-bold text-body-sm flex items-center justify-center gap-2 shadow-sm hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Project
+            </button>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-outline px-2 mb-2 uppercase tracking-widest">Main</p>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container dark:bg-secondary-container text-on-secondary-fixed font-bold rounded-lg group" href="#">
+<span class="material-symbols-outlined text-primary fill-icon">folder</span>
+<span class="font-body-sm">All Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-body-sm">Featured</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-body-sm">Drafts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">archive</span>
+<span class="font-body-sm">Archived</span>
+</a>
+</div>
+<div class="mt-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-body-sm">Documentation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-sm">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Table Header Utilities -->
+<div class="h-14 px-lg flex items-center justify-between border-b border-outline-variant/30 bg-surface-bright/50 backdrop-blur-sm sticky top-0 z-10">
+<div class="flex items-center gap-md">
+<h1 class="font-h1 text-h1">Projects</h1>
+<div class="h-4 w-[1px] bg-outline-variant mx-1"></div>
+<span class="text-body-sm text-outline">12 Total</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-body-sm font-medium border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-body-sm font-medium border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                        Sort
+                    </button>
+<div class="w-[1px] h-4 bg-outline-variant mx-1"></div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-body-sm font-medium border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+                        Bulk Actions
+                    </button>
+</div>
+</div>
+<!-- Content Area -->
+<div class="flex-1 overflow-auto flex">
+<!-- Data Table -->
+<div class="flex-1 min-w-0 border-r border-outline-variant/30">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-low/80 backdrop-blur-md z-10 border-b border-outline-variant/30">
+<tr>
+<th class="pl-lg pr-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold w-10">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</th>
+<th class="px-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold">Project Name</th>
+<th class="px-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold">Category</th>
+<th class="px-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold">Technologies</th>
+<th class="px-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold">Status</th>
+<th class="px-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold">Updated</th>
+<th class="pr-lg pl-4 py-3 text-label-caps text-outline uppercase tracking-widest font-bold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Row 1 (Active/Selected) -->
+<tr class="bg-primary-container/5 hover:bg-primary-container/10 transition-colors cursor-pointer border-l-2 border-primary">
+<td class="pl-lg pr-4 py-4">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<span class="font-bold text-on-surface block">NeuralNet Visualizer</span>
+<span class="text-xs text-outline font-code">nn-viz-001</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded uppercase tracking-tighter">AI / ML</span>
+</td>
+<td class="px-4 py-4">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">Three.js</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">Python</span>
+</div>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-body-sm font-medium">Published</span>
+</div>
+</td>
+<td class="px-4 py-4 text-body-sm text-outline">2h ago</td>
+<td class="pr-lg pl-4 py-4 text-right">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface">star</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="pl-lg pr-4 py-4">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">grid_view</span>
+</div>
+<div>
+<span class="font-bold text-on-surface block">OmniStore Dashboard</span>
+<span class="text-xs text-outline font-code">omni-dash-v2</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded uppercase tracking-tighter">Frontend</span>
+</td>
+<td class="px-4 py-4">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">React</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">Tailwind</span>
+</div>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="text-body-sm font-medium">Draft</span>
+</div>
+</td>
+<td class="px-4 py-4 text-body-sm text-outline">Yesterday</td>
+<td class="pr-lg pl-4 py-4 text-right">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface">star</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="pl-lg pr-4 py-4">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div>
+<span class="font-bold text-on-surface block">Crypta Mobile Wallet</span>
+<span class="text-xs text-outline font-code">cryp-wal-09</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold rounded uppercase tracking-tighter">Mobile</span>
+</td>
+<td class="px-4 py-4">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">SwiftUI</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 text-on-surface text-[10px] rounded font-code">Web3.js</span>
+</div>
+</td>
+<td class="px-4 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-body-sm font-medium">Published</span>
+</div>
+</td>
+<td class="px-4 py-4 text-body-sm text-outline">Oct 12, 2023</td>
+<td class="pr-lg pl-4 py-4 text-right text-primary">
+<span class="material-symbols-outlined fill-icon cursor-pointer">star</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Right Side Panel Editor -->
+<aside class="w-[450px] bg-surface-container-lowest overflow-y-auto flex-shrink-0 flex flex-col shadow-[-10px_0_30px_rgba(0,0,0,0.03)] border-l border-outline-variant/30">
+<div class="p-lg border-b border-outline-variant/20 flex items-center justify-between sticky top-0 bg-surface-container-lowest z-20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">edit</span>
+<h2 class="font-h2 text-h2">Edit Project</h2>
+</div>
+<div class="flex gap-2">
+<button class="p-1.5 hover:bg-surface-container-high rounded transition-colors">
+<span class="material-symbols-outlined text-outline">close</span>
+</button>
+</div>
+</div>
+<div class="p-lg space-y-lg">
+<!-- Basic Info -->
+<section class="space-y-md">
+<div>
+<label class="text-label-caps text-outline uppercase mb-2 block">Project Title</label>
+<input class="w-full border border-outline-variant/40 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" type="text" value="NeuralNet Visualizer"/>
+</div>
+<div>
+<label class="text-label-caps text-outline uppercase mb-2 block">Description</label>
+<textarea class="w-full border border-outline-variant/40 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none" rows="3">An interactive 3D visualization engine for neural network architectures, allowing developers to inspect weights and activation flows in real-time.</textarea>
+</div>
+</section>
+<!-- Tech & Tags -->
+<section class="space-y-md">
+<div>
+<label class="text-label-caps text-outline uppercase mb-2 block">Technologies</label>
+<div class="flex flex-wrap gap-2 p-3 bg-surface-container-low border border-outline-variant/40 rounded-lg">
+<span class="flex items-center gap-1 px-2 py-1 bg-white border border-outline-variant/20 text-[12px] font-code rounded">Three.js <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span></span>
+<span class="flex items-center gap-1 px-2 py-1 bg-white border border-outline-variant/20 text-[12px] font-code rounded">Python <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span></span>
+<span class="flex items-center gap-1 px-2 py-1 bg-white border border-outline-variant/20 text-[12px] font-code rounded">TensorFlow <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span></span>
+<input class="bg-transparent border-none p-0 text-[12px] focus:ring-0 w-24" placeholder="Add tech..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Media Management -->
+<section class="space-y-md">
+<label class="text-label-caps text-outline uppercase block">Media Assets</label>
+<div class="grid grid-cols-2 gap-md">
+<div class="aspect-video bg-surface-container-low border-2 border-dashed border-outline-variant/40 rounded-xl flex flex-col items-center justify-center group cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="w-full h-full bg-cover bg-center rounded-lg opacity-80 group-hover:opacity-100" data-alt="A high-tech digital screenshot of a 3D neural network graph with glowing blue nodes and thin connecting lines on a dark background. The image is framed by a sleek admin dashboard interface with minimalist typography and ghost borders." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVBHj8uYVZL4ePvex6HtIJKJbtrysQjkiPRiEH4hOncwRlNEi3IyyNabduk-CejcBktluQLjM0uJ4RzZDv4A_5v8Fq_OChTPeUg-4DpUe87UwlofiB8-Qy1v2n1euAxtqw1-6ol1o6kfMqNtBPiVjXxb-IMvFXcbM-HfEO9cSbZQRwrnX6LjlQBNAEe25oTfdyeqrsObht5S47vA_hEakgGMEX6ZYV6JZ5DOYgaM6bjjFvAlPejD-u')"></div>
+</div>
+<div class="aspect-video bg-surface-container-low border-2 border-dashed border-outline-variant/40 rounded-xl flex flex-col items-center justify-center hover:bg-surface-container-high transition-all cursor-pointer">
+<span class="material-symbols-outlined text-outline text-[32px] mb-1">add_a_photo</span>
+<span class="text-[10px] font-bold text-outline uppercase">Upload Media</span>
+</div>
+</div>
+</section>
+<!-- Links -->
+<section class="space-y-md">
+<div class="flex gap-md">
+<div class="flex-1">
+<label class="text-label-caps text-outline uppercase mb-2 block">GitHub</label>
+<div class="flex items-center border border-outline-variant/40 rounded-lg bg-surface-container-low overflow-hidden">
+<span class="px-3 text-outline"><span class="material-symbols-outlined text-[18px]">link</span></span>
+<input class="bg-transparent border-none py-2 px-0 text-body-sm w-full focus:ring-0" type="text" value="github.com/dev/nn-viz"/>
+</div>
+</div>
+<div class="flex-1">
+<label class="text-label-caps text-outline uppercase mb-2 block">Live Demo</label>
+<div class="flex items-center border border-outline-variant/40 rounded-lg bg-surface-container-low overflow-hidden">
+<span class="px-3 text-outline"><span class="material-symbols-outlined text-[18px]">rocket_launch</span></span>
+<input class="bg-transparent border-none py-2 px-0 text-body-sm w-full focus:ring-0" type="text" value="nn-viz.devos.app"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Markdown Editor Placeholder -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<label class="text-label-caps text-outline uppercase block">Case Study Markdown</label>
+<div class="flex gap-2">
+<button class="text-[10px] font-bold uppercase text-primary">Write</button>
+<button class="text-[10px] font-bold uppercase text-outline">Preview</button>
+</div>
+</div>
+<div class="bg-[#1A1A1A] rounded-lg p-md min-h-[120px] font-code text-code text-primary-fixed-dim">
+<p class="text-outline"># NeuralNet Visualizer Architecture</p>
+<p class="mt-2">The system utilizes a custom **WebGL** shader to render over 10k nodes simultaneously at 60fps...</p>
+<p class="mt-4 text-secondary-fixed-dim">python</p>
+<p class="text-secondary-fixed-dim">def calculate_weights(layer):</p>
+<p class="text-secondary-fixed-dim">  return layer.get_weights()</p>
+<p class="text-secondary-fixed-dim"></p>
+</div>
+</section>
+<!-- SEO Settings -->
+<section class="space-y-md border-t border-outline-variant/20 pt-lg">
+<h3 class="font-bold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                                SEO Settings
+                            </h3>
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/20">
+<p class="text-blue-700 text-body-md font-medium">NeuralNet Visualizer | Interactive AI Tools</p>
+<p class="text-green-700 text-body-sm">https://nn-viz.devos.app</p>
+<p class="text-outline text-body-sm mt-1">Explore complex neural network structures with our real-time 3D visualization engine built for engineers.</p>
+</div>
+</section>
+<!-- Action Bar -->
+<div class="pt-xl pb-lg flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-2.5 rounded-lg font-bold text-body-md shadow-md active:opacity-90 transition-all">Save Changes</button>
+<button class="px-4 border border-outline-variant text-on-surface-variant rounded-lg font-bold text-body-md hover:bg-surface-container-high transition-colors">Discard</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple tab/row selection behavior simulation
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('click', () => {
+                rows.forEach(r => {
+                    r.classList.remove('bg-primary-container/5', 'border-l-2', 'border-primary');
+                    r.querySelector('input[type="checkbox"]').checked = false;
+                });
+                row.classList.add('bg-primary-container/5', 'border-l-2', 'border-primary');
+                row.querySelector('input[type="checkbox"]').checked = true;
+            });
+        });
+
+        // Toggle Star
+        const stars = document.querySelectorAll('.material-symbols-outlined');
+        stars.forEach(icon => {
+            if (icon.textContent === 'star') {
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    icon.classList.toggle('fill-icon');
+                    icon.classList.toggle('text-primary');
+                });
+            }
+        });
+    </script>
+</body></html>

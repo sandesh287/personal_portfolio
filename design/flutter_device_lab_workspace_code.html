@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS - Flutter Device Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .os-window {
+            box-shadow: 0px 20px 50px rgba(0,0,0,0.08);
+        }
+        .ghost-border {
+            border: 1px solid #E5E5E5;
+        }
+        .device-frame {
+            border: 8px solid #1a1c1d;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#1a1c1d",
+                        "surface-container": "#eeeef0",
+                        "secondary": "#5f5e5e",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#adc6ff",
+                        "on-surface": "#1a1c1d",
+                        "outline-variant": "#c1c6d7",
+                        "on-primary-container": "#fefcff",
+                        "surface-bright": "#f9f9fb",
+                        "on-primary-fixed": "#001a41",
+                        "secondary-container": "#e2dfde",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-surface": "#2f3132",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container-high": "#e8e8ea",
+                        "tertiary-container": "#c64f00",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "surface-container-highest": "#e2e2e4",
+                        "on-secondary-container": "#636262",
+                        "tertiary": "#9e3d00",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary": "#0058bc",
+                        "outline": "#717786",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-error-container": "#93000a",
+                        "background": "#f9f9fb",
+                        "surface-dim": "#d9dadc",
+                        "primary-container": "#0070eb",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9fb",
+                        "inverse-on-surface": "#f0f0f2",
+                        "surface-variant": "#e2e2e4",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#005bc1",
+                        "surface-container-low": "#f3f3f5",
+                        "tertiary-fixed": "#ffdbcc"
+                    },
+                    "spacing": {
+                        "xl": "40px",
+                        "md": "16px",
+                        "container-max": "1200px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "sidebar-width": "260px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"], "body-lg": ["Inter"], "display": ["Inter"], "h1": ["Inter"], "label-caps": ["Inter"],
+                        "code": ["JetBrains Mono"], "body-sm": ["Inter"], "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-dim font-body-md text-on-surface h-screen flex items-center justify-center p-xl">
+<!-- Main OS Application Window -->
+<div class="os-window w-full h-full max-w-[1440px] max-h-[900px] bg-background ghost-border rounded-xl flex flex-col overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center px-md h-xl w-full z-50 bg-surface-bright border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<!-- Traffic Lights -->
+<div class="flex gap-2 mr-4">
+<div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+</div>
+<span class="font-h2 text-h2 font-black text-on-surface">DevOS</span>
+<nav class="hidden md:flex items-center gap-md ml-4">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">File</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Edit</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">View</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Go</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Window</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Help</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">wifi</span>
+<span class="material-symbols-outlined text-on-surface-variant">battery_full</span>
+<div class="w-[1px] h-4 bg-outline-variant"></div>
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-sidebar-width flex flex-col py-md bg-surface-container border-r border-outline-variant h-full">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">developer_board</span>
+</div>
+<div>
+<h1 class="font-h1 text-h1 text-primary leading-none">Portfolio OS</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80">Software Engineer</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<nav class="flex flex-col">
+<div class="px-md py-1 mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest opacity-50">Main Modules</span>
+</div>
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="font-body-sm text-body-sm">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-md py-2 border-l-2 border-primary text-primary font-bold bg-surface-container-highest transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">devices</span>
+<span class="font-body-sm text-body-sm">Device Lab</span>
+</a>
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+<span class="font-body-sm text-body-sm">Performance</span>
+</a>
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span class="font-body-sm text-body-sm">Source Code</span>
+</a>
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+<span class="font-body-sm text-body-sm">Terminal</span>
+</a>
+</nav>
+<div class="mt-lg px-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest opacity-50 block mb-2">Active Projects</span>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white ghost-border cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-body-sm text-body-sm font-semibold">E-commerce App</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-high cursor-pointer transition-colors">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="font-body-sm text-body-sm">Fitness Tracker</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-high cursor-pointer transition-colors">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="font-body-sm text-body-sm">Finance Pro</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant">
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-md py-2 text-on-surface-variant opacity-80 hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[20px] text-green-500" style="font-variation-settings: 'FILL' 1;">circle</span>
+<span class="font-body-sm text-body-sm">System Status: Active</span>
+</a>
+</div>
+</aside>
+<!-- Center Workspace: Laboratory Desk -->
+<main class="flex-1 flex flex-col bg-surface-bright relative overflow-hidden">
+<div class="flex-1 p-lg overflow-y-auto custom-scrollbar">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h2 class="font-h2 text-h2">Device Laboratory</h2>
+<p class="text-on-surface-variant opacity-70">Testing <span class="font-bold text-primary">E-commerce App</span> across 4 device profiles</p>
+</div>
+<div class="flex gap-2">
+<button class="px-md py-2 bg-primary text-white rounded-lg flex items-center gap-2 font-body-sm transition-opacity hover:opacity-90">
+<span class="material-symbols-outlined">play_arrow</span> Run Build
+                            </button>
+<button class="px-md py-2 bg-white ghost-border text-on-surface rounded-lg flex items-center gap-2 font-body-sm hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">refresh</span> Hot Reload
+                            </button>
+</div>
+</div>
+<!-- Laboratory Desk: Device Mockups -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-xl">
+<!-- Android Phone -->
+<div class="flex flex-col items-center">
+<span class="font-label-caps text-label-caps mb-sm opacity-50 uppercase">Android Pixel 7 Pro</span>
+<div class="device-frame w-[220px] h-[450px] relative shadow-lg">
+<div class="absolute top-0 w-full h-6 bg-black flex items-center justify-between px-4">
+<span class="text-[10px] text-white">9:41</span>
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-[10px] text-white">wifi</span>
+<span class="material-symbols-outlined text-[10px] text-white">battery_full</span>
+</div>
+</div>
+<div class="w-full h-full pt-6 flex flex-col">
+<div class="p-4 flex-1">
+<div class="w-full h-24 bg-surface-container-highest rounded-lg mb-4 flex items-center justify-center" data-alt="A clean light-themed UI mockup for an e-commerce mobile application featuring a minimalist product display grid with blue accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZ_qcXiq3F5hA1Abw9x4SfWygLTf0UX4rvffcMMW0Zt7QOy53xPuVSsa_cQhfxCL3558dE-wMP9wJzNzUqjDiF-rXjQW-Snma3CnA3iPzXkGiXLIurTbEwUMpEvpIF-Lz4muI9aVornELF-nSAL2FkvKOUYemzaBu9-Rd-h7fWgudGJCF_FhBHwO_LaKu78p4FbxJDD9NoS1czMZIHczdcgevCvf6srmCIq_xuFXVrLiiEucwaC9J1')"></div>
+<div class="space-y-3">
+<div class="h-4 w-3/4 bg-surface-container rounded"></div>
+<div class="h-4 w-full bg-surface-container rounded"></div>
+<div class="grid grid-cols-2 gap-2 mt-4">
+<div class="h-20 bg-surface-container-low border border-outline-variant rounded"></div>
+<div class="h-20 bg-surface-container-low border border-outline-variant rounded"></div>
+</div>
+</div>
+</div>
+<div class="h-12 border-t border-outline-variant flex justify-around items-center">
+<span class="material-symbols-outlined text-primary">home</span>
+<span class="material-symbols-outlined text-outline">search</span>
+<span class="material-symbols-outlined text-outline">shopping_bag</span>
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+</div>
+</div>
+</div>
+<!-- iPhone -->
+<div class="flex flex-col items-center">
+<span class="font-label-caps text-label-caps mb-sm opacity-50 uppercase">iPhone 15 Pro</span>
+<div class="device-frame w-[220px] h-[450px] rounded-[40px] border-[10px] border-[#222] relative shadow-lg">
+<div class="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-6 bg-black rounded-full z-10"></div>
+<div class="w-full h-full flex flex-col bg-white">
+<div class="p-4 flex-1 pt-8">
+<div class="h-8 w-24 bg-primary/10 rounded mb-4"></div>
+<div class="space-y-4">
+<div class="h-32 bg-surface-container-highest rounded-xl" data-alt="A premium high-fidelity mobile app interface for a high-end luxury fashion store, showcasing large product photography in a minimalist white-and-gray layout with vibrant blue call-to-action buttons." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0lsLrylLt4UizL8-423-j2iJtr06ZyW0sM15p_E77bX7OYNtYBpcDVi_Zjb12GrwrzyCXeKpTdWQUFtql9sk5ygzi8qx_X541DcqsU_Xq5pW4Qi7dc8lvHJ7V1LlaK7SykxUfpe1429aOmR6Lmj4o8krW_iEpAj-wEz57Y58uctF-fsd7biC6UUNwBecqf-6v9nzK320UF_OzNn1EyfBIWYguBFDbHSbA61hZmdoa63AZLiwmrQMA')"></div>
+<div class="h-4 w-1/2 bg-surface-container rounded"></div>
+<div class="h-3 w-full bg-surface-container/50 rounded"></div>
+</div>
+</div>
+<div class="h-14 border-t border-outline-variant flex justify-around items-center pb-2">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">home</span></div>
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<span class="material-symbols-outlined text-outline text-sm">shopping_bag</span>
+<span class="material-symbols-outlined text-outline text-sm">menu</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tablet -->
+<div class="flex flex-col items-center xl:col-span-1">
+<span class="font-label-caps text-label-caps mb-sm opacity-50 uppercase">iPad Air (Landscape)</span>
+<div class="device-frame w-[400px] h-[280px] rounded-xl border-[12px] relative shadow-lg">
+<div class="w-full h-full bg-white flex">
+<div class="w-16 h-full border-r border-outline-variant flex flex-col items-center py-4 gap-6">
+<div class="w-8 h-8 bg-primary rounded"></div>
+<span class="material-symbols-outlined text-outline">dashboard</span>
+<span class="material-symbols-outlined text-outline">inventory</span>
+<span class="material-symbols-outlined text-outline">analytics</span>
+</div>
+<div class="flex-1 p-4 grid grid-cols-3 gap-3">
+<div class="col-span-3 h-10 bg-surface-container rounded-md"></div>
+<div class="h-24 bg-surface-container-low rounded border border-outline-variant"></div>
+<div class="h-24 bg-surface-container-low rounded border border-outline-variant"></div>
+<div class="h-24 bg-surface-container-low rounded border border-outline-variant"></div>
+<div class="col-span-2 h-20 bg-surface-container rounded"></div>
+<div class="h-20 bg-primary/5 border border-primary/20 rounded"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Foldable -->
+<div class="flex flex-col items-center xl:col-span-1">
+<span class="font-label-caps text-label-caps mb-sm opacity-50 uppercase">Galaxy Z Fold (Unfolded)</span>
+<div class="device-frame w-[340px] h-[360px] rounded-md border-[6px] relative shadow-lg flex">
+<div class="w-1/2 h-full border-r border-outline-variant/30 p-4 bg-white">
+<div class="h-full w-full bg-surface-container-lowest border border-outline-variant rounded flex flex-col p-2" data-alt="A digital rendering of a dual-pane foldable smartphone interface, showing a detailed product list on the left and a full product description with a shopping cart on the right, maintaining a crisp professional tech aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfvY-zWNlKBVtcutN8h3EQmiI_7lmRayzpgQCSoPF7HDKiuZ-PEv5U9aCfVNRGNsaE2FNpqpyppI9gTHSlkic5HR7bdLgyfu1HMF20RCnfJB1-B1oKhI5Wg1-o5ScmU1KpNkFgLwsIWoFtCtEINSS_zUJQTIcGBy9By3lj5GhB_WmpxGajCG_K81A6gmoGtPl1SEsGDaUML09wylYkOa28uZHI9X9iALvImHRoBqPT_n0WD_q38PI4')">
+<div class="h-4 w-20 bg-surface-container rounded mb-4"></div>
+<div class="flex-1 space-y-2">
+<div class="h-10 bg-surface-container-low rounded"></div>
+<div class="h-10 bg-surface-container-low rounded"></div>
+<div class="h-10 bg-surface-container-low rounded"></div>
+</div>
+</div>
+</div>
+<div class="w-1/2 h-full p-4 bg-white">
+<div class="h-32 bg-surface-container rounded mb-4"></div>
+<div class="h-4 w-full bg-surface-container rounded mb-2"></div>
+<div class="h-4 w-2/3 bg-surface-container rounded mb-4"></div>
+<div class="h-10 bg-primary rounded-lg"></div>
+</div>
+<div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-outline-variant opacity-20"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Panel: Task-focused Navigation -->
+<div class="h-[240px] bg-white border-t border-outline-variant flex flex-col">
+<div class="flex border-b border-outline-variant">
+<button class="px-lg py-3 font-body-sm font-bold text-primary border-b-2 border-primary bg-surface-container-low">Screens</button>
+<button class="px-lg py-3 font-body-sm text-on-surface-variant hover:bg-surface-container-low transition-colors">UI Components</button>
+<button class="px-lg py-3 font-body-sm text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                            Performance <span class="w-2 h-2 rounded-full bg-green-500"></span>
+</button>
+<button class="px-lg py-3 font-body-sm text-on-surface-variant hover:bg-surface-container-low transition-colors">Version History</button>
+</div>
+<div class="flex-1 p-md flex gap-md overflow-x-auto custom-scrollbar">
+<!-- Metrics in Performance Tab (Logic: If Performance is Active) -->
+<div class="min-w-[200px] h-full p-md bg-surface-bright ghost-border rounded-lg flex flex-col justify-between">
+<span class="font-label-caps text-label-caps opacity-50 uppercase">Frame Rate</span>
+<div>
+<span class="text-h1 font-bold text-green-600">60.0</span>
+<span class="text-body-sm opacity-60">FPS</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded">
+<div class="w-[98%] h-full bg-green-500 rounded"></div>
+</div>
+</div>
+<div class="min-w-[200px] h-full p-md bg-surface-bright ghost-border rounded-lg flex flex-col justify-between">
+<span class="font-label-caps text-label-caps opacity-50 uppercase">Memory Usage</span>
+<div>
+<span class="text-h1 font-bold">142</span>
+<span class="text-body-sm opacity-60">MB</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded">
+<div class="w-[40%] h-full bg-primary rounded"></div>
+</div>
+</div>
+<div class="min-w-[200px] h-full p-md bg-surface-bright ghost-border rounded-lg flex flex-col justify-between">
+<span class="font-label-caps text-label-caps opacity-50 uppercase">GPU Load</span>
+<div>
+<span class="text-h1 font-bold">12%</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded">
+<div class="w-[12%] h-full bg-blue-400 rounded"></div>
+</div>
+</div>
+<div class="min-w-[300px] h-full p-md bg-surface-bright ghost-border rounded-lg flex flex-col">
+<span class="font-label-caps text-label-caps opacity-50 uppercase mb-2">Live Logs</span>
+<div class="flex-1 bg-inverse-surface rounded p-2 overflow-y-auto custom-scrollbar">
+<p class="font-code text-code text-[#4CAF50]">[INFO] Hot Reloading complete in 241ms</p>
+<p class="font-code text-code text-white/70">[DEBUG] RenderObject: RenderFlex#72121 relayout</p>
+<p class="font-code text-code text-white/70">[DEBUG] Flutter engine initialized</p>
+<p class="font-code text-code text-[#FFC107]">[WARN] Image cache overflow: 102MB</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Panel: Project Specs -->
+<aside class="w-[320px] bg-surface-container border-l border-outline-variant overflow-y-auto custom-scrollbar p-md flex flex-col gap-lg">
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest opacity-50 mb-4">Project Specs</h3>
+<!-- Overview -->
+<section class="mb-lg">
+<h4 class="font-body-sm font-bold mb-2">Overview</h4>
+<p class="font-body-sm text-on-surface-variant leading-relaxed">
+                            A flagship e-commerce solution built with high-scalability in mind. Features a modular widget architecture and real-time inventory synchronization.
+                        </p>
+</section>
+<!-- Features -->
+<section class="mb-lg">
+<h4 class="font-body-sm font-bold mb-2">Features</h4>
+<ul class="space-y-1">
+<li class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span> Dynamic Theming
+                            </li>
+<li class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span> Offline-First Support
+                            </li>
+<li class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span> Biometric Checkout
+                            </li>
+</ul>
+</section>
+<!-- Tech Stack -->
+<section class="mb-lg">
+<h4 class="font-body-sm font-bold mb-2">Tech Stack</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-white ghost-border rounded font-code text-code">Flutter 3.19</span>
+<span class="px-2 py-1 bg-white ghost-border rounded font-code text-code">Dart 3.3</span>
+<span class="px-2 py-1 bg-white ghost-border rounded font-code text-code">Firebase</span>
+<span class="px-2 py-1 bg-white ghost-border rounded font-code text-code">SQLite</span>
+</div>
+</section>
+<!-- Architecture -->
+<section class="mb-lg">
+<h4 class="font-body-sm font-bold mb-2">Architecture</h4>
+<div class="p-3 bg-white ghost-border rounded-lg">
+<p class="font-body-sm font-semibold text-primary mb-1">Clean Architecture</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">Data Layer → Domain Layer → Presentation Layer</p>
+</div>
+</section>
+<!-- State Management -->
+<section class="mb-lg">
+<h4 class="font-body-sm font-bold mb-2">State Management</h4>
+<div class="flex items-center gap-3">
+<div class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full font-body-sm">Bloc</div>
+<div class="px-3 py-1 bg-surface-container-highest border border-outline-variant rounded-full font-body-sm">Provider</div>
+</div>
+</section>
+<!-- External Links -->
+<section>
+<h4 class="font-body-sm font-bold mb-3">Resources</h4>
+<div class="grid grid-cols-1 gap-2">
+<a class="flex items-center justify-between p-3 bg-white ghost-border rounded-lg hover:bg-primary/5 transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">terminal</span>
+<span class="font-body-sm font-semibold">GitHub Repo</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-3 bg-white ghost-border rounded-lg hover:bg-primary/5 transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">shop_two</span>
+<span class="font-body-sm font-semibold">Play Store</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">open_in_new</span>
+</a>
+</div>
+</section>
+</div>
+</aside>
+</div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (el.tagName === 'A') e.preventDefault();
+            });
+        });
+    </script>
+</body></html>

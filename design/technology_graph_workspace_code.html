@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS - Tech Graph</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-secondary-container": "#636262",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-on-surface": "#f0f0f2",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "surface-container-low": "#f3f3f5",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#717786",
+                    "primary-container": "#0070eb",
+                    "on-tertiary-fixed": "#351000",
+                    "on-surface": "#1a1c1d",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#e8e8ea",
+                    "outline-variant": "#c1c6d7",
+                    "surface-dim": "#d9dadc",
+                    "on-primary-fixed": "#001a41",
+                    "secondary-container": "#e2dfde",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#adc6ff",
+                    "tertiary": "#9e3d00",
+                    "on-primary-container": "#fefcff",
+                    "secondary": "#5f5e5e",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#eeeef0",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-tertiary-container": "#fffbff",
+                    "primary": "#0058bc",
+                    "on-surface-variant": "#414755",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface-tint": "#005bc1",
+                    "surface": "#f9f9fb",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f9f9fb",
+                    "inverse-surface": "#2f3132",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e2e2e4",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-background": "#1a1c1d",
+                    "tertiary-container": "#c64f00",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-variant": "#e2e2e4",
+                    "on-primary-fixed-variant": "#004493",
+                    "surface-bright": "#f9f9fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "xs": "4px",
+                    "xl": "40px",
+                    "sidebar-width": "260px",
+                    "base": "4px",
+                    "container-max": "1200px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "h2": ["Geist"],
+                    "display": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "body-md": ["Geist"],
+                    "code": ["JetBrains Mono"],
+                    "body-sm": ["Geist"],
+                    "h1": ["Geist"]
+            },
+            "fontSize": {
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f9f9fb; font-family: 'Geist', sans-serif; overflow: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .window-shadow { box-shadow: 0px 20px 50px rgba(0,0,0,0.08); }
+        .ghost-border { border: 1px solid #e5e5e5; }
+        .tech-node { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .tech-node:hover { transform: scale(1.05); }
+        .grid-bg {
+            background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .graph-line { stroke: #d1d5db; stroke-width: 1.5; stroke-dasharray: 4; animation: flow 20s linear infinite; }
+        @keyframes flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+        .node-active { stroke: #007AFF; stroke-width: 2px; }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen p-xl">
+<!-- Main OS Window -->
+<div class="w-full h-full max-w-[1440px] max-h-[900px] bg-surface-container-lowest rounded-xl flex flex-col overflow-hidden ghost-border window-shadow relative">
+<!-- TopNavBar Implementation -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-lg h-16 bg-surface-container dark:bg-inverse-surface border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-md">
+<div class="flex gap-xs mr-md">
+<div class="w-3 h-3 rounded-full bg-error opacity-80"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></div>
+<div class="w-3 h-3 rounded-full bg-green-500 opacity-80"></div>
+</div>
+<span class="font-h2 text-h2 font-bold text-on-surface dark:text-on-primary-fixed">DevOS</span>
+<nav class="hidden md:flex ml-lg gap-lg">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Dashboard</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Workspaces</a>
+<a class="font-body-sm text-body-sm text-primary dark:text-primary-fixed border-b-2 border-primary pb-1" href="#">Tech Graph</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-sm text-on-surface-variant">search</span>
+<input class="pl-xl pr-md py-xs bg-surface-container-high rounded-lg ghost-border font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search architecture..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="account_tree">account_tree</span>
+<img class="w-8 h-8 rounded-full object-cover ghost-border" data-alt="A minimalist professional portrait of a software engineer in a high-tech studio with soft, cool-toned lighting, wearing a simple dark gray crewneck, looking towards the camera with a confident expression. The background is a clean, out-of-focus tech workspace with monitors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9pfh8za17neT1mXJOhHV_Ha3Smo-a3kyhEmdvtvbz3BiDgfUmkSVdOgaclH-1HL26qxA7SKPRUyIcb1m_Y_WEH_Ad3nSjQYAIrPGfJwHei0GlBMQ1pkRYz6Wj0qFRqQGI0YBOvwom7Y9p0hnLJgMJiHtl-ytMjK_WdWNmghTsnAfNNsrkBEAI5t53bcIJoqEJPfmEb13SILF8_DaIeBc4mG5WXv8SsoA0nd7r1y-DapgbxRUffjIO"/>
+</div>
+</header>
+<!-- SideNavBar Implementation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-sidebar-width bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flex flex-col py-lg px-md space-y-base z-40">
+<div class="mb-lg">
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">DevOS Kernel</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-60">v1.0.4-stable</p>
+</div>
+<nav class="space-y-base flex-grow">
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined" data-icon="home_app_logo">home_app_logo</span>
+<span class="font-body-sm text-body-sm">Home</span>
+</div>
+<div class="flex items-center gap-md bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg px-md py-sm border-l-2 border-primary cursor-pointer">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-body-sm text-body-sm">Tech Graph</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined" data-icon="code_blocks">code_blocks</span>
+<span class="font-body-sm text-body-sm">GitHub</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-body-sm text-body-sm">Terminal</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-body-sm text-body-sm">System</span>
+</div>
+</nav>
+<button class="bg-primary text-on-primary py-sm px-md rounded-lg font-body-sm text-body-sm font-semibold flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                New Instance
+            </button>
+<div class="pt-lg border-t border-outline-variant mt-auto">
+<div class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body-sm text-body-sm">Help</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container-high transition-all cursor-pointer rounded-lg">
+<span class="material-symbols-outlined text-green-500" data-icon="check_circle">check_circle</span>
+<span class="font-body-sm text-body-sm">Status</span>
+</div>
+</div>
+</aside>
+<!-- Main Workspace: Technology Graph -->
+<main class="ml-sidebar-width mt-16 flex-grow relative overflow-hidden flex">
+<!-- Graph Canvas -->
+<div class="flex-grow relative grid-bg" id="graph-canvas">
+<!-- Filters & Controls Overlays -->
+<div class="absolute top-md left-md z-10 flex gap-sm bg-surface/80 backdrop-blur-md p-xs rounded-xl ghost-border">
+<button class="px-md py-xs rounded-lg font-label-caps text-label-caps bg-primary text-on-primary">All</button>
+<button class="px-md py-xs rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high">Frontend</button>
+<button class="px-md py-xs rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high">Backend</button>
+<button class="px-md py-xs rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high">Mobile</button>
+<button class="px-md py-xs rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high">AI/DS</button>
+</div>
+<div class="absolute bottom-md right-md z-10 flex flex-col gap-xs">
+<div class="flex flex-col bg-surface ghost-border rounded-lg overflow-hidden">
+<button class="p-sm hover:bg-surface-container-high text-on-surface-variant"><span class="material-symbols-outlined">add</span></button>
+<div class="h-[1px] bg-outline-variant mx-sm"></div>
+<button class="p-sm hover:bg-surface-container-high text-on-surface-variant"><span class="material-symbols-outlined">remove</span></button>
+</div>
+<button class="p-sm bg-surface ghost-border rounded-lg text-on-surface-variant"><span class="material-symbols-outlined">center_focus_strong</span></button>
+</div>
+<!-- SVG Graph Layer -->
+<svg class="w-full h-full" id="dependency-svg">
+<!-- Connections -->
+<path class="graph-line" d="M 400,350 L 300,200" marker-end="url(#arrow)"></path>
+<path class="graph-line" d="M 400,350 L 500,200" marker-end="url(#arrow)"></path>
+<path class="graph-line" d="M 400,350 L 550,400" marker-end="url(#arrow)"></path>
+<path class="graph-line" d="M 400,350 L 250,400" marker-end="url(#arrow)"></path>
+<path class="graph-line" d="M 400,350 L 400,550" marker-end="url(#arrow)"></path>
+<path class="graph-line" d="M 800,450 L 700,300"></path>
+<path class="graph-line" d="M 800,450 L 900,300"></path>
+<path class="graph-line" d="M 800,450 L 950,550"></path>
+<!-- Markers -->
+<defs>
+<marker id="arrow" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="35" refy="3">
+<path d="M0,0 L0,6 L4,3 z" fill="#d1d5db"></path>
+</marker>
+</defs>
+<!-- Nodes rendered as HTML overlays for interactivity, but SVG keeps connections -->
+</svg>
+<!-- Interactive Nodes (Absolute Positioned) -->
+<!-- React (Active Node) -->
+<div class="absolute tech-node left-[360px] top-[310px] flex flex-col items-center gap-xs" onclick="selectNode('React')">
+<div class="w-20 h-20 bg-surface-container-lowest ghost-border rounded-xl flex items-center justify-center node-active shadow-lg">
+<span class="material-symbols-outlined text-primary text-[40px]">deployed_code</span>
+</div>
+<span class="font-body-sm text-body-sm font-semibold text-primary">React</span>
+</div>
+<!-- Python -->
+<div class="absolute tech-node left-[760px] top-[410px] flex flex-col items-center gap-xs" onclick="selectNode('Python')">
+<div class="w-16 h-16 bg-surface-container-lowest ghost-border rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]">function</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Python</span>
+</div>
+<!-- PostgreSQL -->
+<div class="absolute tech-node left-[360px] top-[510px] flex flex-col items-center gap-xs" onclick="selectNode('PostgreSQL')">
+<div class="w-16 h-16 bg-surface-container-lowest ghost-border rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]">database</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">PostgreSQL</span>
+</div>
+<!-- Next.js -->
+<div class="absolute tech-node left-[260px] top-[160px] flex flex-col items-center gap-xs">
+<div class="w-12 h-12 bg-surface-container-lowest ghost-border rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">layers</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Next.js</span>
+</div>
+<!-- TypeScript -->
+<div class="absolute tech-node left-[460px] top-[160px] flex flex-col items-center gap-xs">
+<div class="w-12 h-12 bg-surface-container-lowest ghost-border rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">spellcheck</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">TypeScript</span>
+</div>
+</div>
+<!-- Right Detail Panel -->
+<aside class="w-[380px] bg-surface-container border-l border-outline-variant flex flex-col overflow-y-auto animate-in slide-in-from-right duration-300" id="node-details">
+<!-- Selection Empty State (Hidden by default when data selected) -->
+<div class="p-lg space-y-lg" id="selection-content">
+<!-- Header -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 bg-surface-container-lowest ghost-border rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]" id="detail-icon">deployed_code</span>
+</div>
+<div>
+<h2 class="font-h2 text-h2" id="detail-name">React</h2>
+<p class="font-code text-code text-primary bg-primary/5 px-sm rounded">v18.2.0-stable</p>
+</div>
+</div>
+<button class="p-xs hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined text-on-surface-variant">close</span></button>
+</div>
+<!-- Section 1: Experience -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Experience</h3>
+<div class="flex items-center gap-md">
+<div class="flex flex-col">
+<span class="font-h2 text-h2 text-on-surface">5.2Y</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Proficiency Time</span>
+</div>
+<div class="w-[1px] h-10 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-h2 text-h2 text-on-surface">L7</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Architect Level</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Projects -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Key Implementations</h3>
+<div class="space-y-xs">
+<div class="p-sm bg-surface-container-lowest ghost-border rounded-lg flex items-center justify-between hover:border-primary transition-colors cursor-pointer group">
+<span class="font-body-md text-body-md">Financial Dashboard v2</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">arrow_outward</span>
+</div>
+<div class="p-sm bg-surface-container-lowest ghost-border rounded-lg flex items-center justify-between hover:border-primary transition-colors cursor-pointer group">
+<span class="font-body-md text-body-md">E-Commerce Engine</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Section 3: Related Tech -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Dependencies &amp; Graph</h3>
+<div class="flex flex-wrap gap-xs">
+<span class="px-sm py-xs bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm rounded-md">Redux Toolkit</span>
+<span class="px-sm py-xs bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm rounded-md">TailwindCSS</span>
+<span class="px-sm py-xs bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm rounded-md">Framer Motion</span>
+<span class="px-sm py-xs bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm rounded-md">Vitest</span>
+</div>
+</div>
+<!-- Section 4: Technical Summary -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Technical Summary</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                            Advanced implementation of component-driven architecture. Specialized in high-performance rendering cycles, custom hooks for state management, and virtualized list structures. Proficient in reconciliation algorithms and fiber architecture.
+                        </p>
+</div>
+<!-- Section 5: Example Work -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-sm">Architecture Preview</h3>
+<div class="mt-sm rounded-xl overflow-hidden ghost-border relative group cursor-pointer">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+<span class="bg-surface-container-lowest text-primary px-md py-sm rounded-full font-body-sm text-body-sm shadow-lg">View Blueprint</span>
+</div>
+<div class="w-full h-48 bg-cover bg-center" data-alt="A clean high-fidelity architectural diagram of a modern software system, showing microservices, API gateways, and frontend components connected by thin blue lines. The style is minimalist with a light-mode aesthetic, using white backgrounds and subtle gray shapes with blue accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBc5Cr5hi3Nt2UCY_wUYJ5zxmkCwyPmCvDE9e-0BiYCI9hKBB_5CzQpvG6SMOCtn2PFsuTE6tbht5LEJlpL8Yy5fCj2m43Z5dAFhJ_d-s4FYNzZwAytuSeAlwSybXTEH9bUrsB9vpycVfKxqSGLJxXQZuNIfnElbpgbe7GPWLsIaB9VYBpywi6tzHMLBX8NP5EVD8rciwGHuF50s63gHrnUhPu7UDkZzKyRJIAEE0k9uR_H5wy0-nWH')"></div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        const nodeData = {
+            'React': {
+                icon: 'deployed_code',
+                ver: 'v18.2.0-stable',
+                exp: '5.2Y',
+                level: 'L7',
+                desc: 'Advanced implementation of component-driven architecture. Specialized in high-performance rendering cycles, custom hooks for state management, and virtualized list structures.',
+                projects: ['Financial Dashboard v2', 'E-Commerce Engine']
+            },
+            'Python': {
+                icon: 'function',
+                ver: 'v3.11.4-stable',
+                exp: '4.8Y',
+                level: 'L6',
+                desc: 'Specialized in automated data pipelines, RESTful APIs using FastAPI, and mathematical modeling. Deep expertise in concurrency and asynchronous task processing.',
+                projects: ['Data Analytics Suite', 'Trading Bot Alpha']
+            },
+            'PostgreSQL': {
+                icon: 'database',
+                ver: 'v15.0-stable',
+                exp: '6.5Y',
+                level: 'L8',
+                desc: 'Expert in relational database design, query optimization, and complex partitioning. Advanced knowledge of ACID compliance and WAL archiving.',
+                projects: ['Core Banking DB', 'Identity Service Layer']
+            }
+        };
+
+        function selectNode(name) {
+            const data = nodeData[name];
+            if (!data) return;
+
+            document.getElementById('detail-name').innerText = name;
+            document.getElementById('detail-icon').innerText = data.icon;
+            document.querySelector('#node-details p.text-code').innerText = data.ver;
+            document.querySelector('#node-details .font-h2.text-on-surface').innerText = data.exp;
+            document.querySelectorAll('#node-details .font-h2.text-on-surface')[1].innerText = data.level;
+            document.querySelector('#node-details p.text-on-surface-variant').innerText = data.desc;
+
+            // Highlight node animation logic would go here
+            document.querySelectorAll('.tech-node .w-20, .tech-node .w-16').forEach(el => {
+                el.classList.remove('node-active', 'shadow-lg');
+            });
+            event.currentTarget.querySelector('div').classList.add('node-active', 'shadow-lg');
+        }
+
+        // Initialize with React selected
+        selectNode('React');
+    </script>
+</body></html>

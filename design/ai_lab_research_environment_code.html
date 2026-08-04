@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Lab - Research Environment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e2e4;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #c1c6d7;
+        }
+        .ghost-border {
+            border: 1px solid #e5e5e5;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9fb",
+                        "surface-container-highest": "#e2e2e4",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-container": "#c64f00",
+                        "surface-container": "#eeeef0",
+                        "surface-container-high": "#e8e8ea",
+                        "outline-variant": "#c1c6d7",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#fefcff",
+                        "secondary-container": "#e2dfde",
+                        "surface-dim": "#d9dadc",
+                        "inverse-surface": "#2f3132",
+                        "surface-container-low": "#f3f3f5",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#0058bc",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-background": "#1a1c1d",
+                        "surface-variant": "#e2e2e4",
+                        "surface-bright": "#f9f9fb",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary": "#9e3d00",
+                        "surface": "#f9f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#0070eb",
+                        "on-secondary-container": "#636262",
+                        "inverse-on-surface": "#f0f0f2",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-primary": "#adc6ff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001a41",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-tint": "#005bc1",
+                        "on-surface-variant": "#414755",
+                        "secondary": "#5f5e5e",
+                        "on-surface": "#1a1c1d",
+                        "error-container": "#ffdad6",
+                        "outline": "#717786",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004493"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "sidebar-width": "260px",
+                        "container-max": "1200px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Geist"],
+                        "h2": ["Geist"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "display": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "h1": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-dim flex items-center justify-center min-h-screen p-xl font-body-md text-on-surface">
+<!-- OS Window Wrapper -->
+<div class="w-full h-[90vh] bg-background rounded-xl overflow-hidden shadow-[0px_20px_50px_rgba(0,0,0,0.08)] flex flex-col ghost-border relative">
+<!-- Top Title Bar -->
+<header class="h-12 bg-surface-bright flex items-center px-md border-b border-outline-variant shrink-0 z-50">
+<!-- Traffic Lights -->
+<div class="flex gap-2 w-[80px]">
+<div class="w-3 h-3 rounded-full bg-red-400"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+<div class="w-3 h-3 rounded-full bg-green-400"></div>
+</div>
+<!-- Title -->
+<div class="flex-1 flex justify-center">
+<span class="font-code text-code text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                    AI Lab - Research Environment
+                </span>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">wifi</span>
+<span class="material-symbols-outlined text-on-surface-variant">battery_full</span>
+<img class="w-6 h-6 rounded-full border border-outline-variant" data-alt="A clean, professional minimalist avatar of a software engineer, wearing a dark turtleneck against a neutral light gray background, shot in soft studio lighting for a high-end tech-focused profile look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzeRji91LkCtWmThzIIJHgk9orVlmAR21RlkFunimvDZc04UGfARqVTJGTRHO4-3oGArHADQcQ0zoSoyhh2EMzEX-zLGfHBpJd9n7dwImaKJhvV_1_jyFzKhsfPLJ1aavc-8BBdZLI1sCNvsXu2FqPsfMhIhKF469zbUj1nIDgZlq4HX-tDiD9F0l15gENY3DSoF8BexbVZ_8y89sq_FKw4i3nRy9uC717V6kH2LX8zeO3YZQ6f9cv"/>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Experiment Explorer -->
+<aside class="w-sidebar-width bg-surface-container-low border-r border-outline-variant flex flex-col shrink-0">
+<div class="p-md flex items-center justify-between border-b border-outline-variant">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Explorer</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">create_new_folder</span>
+</div>
+<div class="flex-1 overflow-y-auto py-sm custom-scrollbar">
+<div class="px-md py-xs flex items-center gap-2 text-on-surface-variant font-label-caps">
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+                        PROJECTS
+                    </div>
+<nav class="space-y-[1px]">
+<!-- Active Item -->
+<div class="group flex items-center px-md py-2 gap-3 border-l-2 border-primary bg-surface-container-high text-on-surface cursor-pointer">
+<span class="material-symbols-outlined text-primary">data_object</span>
+<span class="font-body-sm text-body-sm truncate">Real-time Object Detection</span>
+</div>
+<!-- Inactive Items -->
+<div class="group flex items-center px-md py-2 gap-3 text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+<span class="font-body-sm text-body-sm truncate">NLP Sentiment Analysis</span>
+</div>
+<div class="group flex items-center px-md py-2 gap-3 text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-body-sm text-body-sm truncate">Stock Price Prediction</span>
+</div>
+<div class="group flex items-center px-md py-2 gap-3 text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-sm text-body-sm truncate">Neural Style Transfer</span>
+</div>
+<div class="group flex items-center px-md py-2 gap-3 text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined">folder</span>
+<span class="font-body-sm text-body-sm truncate">Archived Experiments</span>
+</div>
+</nav>
+<div class="mt-md px-md py-xs flex items-center gap-2 text-on-surface-variant font-label-caps">
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+                        ENVIRONMENTS
+                    </div>
+<div class="px-md py-2 flex items-center gap-3 text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined text-green-500" style="font-variation-settings: 'FILL' 1;">circle</span>
+<span class="font-body-sm text-body-sm">PyTorch 2.1 (GPU)</span>
+</div>
+</div>
+<!-- Footer Status -->
+<div class="p-md border-t border-outline-variant bg-surface-container">
+<button class="w-full bg-primary text-on-primary py-2 px-md rounded-lg font-body-sm flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">add</span>
+                        New Project
+                    </button>
+</div>
+</aside>
+<!-- Central Pane: Notebook Viewer -->
+<main class="flex-1 overflow-y-auto bg-surface-container-lowest p-lg custom-scrollbar">
+<div class="max-w-[900px] mx-auto space-y-lg">
+<!-- Experiment Header -->
+<section>
+<div class="flex items-center gap-2 text-primary font-label-caps mb-1">
+<span class="material-symbols-outlined text-[16px]">science</span>
+                            EXPERIMENT RUN #402
+                        </div>
+<h1 class="font-h1 text-h1 text-on-surface mb-2">Real-time Object Detection</h1>
+<p class="font-body-lg text-on-surface-variant">YOLOv8 fine-tuning on custom urban surveillance dataset for autonomous navigation safety.</p>
+</section>
+<!-- Markdown Style Notes -->
+<section class="ghost-border p-lg rounded-xl space-y-md">
+<div class="flex items-center gap-2 text-on-surface font-label-caps border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined text-sm">sticky_note_2</span>
+                            EXPERIMENT NOTES
+                        </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<h3 class="font-bold text-on-surface">Objectives</h3>
+<ul class="list-disc list-inside text-body-sm text-on-surface-variant space-y-1">
+<li>Reduce latency to &lt;20ms for edge devices</li>
+<li>Improve recall on small object classes (pedestrians)</li>
+<li>Test quantization robustness</li>
+</ul>
+</div>
+<div class="space-y-sm">
+<h3 class="font-bold text-on-surface">Methodology</h3>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                    Utilizing a pre-trained YOLOv8 backbone with an added feature pyramid network (FPN) layer. Hyperparameter search conducted via Bayesian Optimization.
+                                </p>
+</div>
+</div>
+</section>
+<!-- Code Block Area -->
+<section class="rounded-xl overflow-hidden">
+<div class="bg-[#1A1A1A] px-md py-2 flex items-center justify-between">
+<div class="flex items-center gap-2 text-[#888] font-code text-xs">
+<span class="material-symbols-outlined text-sm">code</span>
+                                train_model.py
+                            </div>
+<span class="text-[#888] text-[10px] font-label-caps">PYTHON</span>
+</div>
+<div class="bg-[#1e1e1e] p-md font-code text-code text-[#D4D4D4] leading-relaxed overflow-x-auto custom-scrollbar">
+<span class="text-[#569CD6]">from</span> ultralytics <span class="text-[#569CD6]">import</span> YOLO<br/>
+<br/>
+<span class="text-[#6A9955]"># Initialize model with custom weights</span><br/>
+                            model = YOLO(<span class="text-[#CE9178]">'yolov8n.pt'</span>)<br/>
+<br/>
+<span class="text-[#6A9955]"># Execute training pipeline</span><br/>
+                            results = model.train(<br/>
+                                data=<span class="text-[#CE9178]">'urban_scene.yaml'</span>,<br/>
+                                epochs=<span class="text-[#B5CEA8]">100</span>,<br/>
+                                imgsz=<span class="text-[#B5CEA8]">640</span>,<br/>
+                                device=<span class="text-[#CE9178]">'cuda:0'</span><br/>
+                            )
+                        </div>
+</section>
+<!-- Visualization Area -->
+<section class="ghost-border rounded-xl p-lg bg-surface-bright">
+<div class="flex items-center justify-between mb-lg">
+<div class="flex items-center gap-2 text-on-surface font-label-caps">
+<span class="material-symbols-outlined text-sm">query_stats</span>
+                                TRAINING HISTORY (LOSS / ACCURACY)
+                            </div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-[11px] font-label-caps ghost-border rounded hover:bg-surface-container-low">CSV EXPORT</button>
+<button class="px-3 py-1 text-[11px] font-label-caps bg-primary text-on-primary rounded">LIVE UPDATES</button>
+</div>
+</div>
+<!-- Simple Interactive Chart Visualization -->
+<div class="h-64 relative flex items-end justify-between gap-2 border-b border-l border-outline-variant p-4">
+<!-- Mock Line Chart Path via SVG -->
+<svg class="absolute inset-0 w-full h-full p-4 pointer-events-none" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M 0 80 Q 25 70 50 40 T 100 10" fill="none" stroke="#007AFF" stroke-width="2"></path>
+<path d="M 0 90 Q 30 85 60 70 T 100 45" fill="none" stroke="#C1C6D7" stroke-dasharray="4" stroke-width="1.5"></path>
+</svg>
+<!-- Tooltip Trigger Example -->
+<div class="absolute left-[50%] top-[40%] group">
+<div class="w-3 h-3 bg-primary rounded-full border-2 border-white shadow-sm -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-150"></div>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                    Epoch 50: 0.892 Accuracy
+                                </div>
+</div>
+<div class="w-full h-full absolute inset-0 grid grid-cols-5 pointer-events-none">
+<div class="border-r border-outline-variant/30 h-full"></div>
+<div class="border-r border-outline-variant/30 h-full"></div>
+<div class="border-r border-outline-variant/30 h-full"></div>
+<div class="border-r border-outline-variant/30 h-full"></div>
+<div></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] font-label-caps text-on-surface-variant">
+<span>EPOCH 0</span>
+<span>EPOCH 25</span>
+<span>EPOCH 50</span>
+<span>EPOCH 75</span>
+<span>EPOCH 100</span>
+</div>
+</section>
+</div>
+</main>
+<!-- Right Sidebar: Performance & Dataset -->
+<aside class="w-[320px] bg-surface-container-low border-l border-outline-variant flex flex-col shrink-0">
+<!-- Model Performance -->
+<section class="flex-1 p-md flex flex-col gap-md border-b border-outline-variant overflow-y-auto custom-scrollbar">
+<div class="flex items-center gap-2 text-on-surface-variant font-label-caps">
+<span class="material-symbols-outlined text-sm">bar_chart</span>
+                        MODEL PERFORMANCE
+                    </div>
+<!-- Accuracy Gauge -->
+<div class="ghost-border bg-surface-bright rounded-xl p-md">
+<div class="flex justify-between items-end mb-2">
+<div>
+<div class="text-[10px] font-label-caps text-on-surface-variant">ACCURACY</div>
+<div class="font-h2 text-h2 text-primary">98.2%</div>
+</div>
+<div class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">+1.2%</div>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 98.2%"></div>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 gap-md">
+<div class="ghost-border bg-surface-bright rounded-xl p-md">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">PRECISION</div>
+<div class="font-bold text-lg">0.96</div>
+</div>
+<div class="ghost-border bg-surface-bright rounded-xl p-md">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">RECALL</div>
+<div class="font-bold text-lg">0.94</div>
+</div>
+</div>
+<!-- Confusion Matrix Mockup -->
+<div class="space-y-sm">
+<div class="text-[10px] font-label-caps text-on-surface-variant">CONFUSION MATRIX</div>
+<div class="grid grid-cols-3 gap-[2px] bg-outline-variant p-[2px] rounded overflow-hidden">
+<div class="bg-primary aspect-square flex items-center justify-center text-on-primary text-[11px] font-bold">124</div>
+<div class="bg-primary/40 aspect-square flex items-center justify-center text-on-surface text-[11px]">8</div>
+<div class="bg-surface-bright aspect-square flex items-center justify-center text-on-surface-variant text-[11px]">2</div>
+<div class="bg-primary/20 aspect-square flex items-center justify-center text-on-surface text-[11px]">4</div>
+<div class="bg-primary/80 aspect-square flex items-center justify-center text-on-primary text-[11px] font-bold">98</div>
+<div class="bg-primary/10 aspect-square flex items-center justify-center text-on-surface-variant text-[11px]">5</div>
+<div class="bg-surface-bright aspect-square flex items-center justify-center text-on-surface-variant text-[11px]">1</div>
+<div class="bg-primary/30 aspect-square flex items-center justify-center text-on-surface text-[11px]">9</div>
+<div class="bg-primary aspect-square flex items-center justify-center text-on-primary text-[11px] font-bold">115</div>
+</div>
+</div>
+</section>
+<!-- Dataset Panel -->
+<section class="p-md flex flex-col gap-md">
+<div class="flex items-center gap-2 text-on-surface-variant font-label-caps">
+<span class="material-symbols-outlined text-sm">database</span>
+                        DATASET PANEL
+                    </div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Size</span>
+<span class="font-medium">1.2GB</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Features</span>
+<span class="font-medium">24</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Type</span>
+<span class="font-medium">Images (.jpg)</span>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-lg p-sm flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">auto_fix_high</span>
+<div>
+<div class="text-[10px] font-label-caps text-on-surface-variant uppercase">Preprocessing</div>
+<div class="text-[12px] font-medium">Normalized (Z-Score)</div>
+</div>
+</div>
+<!-- Dataset Status Pill -->
+<div class="flex items-center gap-2 self-start bg-surface-bright ghost-border px-3 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-[11px] font-label-caps">ACTIVE STATUS</span>
+</div>
+</section>
+</aside>
+</div>
+<!-- Bottom Status Bar -->
+<footer class="h-8 bg-primary flex items-center justify-between px-md shrink-0">
+<div class="flex items-center gap-4 text-on-primary font-code text-[11px]">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">source</span>
+                    main*
+                </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">sync</span>
+                    Up to date
+                </div>
+</div>
+<div class="flex items-center gap-4 text-on-primary font-code text-[11px]">
+<span>UTF-8</span>
+<span>PyTorch 2.1.0</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">notifications</span>
+                    0
+                </span>
+</div>
+</footer>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.group').forEach(el => {
+                    el.classList.remove('border-l-2', 'border-primary', 'bg-surface-container-high', 'text-on-surface');
+                    el.classList.add('text-on-surface-variant', 'hover:bg-surface-container-low');
+                    const icon = el.querySelector('.material-symbols-outlined');
+                    if(icon) icon.classList.remove('text-primary');
+                });
+                item.classList.add('border-l-2', 'border-primary', 'bg-surface-container-high', 'text-on-surface');
+                item.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-low');
+                const icon = item.querySelector('.material-symbols-outlined');
+                if(icon) icon.classList.add('text-primary');
+            });
+        });
+    </script>
+</body></html>

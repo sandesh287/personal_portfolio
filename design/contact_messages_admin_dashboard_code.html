@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Messages | Portfolio Admin</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "tertiary-fixed-dim": "#ffb595",
+                  "primary-fixed": "#d8e2ff",
+                  "inverse-surface": "#2f3132",
+                  "primary": "#0058bc",
+                  "secondary-container": "#e2dfde",
+                  "secondary": "#5f5e5e",
+                  "on-primary": "#ffffff",
+                  "on-secondary-fixed-variant": "#474746",
+                  "on-error-container": "#93000a",
+                  "surface-variant": "#e2e2e4",
+                  "surface-container-lowest": "#ffffff",
+                  "background": "#f9f9fb",
+                  "on-secondary-container": "#636262",
+                  "tertiary-container": "#c64f00",
+                  "on-secondary-fixed": "#1c1b1b",
+                  "on-primary-fixed-variant": "#004493",
+                  "error": "#ba1a1a",
+                  "outline-variant": "#c1c6d7",
+                  "on-primary-container": "#fefcff",
+                  "surface-container": "#eeeef0",
+                  "error-container": "#ffdad6",
+                  "secondary-fixed": "#e5e2e1",
+                  "outline": "#717786",
+                  "surface-container-low": "#f3f3f5",
+                  "surface-container-highest": "#e2e2e4",
+                  "secondary-fixed-dim": "#c8c6c5",
+                  "surface-container-high": "#e8e8ea",
+                  "surface-bright": "#f9f9fb",
+                  "inverse-on-surface": "#f0f0f2",
+                  "tertiary": "#9e3d00",
+                  "on-background": "#1a1c1d",
+                  "on-tertiary-container": "#fffbff",
+                  "tertiary-fixed": "#ffdbcc",
+                  "primary-container": "#0070eb",
+                  "on-tertiary": "#ffffff",
+                  "on-surface-variant": "#414755",
+                  "on-tertiary-fixed": "#351000",
+                  "surface-dim": "#d9dadc",
+                  "on-secondary": "#ffffff",
+                  "on-primary-fixed": "#001a41",
+                  "on-error": "#ffffff",
+                  "inverse-primary": "#adc6ff",
+                  "primary-fixed-dim": "#adc6ff",
+                  "surface": "#f9f9fb",
+                  "on-tertiary-fixed-variant": "#7c2e00",
+                  "surface-tint": "#005bc1",
+                  "on-surface": "#1a1c1d"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "lg": "24px",
+                  "xs": "4px",
+                  "xl": "40px",
+                  "sm": "8px",
+                  "md": "16px",
+                  "base": "4px",
+                  "sidebar-width": "260px",
+                  "container-max": "1200px"
+          },
+          "fontFamily": {
+                  "label-caps": ["Geist"],
+                  "h1": ["Geist"],
+                  "code": ["JetBrains Mono"],
+                  "body-md": ["Geist"],
+                  "body-lg": ["Geist"],
+                  "h2": ["Geist"],
+                  "display": ["Geist"],
+                  "body-sm": ["Geist"]
+          },
+          "fontSize": {
+                  "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                  "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Geist', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #f9f9fb;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+    }
+    /* Ghost Borders and Layering */
+    .app-container {
+      box-shadow: 0px 20px 50px rgba(0,0,0,0.08);
+      border: 1px solid #e5e5e5;
+    }
+    .ghost-border {
+      border: 1px solid #e5e5e5;
+    }
+    .active-indicator {
+      width: 2px;
+      height: 100%;
+      background-color: #007AFF;
+      position: absolute;
+      left: 0;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-low min-h-screen p-xl flex items-center justify-center">
+<!-- Main Application Window (Level 1) -->
+<div class="app-container w-full max-w-[1440px] h-[850px] bg-surface flex overflow-hidden rounded-xl">
+<!-- Predicted Component: SideNavBar -->
+<aside class="w-sidebar-width h-full fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col p-md gap-sm z-50">
+<div class="mb-lg flex items-center gap-sm px-sm">
+<span class="font-h2 text-h2 font-bold text-primary">Admin Panel</span>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-sm px-md rounded-lg font-medium flex items-center gap-sm active:scale-95 transition-transform mb-md">
+<span class="material-symbols-outlined">edit</span>
+<span class="font-body-sm text-body-sm">New Message</span>
+</button>
+<nav class="flex-1 flex flex-col gap-xs">
+<!-- Inbox Active -->
+<a class="relative flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg font-medium transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span class="font-body-sm text-body-sm">Inbox</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container-high rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">mark_as_unread</span>
+<span class="font-body-sm text-body-sm">Unread</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container-high rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">archive</span>
+<span class="font-body-sm text-body-sm">Archived</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container-high rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">report</span>
+<span class="font-body-sm text-body-sm">Spam</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container-high rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container-high rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-sm text-body-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Content Canvas -->
+<main class="ml-sidebar-width flex-1 flex flex-col bg-surface relative overflow-hidden">
+<!-- Predicted Component: TopNavBar -->
+<header class="flex justify-between items-center h-16 px-lg border-b border-outline-variant bg-surface shrink-0">
+<div class="flex items-center gap-md flex-1 max-w-md">
+<div class="relative w-full focus-within:ring-2 focus-within:ring-primary/20 rounded-lg transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg font-body-sm text-body-sm focus:outline-none focus:border-primary" placeholder="Search messages..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-sm">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a software engineering manager in a brightly lit, modern office environment. He has a neutral, focused expression, wearing clean business casual attire. The photography style is high-contrast, light-mode, and sharp, emphasizing a minimalist and clean aesthetic consistent with a premium admin dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6j9woIgNreuWQ2h-mna7RGNX7xNgELe5TJTvS3cucRhQycLXVUFF4OpRMrZN51APZUg1EqTslrM10XtvuZo5AdDc3OQHkrK7l0P55evIUcgem-GqRxeD4j-aPYNPdwEhEhhfRohMzc9UseCWmq-qdOBX84du2N_BWguzGelSZ1GHI2b1yFmlhZl1KSMjYzz6sdww1aSil7weTX-utwbbP39P3ewR3wRdix7GbnxAsPVPrpADZzg2k"/>
+<div class="flex flex-col">
+<span class="font-body-sm font-semibold leading-tight">Alex Rivera</span>
+<span class="text-[10px] text-outline uppercase tracking-wider font-bold">Admin</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Three-Pane Body -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Middle Panel: Message List -->
+<section class="w-[380px] flex flex-col border-r border-outline-variant bg-surface-container-lowest">
+<div class="p-md flex items-center justify-between border-b border-outline-variant bg-surface">
+<h3 class="font-h2 text-body-md font-bold">Inbox</h3>
+<span class="text-[11px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">12 New</span>
+</div>
+<div class="flex-1 overflow-y-auto scroll-smooth">
+<!-- Message Entry: Active -->
+<div class="p-md bg-surface border-b border-outline-variant relative cursor-pointer hover:bg-surface-container transition-colors group">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm font-bold text-on-surface">John Doe</span>
+<span class="font-label-caps text-outline">Oct 28</span>
+</div>
+<div class="font-body-sm font-medium text-primary truncate mb-1">Freelance Project Inquiry</div>
+<p class="font-body-sm text-secondary line-clamp-2 leading-relaxed">Hi Alex, I've been following your work on GitHub and I'm really impressed with your latest...</p>
+<div class="mt-2 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-caps text-primary">Inquiry</span>
+</div>
+</div>
+<!-- Message Entry: Read -->
+<div class="p-md border-b border-outline-variant cursor-pointer hover:bg-surface-container transition-colors group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm font-medium text-secondary">Sarah Jenkins</span>
+<span class="font-label-caps text-outline">Oct 27</span>
+</div>
+<div class="font-body-sm text-on-surface-variant truncate mb-1">Consulting for Fintech App</div>
+<p class="font-body-sm text-secondary line-clamp-2 leading-relaxed">We are looking for a senior software engineer to assist with our architectural review...</p>
+</div>
+<!-- Message Entry: Read -->
+<div class="p-md border-b border-outline-variant cursor-pointer hover:bg-surface-container transition-colors group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm font-medium text-secondary">TechCorp Recruitment</span>
+<span class="font-label-caps text-outline">Oct 25</span>
+</div>
+<div class="font-body-sm text-on-surface-variant truncate mb-1">Senior SWE Opportunity</div>
+<p class="font-body-sm text-secondary line-clamp-2 leading-relaxed">I came across your portfolio and wanted to discuss a remote lead position we have open...</p>
+</div>
+<!-- Message Entry: Read -->
+<div class="p-md border-b border-outline-variant cursor-pointer hover:bg-surface-container transition-colors group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm font-medium text-secondary">Marcus Thorne</span>
+<span class="font-label-caps text-outline">Oct 24</span>
+</div>
+<div class="font-body-sm text-on-surface-variant truncate mb-1">Quick Question about API</div>
+<p class="font-body-sm text-secondary line-clamp-2 leading-relaxed">Hey, quick question regarding the rate limiting strategy you implemented in the demo...</p>
+</div>
+</div>
+</section>
+<!-- Right Panel: Conversation View -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden">
+<!-- Actions Header -->
+<div class="h-16 px-lg border-b border-outline-variant flex items-center justify-between shrink-0">
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-md py-2 bg-primary text-on-primary rounded-lg font-body-sm font-medium hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">reply</span>
+                Reply
+              </button>
+<button class="flex items-center gap-xs px-md py-2 bg-surface-container-high border border-outline-variant text-on-surface rounded-lg font-body-sm font-medium hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+                Archive
+              </button>
+<button class="flex items-center gap-xs px-md py-2 bg-surface-container-high border border-outline-variant text-on-surface rounded-lg font-body-sm font-medium hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">mark_email_read</span>
+                Mark as Read
+              </button>
+</div>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<!-- Message Thread -->
+<div class="flex-1 overflow-y-auto p-xl">
+<div class="max-w-3xl mx-auto">
+<!-- Sender Header -->
+<div class="flex items-center justify-between mb-lg pb-lg border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-h2">JD</div>
+<div class="flex flex-col">
+<h2 class="font-h2 text-h2 text-on-surface">John Doe</h2>
+<span class="font-code text-code text-secondary">john@example.com</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-body-sm text-outline block">October 28, 2023</span>
+<span class="font-label-caps text-outline">10:42 AM (2 hours ago)</span>
+</div>
+</div>
+<!-- Message Content -->
+<div class="prose prose-sm max-w-none">
+<h1 class="font-h1 text-h2 mb-md text-on-surface">Freelance Project Inquiry: Fintech Dashboard Architecture</h1>
+<div class="font-body-md text-on-surface-variant space-y-md leading-relaxed">
+<p>Hi Alex,</p>
+<p>I hope you're having a productive week. I've been following your work on GitHub for the past few months, particularly your recent contributions to the distributed systems monitoring tool. Your approach to low-latency data visualization is exactly what we need for our upcoming project.</p>
+<p>I'm currently the Lead Architect at <span class="font-semibold text-primary">NeoVault</span>, a fintech startup focused on institutional digital asset management. We are in the process of kicking off a new initiative: a high-density administrative dashboard for real-time order execution monitoring.</p>
+<p>We are looking for a software engineering consultant who can help us with:</p>
+<ul class="list-disc pl-md space-y-sm">
+<li>Designing the frontend architecture using a modular, scalable approach.</li>
+<li>Implementing a robust state management system that handles high-frequency WebSocket data.</li>
+<li>Consulting on UI performance optimization for complex data grids.</li>
+</ul>
+<p>Our timeline is approximately 3-4 months starting in late November. Given your portfolio's emphasis on minimalist-functional design systems and high-performance engineering tools, I thought you'd be a perfect fit for this specific technical challenge.</p>
+<p>Are you available for a quick 15-minute call sometime this week to discuss the project in more detail? I'd love to walk you through our technical stack and current progress.</p>
+<p>Looking forward to hearing from you.</p>
+<p class="font-medium text-on-surface mt-xl">Best regards,<br/>John Doe</p>
+</div>
+</div>
+<!-- Attachment Placeholder -->
+<div class="mt-xl p-md border border-outline-variant rounded-xl bg-surface-container-low flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<span class="font-body-sm font-bold text-on-surface block">Project_Brief_Q4.pdf</span>
+<span class="font-label-caps text-secondary">2.4 MB</span>
+</div>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<!-- Quick Reply Area -->
+<div class="mt-xl border-t border-outline-variant pt-xl">
+<div class="border border-outline-variant rounded-xl p-md bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<div class="flex items-center gap-sm mb-md text-outline">
+<span class="material-symbols-outlined">reply</span>
+<span class="font-body-sm font-medium">Replying to John Doe...</span>
+</div>
+<textarea class="w-full h-32 border-none focus:ring-0 font-body-md text-on-surface bg-transparent resize-none p-0" placeholder="Write your reply..."></textarea>
+<div class="flex items-center justify-between mt-md">
+<div class="flex items-center gap-xs">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">attach_file</span></button>
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">mood</span></button>
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">format_bold</span></button>
+</div>
+<button class="bg-primary text-on-primary px-lg py-2 rounded-lg font-body-sm font-bold active:scale-95 transition-transform">
+                      Send Reply
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Micro-interaction for hover effects -->
+<script>
+    document.querySelectorAll('.group').forEach(el => {
+      el.addEventListener('click', function() {
+        // Simple visual feedback for selection
+        document.querySelectorAll('.active-indicator').forEach(i => i.remove());
+        const indicator = document.createElement('div');
+        indicator.className = 'active-indicator';
+        this.appendChild(indicator);
+      });
+    });
+  </script>
+</body></html>

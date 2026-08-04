@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Experience Explorer - DevOS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f0f2",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#9e3d00",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f9f9fb",
+                    "on-surface": "#1a1c1d",
+                    "on-primary-fixed-variant": "#004493",
+                    "surface-dim": "#d9dadc",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-container": "#eeeef0",
+                    "on-secondary-container": "#636262",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e2e2e4",
+                    "on-tertiary-container": "#fffbff",
+                    "on-surface-variant": "#414755",
+                    "inverse-primary": "#adc6ff",
+                    "surface-variant": "#e2e2e4",
+                    "on-secondary-fixed-variant": "#474746",
+                    "surface-container-high": "#e8e8ea",
+                    "on-primary-fixed": "#001a41",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#f3f3f5",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-surface": "#2f3132",
+                    "outline-variant": "#c1c6d7",
+                    "secondary-container": "#e2dfde",
+                    "primary-container": "#0070eb",
+                    "on-error": "#ffffff",
+                    "primary": "#0058bc",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-container": "#c64f00",
+                    "surface-tint": "#005bc1",
+                    "outline": "#717786",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "on-background": "#1a1c1d",
+                    "on-primary-container": "#fefcff",
+                    "on-tertiary-fixed": "#351000",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f9f9fb",
+                    "background": "#f9f9fb",
+                    "secondary": "#5f5e5e",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "sm": "8px",
+                    "sidebar-width": "260px",
+                    "base": "4px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "h1": ["Geist"],
+                    "body-sm": ["Geist"],
+                    "h2": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "code": ["JetBrains Mono"],
+                    "body-md": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "display": ["Geist"]
+            },
+            "fontSize": {
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #F9F9FB; color: #1a1c1d; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ghost-border { border: 1px solid #E5E5E7; }
+        .sidebar-active-indicator { position: absolute; left: 0; width: 2px; height: 100%; background-color: #0058bc; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e2e4; border-radius: 2px; }
+        .os-window-shadow { box-shadow: 0px 20px 50px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body class="bg-surface overflow-hidden h-screen flex flex-col p-xl">
+<!-- OS Window Container -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden os-window-shadow relative">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-low flex justify-between items-center w-full px-md h-12 z-50 border-b border-outline-variant">
+<div class="flex items-center gap-lg">
+<span class="font-h2 text-h2 font-bold text-on-surface">Experience Explorer</span>
+<nav class="hidden md:flex gap-md h-full items-center">
+<a class="font-body-sm text-body-sm text-primary border-b-2 border-primary h-full flex items-center px-sm transition-colors active:opacity-80 cursor-pointer" href="#">File</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container transition-colors px-sm py-1 rounded cursor-pointer" href="#">Edit</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container transition-colors px-sm py-1 rounded cursor-pointer" href="#">View</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container transition-colors px-sm py-1 rounded cursor-pointer" href="#">Window</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative w-64">
+<input class="w-full bg-surface-container border border-outline-variant rounded-lg px-sm py-xs font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Search experiences..." type="text"/>
+<span class="material-symbols-outlined absolute right-2 top-1.5 text-on-surface-variant text-[18px]">search</span>
+</div>
+<div class="flex gap-sm">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-secondary-container p-1 rounded transition-colors cursor-pointer">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-secondary-container p-1 rounded transition-colors cursor-pointer">terminal</button>
+</div>
+<div class="h-8 w-8 rounded-full bg-secondary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a software engineer with a neutral expression, wearing a dark navy polo shirt. The background is a soft, out-of-focus modern office with glass walls and minimalist white furniture. The lighting is crisp and cool-toned, emphasizing professional clarity and a high-end technical aesthetic consistent with a developer operating system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4qhRp5qf_oiIynEU788yFoES4bU4jCRh3aEqB0XWi40Og3jWg92xi3CYYNb5ZYwAoU6zhyHGULmQpLJBGZKljmNQNGiOeGPQ5Sq_d6Va9LoB_LOdodgI6Bf2rTxy0__SW6MQHWYdm87Tej8mujXEocIA9dvreGHAFP7h9S_j8GQ-tOYwMFu-AJcc0yRoC3Ga3Dn53qbUPKfENOGEOyDvcAXWFW7GYX6dDvZLiKOedrsk4imb5FtOD"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-sidebar-width bg-surface-container border-r border-outline-variant flex flex-col py-md z-40">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-xs">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">developer_board</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-bold text-on-surface leading-none">Navigation</p>
+<p class="text-[11px] text-on-surface-variant">Experience Categories</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-xs">
+<div class="relative group">
+<div class="sidebar-active-indicator"></div>
+<a class="bg-secondary-container text-on-surface flex items-center gap-sm px-md py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">business</span>
+                            Companies
+                        </a>
+</div>
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm px-md py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">diversity_3</span>
+                        Freelance
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm px-md py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">work_history</span>
+                        Internships
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm px-md py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+                        Open Source
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm px-md py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">school</span>
+                        Education
+                    </a>
+</nav>
+<div class="mt-auto px-md space-y-xs pt-md border-t border-outline-variant">
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                        Docs
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant flex items-center gap-sm py-sm font-body-sm text-body-sm transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+                        Help
+                    </a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 overflow-y-auto bg-surface-container-low p-lg custom-scrollbar">
+<div class="max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="mb-lg flex justify-between items-end border-b border-outline-variant pb-md">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Experience Portfolio</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Validated technical trajectory and engineering contributions.</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-primary text-on-primary px-md py-sm rounded-lg font-body-sm text-body-sm font-bold flex items-center gap-xs hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                Export JSON
+                            </button>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex gap-md mb-lg">
+<div class="flex bg-surface-container rounded-lg p-xs border border-outline-variant">
+<button class="px-md py-xs bg-surface-container-lowest border border-outline-variant rounded shadow-sm text-body-sm font-bold text-on-surface">All Engineering</button>
+<button class="px-md py-xs text-body-sm text-on-surface-variant hover:text-on-surface">Backend</button>
+<button class="px-md py-xs text-body-sm text-on-surface-variant hover:text-on-surface">Frontend</button>
+<button class="px-md py-xs text-body-sm text-on-surface-variant hover:text-on-surface">Architecture</button>
+</div>
+<div class="ml-auto flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm">
+<span>Sorted by: Date (Desc)</span>
+<span class="material-symbols-outlined">filter_list</span>
+</div>
+</div>
+<!-- Experience Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Card 1: Fintech Senior -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col hover:border-primary/40 transition-colors group">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container rounded border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-8 h-8 object-contain opacity-80" data-alt="A minimalist logo for a Fintech company, consisting of an abstract geometric shield shape in deep obsidian black against a crisp white background. The design is modern, sharp, and corporate, conveying trust and financial security. Professional studio lighting with no shadows, centered composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz848a2I7tL8f_EogNPtkcQZBY2gea0EcT3cNBlQL_txxSj69cC0BkP1uFrgCenDJ6a7OcNTk9tfIshDkk3-XBwDQ76ma6JVmPjfpQ40occIpoh5y-c4dBoP0gM3MQ64KFuZe1VD2otfDnCMVW0pKca2xft_ZY-P4zkdqVUe-RjM7zWte0-F_ke1I-xzOmS5gfGemyjnxOfGp8OmOV1v8yhkQ_33Iji4QNJywUqKnHtRWwAjG0SSKi"/>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Senior Software Engineer</h3>
+<p class="font-body-sm text-body-sm text-primary font-bold">Lumina Finance</p>
+</div>
+</div>
+<span class="font-label-caps text-label-caps bg-secondary-container text-on-secondary-fixed-variant px-sm py-xs rounded uppercase">2021 — Present</span>
+</div>
+<div class="mb-md flex flex-wrap gap-xs">
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Go</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">PostgreSQL</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Kubernetes</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">gRPC</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">AWS</span>
+</div>
+<div class="flex-1 space-y-md">
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Mission</h4>
+<p class="font-body-md text-body-md text-on-surface">Lead the architectural redesign of the core transaction processing engine to support high-frequency clearing and settlement.</p>
+</section>
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Key Engineering Achievements</h4>
+<ul class="space-y-xs">
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Architected a distributed ledger system reducing transaction latency by 45% using optimized Go routines.</p>
+</li>
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Implemented automated disaster recovery protocols with 99.999% availability across multi-region AWS zones.</p>
+</li>
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Spearheaded the migration from REST to gRPC, achieving a 3x throughput increase in internal service communication.</p>
+</li>
+</ul>
+</section>
+</div>
+<button class="mt-lg w-full py-sm border border-outline-variant rounded-lg font-body-sm text-body-sm font-bold text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-sm">
+                                View Detailed Workspace
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Card 2: Big Tech Intern -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col hover:border-primary/40 transition-colors group">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container rounded border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-8 h-8 object-contain opacity-80" data-alt="A clean, modernist tech company logo featuring a blue stylized letter 'A' with sharp, technical edges. The logo is displayed in high resolution against a neutral light gray background. Minimalist aesthetic, tech-forward, corporate style with even lighting and professional matte finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC91bVmUrjnZ6_dz-84hOj_QlNdN4GW4G4Ei9uvW6VOgZJlPbJEX65H8ASvgM1vSYf-HomBDFJaLiGIlEmAQL-sEIgXufVrdgJPAzYBLVPtWi5X4-6WZD1TSO-ZLgx8CSSs_0GEHRoprwKXdp1wk-D8JBx5K20diC4GPEGDrdw3jOsH7ntly4R-1Ux3yyvD2CknNpnx4vir8IVjVVPVc8-hVtdq1xTLeTnktHvxIedamsOw_EzyFMuo"/>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Full Stack Engineer</h3>
+<p class="font-body-sm text-body-sm text-primary font-bold">Aether Systems</p>
+</div>
+</div>
+<span class="font-label-caps text-label-caps bg-secondary-container text-on-secondary-fixed-variant px-sm py-xs rounded uppercase">2020 — 2021</span>
+</div>
+<div class="mb-md flex flex-wrap gap-xs">
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">React</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Node.js</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">TypeScript</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">GraphQL</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Redis</span>
+</div>
+<div class="flex-1 space-y-md">
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Mission</h4>
+<p class="font-body-md text-body-md text-on-surface">Development of enterprise-scale internal analytics dashboards to monitor real-time infrastructure health.</p>
+</section>
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Key Engineering Achievements</h4>
+<ul class="space-y-xs">
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Built a dynamic data visualization engine using D3.js and React that handled 1M+ data points per second.</p>
+</li>
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Optimized GraphQL query patterns, reducing API payload sizes by 60% and improving dashboard load times.</p>
+</li>
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Engineered a robust caching layer with Redis to provide sub-millisecond response times for frequent queries.</p>
+</li>
+</ul>
+</section>
+</div>
+<button class="mt-lg w-full py-sm border border-outline-variant rounded-lg font-body-sm text-body-sm font-bold text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-sm">
+                                View Detailed Workspace
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Card 3: E-commerce Specialist -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col hover:border-primary/40 transition-colors group">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container rounded border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-8 h-8 object-contain opacity-80" data-alt="A modern corporate logo for an e-commerce infrastructure company. The icon is a simple, bold circle with a lightning bolt cutout, colored in a deep, professional blue. The background is white. Minimalist, professional lighting, tech-centric, centered, extremely high quality digital render." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt84tOStKEtwuryBYvgfztiIk2pDSbYMVRLcwxXUK032Adl1mS39Pp33L9MrPzljsm8WaCz_vSQFIM3AHH44xQUByUx6hc0khNrbzSEbawntMCvTnZmXwIJvynBF7tVvLZ217cIciV2Aa4a-tEpG1gQ_13fy2pOGjmCa8PuzmP19EJLyIRQVv5ao7JjOK6KrIksymwZ02fKrcANg0845glR0k4byrT_7WnNz2z7wIDpiojowqJvT8G"/>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Software Architect</h3>
+<p class="font-body-sm text-body-sm text-primary font-bold">SwiftCart Solutions</p>
+</div>
+</div>
+<span class="font-label-caps text-label-caps bg-secondary-container text-on-secondary-fixed-variant px-sm py-xs rounded uppercase">2018 — 2020</span>
+</div>
+<div class="mb-md flex flex-wrap gap-xs">
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Python</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Django</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Docker</span>
+<span class="font-code text-code bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant text-on-surface-variant">Elasticsearch</span>
+</div>
+<div class="flex-1 space-y-md">
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Mission</h4>
+<p class="font-body-md text-body-md text-on-surface">Re-engineering the search and discovery backend to support a catalog of over 50 million unique SKUs.</p>
+</section>
+<section>
+<h4 class="font-label-caps text-label-caps text-outline mb-xs uppercase">Key Engineering Achievements</h4>
+<ul class="space-y-xs">
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Integrated Elasticsearch with custom scoring algorithms, increasing conversion rates by 12%.</p>
+</li>
+<li class="flex items-start gap-sm">
+<span class="w-1 h-1 rounded-full bg-primary mt-2"></span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Implemented a containerized microservices architecture that reduced deployment times from hours to minutes.</p>
+</li>
+</ul>
+</section>
+</div>
+<button class="mt-lg w-full py-sm border border-outline-variant rounded-lg font-body-sm text-body-sm font-bold text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center gap-sm">
+                                View Detailed Workspace
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Empty State / Add Experience -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center text-center gap-md hover:border-primary transition-colors cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-on-primary">add</span>
+</div>
+<div>
+<p class="font-h2 text-h2 text-on-surface">Append New Experience</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Register a new professional chapter into the DevOS knowledge base.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- System Footer (Window Status Bar) -->
+<footer class="h-8 bg-surface-container border-t border-outline-variant flex items-center px-md justify-between">
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">System: Synced</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-50">|</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">3 Records Detected</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant">UTF-8</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Ln 1, Col 1</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">notifications</span>
+</div>
+</footer>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

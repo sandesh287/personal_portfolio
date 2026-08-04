@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sandesh OS | Media Library</title>
+<!-- Google Fonts: Geist for UI, JetBrains Mono for Technical Data -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#414755",
+                    "surface-variant": "#e2e2e4",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "outline-variant": "#c1c6d7",
+                    "tertiary": "#9e3d00",
+                    "on-surface": "#1a1c1d",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#fffbff",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "on-background": "#1a1c1d",
+                    "surface-tint": "#005bc1",
+                    "surface": "#f9f9fb",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary-container": "#0070eb",
+                    "tertiary-container": "#c64f00",
+                    "surface-container-highest": "#e2e2e4",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-surface": "#2f3132",
+                    "primary": "#0058bc",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "surface-bright": "#f9f9fb",
+                    "surface-container-high": "#e8e8ea",
+                    "on-tertiary-fixed": "#351000",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#474746",
+                    "secondary": "#5f5e5e",
+                    "outline": "#717786",
+                    "on-primary-container": "#fefcff",
+                    "primary-fixed": "#d8e2ff",
+                    "secondary-container": "#e2dfde",
+                    "on-primary-fixed": "#001a41",
+                    "inverse-primary": "#adc6ff",
+                    "surface-dim": "#d9dadc",
+                    "surface-container": "#eeeef0",
+                    "surface-container-low": "#f3f3f5",
+                    "background": "#f9f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-secondary-container": "#636262",
+                    "inverse-on-surface": "#f0f0f2",
+                    "on-secondary-fixed": "#1c1b1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar-width": "260px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "xl": "40px",
+                    "lg": "24px",
+                    "container-max": "1200px",
+                    "sm": "8px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "code": ["JetBrains Mono"],
+                    "display": ["Geist"],
+                    "h2": ["Geist"],
+                    "h1": ["Geist"],
+                    "body-sm": ["Geist"],
+                    "body-md": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "body-lg": ["Geist"]
+            },
+            "fontSize": {
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #e5e7eb; /* OS Wallpaper effect */
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+        }
+        .ghost-border {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        /* Custom scrollbar for technical look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="p-xl">
+<!-- OS Window Container -->
+<div class="bg-surface-container-lowest w-full max-w-[1440px] h-[90vh] rounded-xl shadow-[0px_20px_50px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden relative border border-outline-variant">
+<!-- TopNavBar (The Window Bar) -->
+<header class="fixed top-0 right-0 left-[260px] z-50 flex items-center justify-between px-md h-10 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-md">
+<span class="font-display text-body-md font-bold text-on-surface">Sandesh v1.0</span>
+<nav class="hidden md:flex gap-md text-on-surface-variant">
+<button class="hover:text-primary transition-all">File</button>
+<button class="hover:text-primary transition-all">Edit</button>
+<button class="text-primary font-bold">View</button>
+<button class="hover:text-primary transition-all">Go</button>
+<button class="hover:text-primary transition-all">Window</button>
+<button class="hover:text-primary transition-all">Help</button>
+</nav>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+<span class="font-code text-[12px]">MON 14:00</span>
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A minimalist professional profile headshot of a software engineer with a clean, well-lit studio background. The style is modern and high-contrast, perfectly fitting the monolithic technical aesthetic of the Sandesh OS dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEj7Ad9bbUvnfc01j8hTnDlPGIVfjCraZKIMkOwVUmtzLz3YyRJNk_CMHp3zqKt8zsSa7iS2UT6PT8tCOq5NHDm5qEVhoinJifcvdIwwW4E7-ZZ7LTv4hw1mXlDGdQGM-bLfcHNyyXzRXTBHke8Irf7MstQUbg_m10_ZzKHI1vCxC4PUiJw3u3_eW4qNSgZd_CHdME2wpR--hNjOPV4ECltf8j7f0YfSCqZDArXa0IqsteSbwTETDB"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-10 overflow-hidden">
+<!-- SideNavBar (The Explorer) -->
+<aside class="w-[260px] h-full flex flex-col py-lg bg-surface-container-low border-r border-outline-variant shrink-0">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-base">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">terminal</span>
+</div>
+<div>
+<h2 class="font-display text-body-md font-semibold text-on-surface leading-tight">Sandesh OS</h2>
+<p class="font-body-sm text-[11px] text-on-surface-variant">Software Engineer</p>
+</div>
+</div>
+</div>
+<div class="px-sm space-y-xs">
+<div class="px-md py-xs">
+<span class="font-label-caps text-on-surface-variant opacity-50 uppercase">Library</span>
+</div>
+<button class="w-full flex items-center gap-sm px-md py-2 rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-display text-body-sm">Dashboard</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-2 rounded-lg bg-secondary-container text-on-secondary-container border-l-2 border-primary">
+<span class="material-symbols-outlined text-[20px]">image</span>
+<span class="font-display text-body-sm">Media</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-2 rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span class="font-display text-body-sm">Projects</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-2 rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">article</span>
+<span class="font-display text-body-sm">Blog</span>
+</button>
+</div>
+<div class="px-sm mt-lg space-y-xs">
+<div class="px-md py-xs">
+<span class="font-label-caps text-on-surface-variant opacity-50 uppercase">Folders</span>
+</div>
+<button class="w-full flex items-center gap-sm px-md py-xs rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+<span class="font-display text-body-sm">Images</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-xs rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">movie</span>
+<span class="font-display text-body-sm">Videos</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-xs rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span class="font-display text-body-sm">Documents</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-xs rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="font-display text-body-sm">Downloads</span>
+</button>
+<button class="w-full flex items-center gap-sm px-md py-xs rounded-lg transition-colors hover:bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span class="font-display text-body-sm">Trash</span>
+</button>
+</div>
+<div class="mt-auto px-md pt-lg border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-2 rounded-lg font-display text-body-sm font-semibold flex items-center justify-center gap-xs hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+                        New Project
+                    </button>
+</div>
+</aside>
+<!-- Main Stage -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Sub-Toolbar -->
+<div class="h-14 px-lg border-b border-outline-variant flex items-center justify-between shrink-0 bg-surface-container-lowest">
+<div class="flex items-center gap-md flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-60 text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 font-body-sm focus:ring-2 focus:ring-primary/20 transition-all text-on-surface" placeholder="Search files, metadata, or projects..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex border border-outline-variant rounded-lg overflow-hidden bg-surface-container-low p-1">
+<button class="p-1.5 bg-surface-container-lowest rounded-md shadow-sm">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-highest transition-colors rounded-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">list</span>
+</button>
+</div>
+<button class="flex items-center gap-xs px-md py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                            Sort
+                        </button>
+<button class="flex items-center gap-xs px-md py-2 bg-primary text-on-primary rounded-lg font-body-sm font-semibold hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">upload</span>
+                            Upload
+                        </button>
+</div>
+</div>
+<!-- Content Area (The Grid) -->
+<div class="flex-1 overflow-y-auto p-lg relative scroll-smooth">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-lg">
+<!-- File Card 1 -->
+<div class="group cursor-pointer" onclick="selectFile('architecture-v2.png')">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant group-hover:border-primary transition-all relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A highly detailed technical architecture diagram showing a neural network processing pipeline. The diagram uses clean lines, monochrome tones with blue accents, and professional sans-serif typography, reflecting a high-end engineering project documentation style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA6uHY8-99QgM4uh44fL0hkGJmjGlA7Z2xgxmi0yhwfGSjwvjSzEecBkOqHocKaPkwcND9AKrHGgsNoOFPmB2W_SGDs4ADJk706TBRxFKsx0UQopPOa5vz1vrnypysakWP_fFA_TgtyXpMKjLK9IdwZsaDTjQBSJ81M9yhqO7F9RxznKp-1n0-5KDtxT8-kYH8gun3JBcAGAimfT2np3gWmH1GmHK5otWg_neO10Y79baYVio2MTpz"/>
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="bg-surface-container-lowest/90 p-1 rounded border border-outline-variant shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+</div>
+</div>
+</div>
+<div class="mt-sm">
+<p class="font-display text-body-sm font-semibold text-on-surface truncate">architecture-v2.png</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant">2.4 MB • 2400x1600</p>
+</div>
+</div>
+<!-- File Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant group-hover:border-primary transition-all flex items-center justify-center relative">
+<div class="flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-[48px] text-on-surface-variant opacity-40">picture_as_pdf</span>
+<span class="font-label-caps text-on-surface-variant/60">PDF</span>
+</div>
+<div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-center px-1">
+<span class="font-label-caps text-white text-[9px]">4 Pages</span>
+</div>
+</div>
+</div>
+<div class="mt-sm">
+<p class="font-display text-body-sm font-semibold text-on-surface truncate">resume-revised.pdf</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant">1.1 MB • Today</p>
+</div>
+</div>
+<!-- File Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant group-hover:border-primary transition-all relative">
+<img class="w-full h-full object-cover" data-alt="A cinematic 4K screenshot of a web application dashboard with complex data visualizations, bento grid layout, and dark mode interface. The UI shows real-time analytics for a machine learning platform, featuring minimalist aesthetics and vibrant neon highlights against a deep charcoal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUa6yeJ0OfPLF0TTzYRZ9a5Xr2iPimSGF3HD6iI0fuzkohxNhwpfh41NN3HFa1WgnQhSwt7qDxODEDpDNm2T4mXqU5oBLHrf90iFA6u-1tKXChhZNIW0vqc5EHPl7FZz66BmnokMF_TbM6QfQ5my7vFkjOOmTjzdoiCrWWwcG3rXFUpopGc7Em0vDWl8oK9BfvdLwm6dIDwU615Q-XMhm3tTk31QN94RsMnLSY-L_K8h7fAJN7mbW4"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-[48px]">play_circle</span>
+</div>
+<div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-code">02:45</div>
+</div>
+<div class="mt-sm">
+<p class="font-display text-body-sm font-semibold text-on-surface truncate">demo_recording_v1.mp4</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant">42.8 MB • yesterday</p>
+</div>
+</div>
+<!-- File Card 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant group-hover:border-primary transition-all relative">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist vector illustration of a cloud infrastructure diagram. The design features microservices connected by elegant, thin lines, with logical groupings and server icons. The color palette consists of soft blues, grays, and white space, conveying technical precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaLVfArtgJ3B3V74rNtaiAgUM3ERiC_znEe_8zP1uc7XK1a1UIs1U6j-ilvUwfypYoB-UNWX96oqv6342DoXQepXYTbVpTxnShSW0sVvuxQiKu6vLjjGRKItpaFz0shVbdLCBmG2f4AASFMQ74YwEeYklxmFlcvS1i7GDTQWn4_F068gK86-Z4rpHmFgmAPmd57c-vriJjiC1KreinU-hw78DRK9sW-oB7KWac0OMXwbqtkCE9JFV9"/>
+</div>
+<div class="mt-sm">
+<p class="font-display text-body-sm font-semibold text-on-surface truncate">cloud-nodes.svg</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant">156 KB • 3 days ago</p>
+</div>
+</div>
+<!-- Add more mock cards -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container-low border border-dashed border-outline rounded-xl flex flex-col items-center justify-center gap-sm text-on-surface-variant/40 hover:bg-surface-container-highest hover:text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-[32px]">add_circle</span>
+<span class="font-label-caps">Upload</span>
+</div>
+</div>
+</div>
+<!-- Drag & Drop Overlay -->
+<div class="mt-xl border-2 border-dashed border-outline-variant rounded-2xl p-xl flex flex-col items-center justify-center bg-surface-container-low hover:bg-surface-container-high transition-colors group">
+<div class="w-16 h-16 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[32px]">cloud_upload</span>
+</div>
+<h3 class="font-display text-h2 text-on-surface">Drop files to upload</h3>
+<p class="font-body-md text-on-surface-variant mb-lg">Support for high-res images, PDF documents, and MP4 recordings up to 500MB.</p>
+<button class="bg-secondary-container text-on-secondary-container px-lg py-2 rounded-lg font-display text-body-sm font-semibold hover:bg-secondary-fixed-dim transition-colors">Select from Disk</button>
+</div>
+</div>
+</main>
+<!-- Metadata Panel (The Inspector) -->
+<aside class="w-[340px] h-full bg-surface-container-lowest border-l border-outline-variant flex flex-col overflow-y-auto transform translate-x-full transition-transform duration-300" id="metadata-panel">
+<div class="p-lg border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-display text-body-md font-bold text-on-surface uppercase tracking-tight">Details</h3>
+<button class="hover:bg-surface-container-high p-1 rounded-md transition-colors" onclick="closePanel()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-lg space-y-lg">
+<div class="aspect-video bg-surface-container rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up detailed view of the neural network architecture diagram previously shown, highlighting specific data nodes and connection paths. The lighting is bright and technical, emphasizing the clarity of the lines and labels within the professional engineering documentation context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPpTnQKC9432U-n49KvoCPsbO2yHz7md16PpIkbnandbltQ3BY_-s-l55KXw708DVqDb6cgiAl8RWBSGqRxF6nmNIeoZ1a1439FgpHxJLSRrRCY2iTJuFmmQxPhon1iNFV3UmyIRv4goQOQZTGRa_FCusmZk4-lpEbxNdpQCYCHJPZVLpzeI7-REmFq0VOAaxlVs8jwP6jFH1qz1woVaxlM8mapYuDYI9sl2Xh1sH9L3oeDKSQOt1B"/>
+</div>
+<div>
+<h4 class="font-display text-h2 text-on-surface break-words" id="detail-name">architecture-v2.png</h4>
+<div class="flex items-center gap-xs mt-xs">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-label-caps text-on-surface-variant opacity-70">Published</span>
+</div>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant">
+<span class="font-body-sm text-on-surface-variant">Size</span>
+<span class="font-code text-body-sm text-on-surface">2.4 MB</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant">
+<span class="font-body-sm text-on-surface-variant">Dimensions</span>
+<span class="font-code text-body-sm text-on-surface">2400 x 1600 px</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant">
+<span class="font-body-sm text-on-surface-variant">Type</span>
+<span class="font-code text-body-sm text-on-surface">PNG Image</span>
+</div>
+<div class="py-2">
+<span class="font-body-sm text-on-surface-variant block mb-sm">Used in</span>
+<div class="flex items-center gap-sm bg-surface-container-low p-2 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">hub</span>
+<span class="font-display text-body-sm text-on-surface">NeuralNet Visualizer</span>
+</div>
+</div>
+</div>
+<div class="space-y-sm pt-md">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-2.5 rounded-lg font-display text-body-sm font-semibold hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">link</span>
+                            Copy Public URL
+                        </button>
+<div class="grid grid-cols-2 gap-sm">
+<button class="flex items-center justify-center gap-sm bg-surface-container-low text-on-surface-variant py-2 rounded-lg font-display text-body-sm font-semibold hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">download</span>
+                                Download
+                            </button>
+<button class="flex items-center justify-center gap-sm border border-error/20 text-error py-2 rounded-lg font-display text-body-sm font-semibold hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined">delete</span>
+                                Delete
+                            </button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Footer / Status Bar -->
+<footer class="h-6 bg-surface-container-low border-t border-outline-variant px-md flex items-center justify-between text-[11px] font-body-sm text-on-surface-variant/60">
+<div class="flex items-center gap-md">
+<span>4 items selected</span>
+<span>Storage: 1.2GB / 10GB</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+<span>Systems Online</span>
+</div>
+<span>v1.0.4-stable</span>
+</div>
+</footer>
+</div>
+<script>
+        const panel = document.getElementById('metadata-panel');
+        const detailName = document.getElementById('detail-name');
+
+        function selectFile(name) {
+            detailName.innerText = name;
+            panel.classList.remove('translate-x-full');
+            panel.classList.add('translate-x-0');
+        }
+
+        function closePanel() {
+            panel.classList.remove('translate-x-0');
+            panel.classList.add('translate-x-full');
+        }
+
+        // Micro-interaction: Drag & Drop highlighting
+        const dropZone = document.querySelector('.border-dashed');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('bg-primary/5', 'border-primary');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-primary/5', 'border-primary');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-primary/5', 'border-primary');
+            alert('File processing initiated...');
+        });
+    </script>
+</body></html>

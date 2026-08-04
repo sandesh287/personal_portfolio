@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS - Resume Viewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@450&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f9f9fb",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-tertiary-container": "#fffbff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary": "#9e3d00",
+                        "surface-container-high": "#e8e8ea",
+                        "surface-dim": "#d9dadc",
+                        "on-tertiary-fixed": "#351000",
+                        "primary": "#0058bc",
+                        "surface-tint": "#005bc1",
+                        "surface-variant": "#e2e2e4",
+                        "surface-bright": "#f9f9fb",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e2e2e4",
+                        "error": "#ba1a1a",
+                        "surface": "#f9f9fb",
+                        "on-secondary-fixed-variant": "#474746",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#0070eb",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1a1c1d",
+                        "secondary-container": "#e2dfde",
+                        "surface-container": "#eeeef0",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3f5",
+                        "on-surface-variant": "#414755",
+                        "secondary": "#5f5e5e",
+                        "primary-fixed": "#d8e2ff",
+                        "outline-variant": "#c1c6d7",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#636262",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "tertiary-container": "#c64f00",
+                        "on-primary-fixed": "#001a41",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#fefcff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#2f3132",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f0f0f2",
+                        "inverse-primary": "#adc6ff",
+                        "outline": "#717786",
+                        "on-background": "#1a1c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "md": "16px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "container-max": "1200px",
+                        "xl": "40px",
+                        "sm": "8px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "body-md": ["Geist"],
+                        "h1": ["Geist"],
+                        "display": ["Geist"],
+                        "code": ["JetBrains Mono"],
+                        "body-sm": ["Geist"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "h1": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "450" }],
+                        "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f0f0f2;
+            font-family: 'Geist', sans-serif;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-size: 20px;
+        }
+        .resume-shadow {
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06), 0px 4px 8px rgba(0, 0, 0, 0.04);
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .active-nav-border {
+            border-left: 2px solid #0058bc;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center justify-center p-xl">
+<!-- DevOS Desktop Background Layer (Ambient) -->
+<div class="fixed inset-0 z-[-1]">
+
+</div>
+<!-- Main OS Window Container -->
+<div class="w-full max-w-[1400px] h-full bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col resume-shadow relative z-10">
+<!-- TopNavBar (Shared Component Identity) -->
+<header class="flex justify-between items-center w-full px-md h-sm bg-surface-container-low border-b border-outline-variant z-[100] h-10 select-none">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 font-bold text-on-surface">DevOS</span>
+<nav class="hidden md:flex gap-md items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">File</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">Edit</span>
+<span class="font-body-sm text-body-sm text-primary font-semibold hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">View</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">Go</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">Terminal</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors px-sm py-xs rounded cursor-default">Help</span>
+</nav>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant">
+<span class="material-symbols-outlined">wifi</span>
+<span class="material-symbols-outlined">battery_full</span>
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-body-sm text-body-sm ml-sm">10:42 AM</span>
+</div>
+</header>
+<!-- Application Window Header (Toolbar) -->
+<div class="bg-surface-container-low border-b border-outline-variant h-12 flex items-center justify-between px-md shrink-0">
+<!-- Window Controls -->
+<div class="flex items-center gap-2 w-32">
+<div class="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]"></div>
+<div class="w-3 h-3 rounded-full bg-[#FEBC2E] border border-[#D89E24]"></div>
+<div class="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
+</div>
+<!-- Title -->
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-body-sm font-semibold text-on-surface truncate max-w-[300px]">Sandesh_Resume_v2.pdf</span>
+</div>
+<!-- Toolbar Actions -->
+<div class="flex items-center gap-xs">
+<div class="flex items-center bg-surface-container rounded-md border border-outline-variant mr-md">
+<button class="p-1 hover:bg-surface-variant rounded-l-md"><span class="material-symbols-outlined">remove</span></button>
+<span class="px-2 font-body-sm border-x border-outline-variant text-on-surface-variant min-w-[50px] text-center">100%</span>
+<button class="p-1 hover:bg-surface-variant rounded-r-md"><span class="material-symbols-outlined">add</span></button>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant mx-xs"></div>
+<button class="p-2 hover:bg-surface-variant rounded text-on-surface-variant" title="Print"><span class="material-symbols-outlined">print</span></button>
+<button class="p-2 hover:bg-surface-variant rounded text-on-surface-variant" title="Share"><span class="material-symbols-outlined">share</span></button>
+<button class="ml-xs bg-primary text-on-primary px-4 py-1.5 rounded-lg font-body-sm font-semibold flex items-center gap-xs hover:bg-primary-container transition-colors active:scale-95">
+<span class="material-symbols-outlined !text-[18px]">download</span>
+                    Download
+                </button>
+</div>
+</div>
+<!-- Main Body Split -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar Navigation -->
+<aside class="w-[260px] bg-surface-container border-r border-outline-variant flex flex-col py-md shrink-0">
+<div class="px-md mb-md">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-widest">Document Outline</span>
+</div>
+<nav class="flex-1 overflow-y-auto no-scrollbar">
+<a class="flex items-center gap-sm px-md py-sm bg-surface-container-highest active-nav-border text-on-surface font-medium hover:bg-surface-variant transition-all cursor-pointer" href="#summary">
+<span class="material-symbols-outlined text-primary">info</span>
+<span class="font-body-sm">Summary</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant opacity-80 hover:bg-surface-variant transition-all cursor-pointer" href="#skills">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-sm">Skills &amp; Stack</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant opacity-80 hover:bg-surface-variant transition-all cursor-pointer" href="#experience">
+<span class="material-symbols-outlined">work</span>
+<span class="font-body-sm">Experience</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant opacity-80 hover:bg-surface-variant transition-all cursor-pointer" href="#education">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-sm">Education</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant opacity-80 hover:bg-surface-variant transition-all cursor-pointer" href="#projects">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-body-sm">Key Projects</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant opacity-80 hover:bg-surface-variant transition-all cursor-pointer" href="#certifications">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-body-sm">Certifications</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-md border-t border-outline-variant">
+<div class="p-md bg-surface-container-low rounded-lg border border-outline-variant">
+<span class="font-label-caps text-[10px] text-primary block mb-1">PRO TIP</span>
+<p class="font-body-sm text-[12px] text-on-surface-variant leading-tight">Click sections to jump directly to specific content nodes.</p>
+</div>
+</div>
+</aside>
+<!-- Workspace -->
+<main class="flex-1 bg-surface-dim overflow-y-auto flex flex-col items-center py-xl relative">
+<!-- Resume A4 Page -->
+<div class="bg-white w-[800px] min-h-[1132px] resume-shadow p-[60px] flex flex-col mb-xl text-[#1a1c1d]">
+<!-- Header -->
+<div class="border-b-2 border-[#1a1c1d] pb-lg mb-lg flex justify-between items-end">
+<div>
+<h1 class="font-h1 text-[40px] font-extrabold tracking-tighter leading-none mb-2">SANDESH KULKARNI</h1>
+<p class="font-body-lg text-primary font-bold uppercase tracking-[0.2em] text-[14px]">Senior Full-Stack Engineer</p>
+</div>
+<div class="text-right font-body-sm text-[12px] leading-relaxed text-on-surface-variant">
+<p>San Francisco, CA</p>
+<p>sandesh.dev@email.com</p>
+<p>+1 (555) 012-3456</p>
+<p class="font-semibold text-on-surface">github.com/sandesh-dev</p>
+</div>
+</div>
+<!-- Summary Section -->
+<section class="mb-lg" id="summary">
+<h2 class="font-label-caps text-[13px] text-on-surface mb-md border-b border-outline-variant pb-xs flex items-center justify-between">
+<span>SUMMARY</span>
+</h2>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                            Full-stack developer with 8+ years of experience building scalable distributed systems and high-performance web applications. Expert in React, Node.js, and AWS infrastructure. Proven track record of leading engineering teams to deliver mission-critical software in fast-paced startup environments and enterprise settings.
+                        </p>
+</section>
+<!-- Skills Grid -->
+<section class="mb-lg" id="skills">
+<h2 class="font-label-caps text-[13px] text-on-surface mb-md border-b border-outline-variant pb-xs">CORE COMPETENCIES</h2>
+<div class="grid grid-cols-3 gap-lg">
+<div>
+<h3 class="font-body-sm font-bold mb-1">Frontend</h3>
+<p class="font-code text-[12px] text-on-surface-variant">React, Next.js, TypeScript, Tailwind CSS, Redux, Webpack</p>
+</div>
+<div>
+<h3 class="font-body-sm font-bold mb-1">Backend</h3>
+<p class="font-code text-[12px] text-on-surface-variant">Node.js, PostgreSQL, GraphQL, Python (FastAPI), Redis</p>
+</div>
+<div>
+<h3 class="font-body-sm font-bold mb-1">Cloud &amp; Dev</h3>
+<p class="font-code text-[12px] text-on-surface-variant">AWS (EC2, S3, Lambda), Docker, Kubernetes, CI/CD, Terraform</p>
+</div>
+</div>
+</section>
+<!-- Experience -->
+<section class="mb-lg" id="experience">
+<h2 class="font-label-caps text-[13px] text-on-surface mb-md border-b border-outline-variant pb-xs">PROFESSIONAL EXPERIENCE</h2>
+<div class="mb-lg">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-body-lg font-bold">TechFlow Systems</h3>
+<span class="font-body-sm font-medium italic">2020 — Present</span>
+</div>
+<p class="font-body-sm text-primary font-semibold mb-2">Senior Full Stack Engineer</p>
+<ul class="font-body-md text-on-surface-variant space-y-2 list-disc pl-5">
+<li>Architected and led the migration of a legacy monolithic dashboard to a micro-frontend architecture using React and Module Federation, improving build times by 40%.</li>
+<li>Developed a real-time data visualization engine using D3.js and WebSockets that handles 100k+ events per second.</li>
+<li>Reduced cloud infrastructure costs by 25% through optimization of AWS Lambda functions and implementing more efficient caching strategies.</li>
+</ul>
+</div>
+<div class="mb-lg">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-body-lg font-bold">Nexus Labs</h3>
+<span class="font-body-sm font-medium italic">2017 — 2020</span>
+</div>
+<p class="font-body-sm text-primary font-semibold mb-2">Software Engineer II</p>
+<ul class="font-body-md text-on-surface-variant space-y-2 list-disc pl-5">
+<li>Designed and implemented a GraphQL API layer that unified data from 5 disparate microservices, reducing frontend data-fetching complexity.</li>
+<li>Lead developer for the internal design system used by 50+ engineers, ensuring UI consistency across 12 different product lines.</li>
+<li>Mentored 3 junior developers and conducted 200+ technical interviews for engineering roles.</li>
+</ul>
+</div>
+</section>
+<!-- Education & Certs -->
+<div class="grid grid-cols-2 gap-xl">
+<section id="education">
+<h2 class="font-label-caps text-[13px] text-on-surface mb-md border-b border-outline-variant pb-xs">EDUCATION</h2>
+<div>
+<h3 class="font-body-sm font-bold">B.S. in Computer Science</h3>
+<p class="font-body-sm text-on-surface-variant">University of California, Berkeley</p>
+<p class="font-body-sm text-outline italic">Class of 2017</p>
+</div>
+</section>
+<section id="certifications">
+<h2 class="font-label-caps text-[13px] text-on-surface mb-md border-b border-outline-variant pb-xs">CERTIFICATIONS</h2>
+<ul class="font-body-sm text-on-surface-variant space-y-1">
+<li>• AWS Certified Solutions Architect</li>
+<li>• Google Professional Cloud Developer</li>
+<li>• Meta Front-End Developer Professional Certificate</li>
+</ul>
+</section>
+</div>
+<!-- Footer Decorative -->
+<div class="mt-auto pt-xl text-center border-t border-outline-variant">
+<p class="font-body-sm text-[11px] text-outline uppercase tracking-widest">References available upon request • devos generated</p>
+</div>
+</div>
+<!-- FAB for quick scroll to top (Contextual) -->
+<button class="fixed bottom-lg right-lg w-12 h-12 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary-container transition-all active:scale-90 opacity-0 pointer-events-none" id="scrollToTop">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</main>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Smooth scroll for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                const container = document.querySelector('main');
+                
+                if (targetElement) {
+                    container.scrollTo({
+                        top: targetElement.offsetTop - 40,
+                        behavior: 'smooth'
+                    });
+
+                    // Update active state
+                    document.querySelectorAll('aside nav a').forEach(a => {
+                        a.classList.remove('bg-surface-container-highest', 'active-nav-border', 'text-on-surface', 'font-medium');
+                        a.classList.add('text-on-surface-variant', 'opacity-80');
+                    });
+                    this.classList.add('bg-surface-container-highest', 'active-nav-border', 'text-on-surface', 'font-medium');
+                    this.classList.remove('text-on-surface-variant', 'opacity-80');
+                }
+            });
+        });
+
+        // Show scroll-to-top button
+        const mainContainer = document.querySelector('main');
+        const scrollBtn = document.getElementById('scrollToTop');
+        
+        mainContainer.addEventListener('scroll', () => {
+            if (mainContainer.scrollTop > 300) {
+                scrollBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                scrollBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body></html>

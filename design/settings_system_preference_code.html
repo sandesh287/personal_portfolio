@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ProjectConsole v2.0 - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+        }
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #f9f9fb;
+            color: #1a1c1d;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e2e4;
+            border-radius: 10px;
+        }
+        .ghost-border {
+            border: 1px solid #e5e5e5;
+        }
+        .focus-ring:focus-within {
+            ring: 4px solid rgba(0, 112, 235, 0.2);
+            border-color: #0070eb;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#eeeef0",
+                    "primary": "#0058bc",
+                    "primary-fixed-dim": "#adc6ff",
+                    "outline": "#717786",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#0070eb",
+                    "background": "#f9f9fb",
+                    "on-primary-container": "#fefcff",
+                    "primary-fixed": "#d8e2ff",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#474746",
+                    "inverse-primary": "#adc6ff",
+                    "surface-variant": "#e2e2e4",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#004493",
+                    "surface": "#f9f9fb",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#636262",
+                    "on-background": "#1a1c1d",
+                    "inverse-surface": "#2f3132",
+                    "surface-container-high": "#e8e8ea",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "inverse-on-surface": "#f0f0f2",
+                    "on-tertiary-container": "#fffbff",
+                    "secondary-container": "#e2dfde",
+                    "surface-container-low": "#f3f3f5",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-dim": "#d9dadc",
+                    "surface-bright": "#f9f9fb",
+                    "surface-tint": "#005bc1",
+                    "on-tertiary-fixed": "#351000",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "surface-container-highest": "#e2e2e4",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414755",
+                    "tertiary": "#9e3d00",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#c64f00",
+                    "secondary": "#5f5e5e",
+                    "on-surface": "#1a1c1d",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#e5e2e1",
+                    "outline-variant": "#c1c6d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "xs": "4px",
+                    "container-max": "1200px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "sidebar-width": "260px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Geist"],
+                    "h1": ["Geist"],
+                    "code": ["JetBrains Mono"],
+                    "display": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "h2": ["Geist"],
+                    "body-md": ["Geist"],
+                    "body-lg": ["Geist"]
+            },
+            "fontSize": {
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-outline-variant fixed top-0 w-full z-50 h-16 flex justify-between items-center px-lg">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">ProjectConsole v2.0</span>
+<nav class="hidden md:flex ml-xl gap-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md cursor-pointer" href="#">Repositories</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md cursor-pointer" href="#">Deployments</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md cursor-pointer" href="#">Analytics</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md cursor-pointer" href="#">Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative focus-ring flex items-center bg-surface-container-lowest ghost-border rounded-lg px-sm py-xs w-64">
+<span class="material-symbols-outlined text-outline text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm w-full outline-none" placeholder="Search settings..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80">notifications</button>
+<button class="material-symbols-outlined text-primary font-bold border-b-2 border-primary pb-1 transition-colors cursor-pointer active:opacity-80">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ghost-border">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a professional software engineer in a clean, minimalist studio lighting setup. The person is wearing a neutral-colored tech-apparel hoodie, looking directly at the camera with a focused and confident expression. The background is a soft, out-of-focus tech environment with subtle blue and gray tones, emphasizing a professional light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA18oYhfuKY-uEJhuAzhsQaqYsa5VJ_tSXSvhmjm73CQBzlbF8C0_iWv7zTbrYtJY4h1ZGmv9eHc831xN70zO7DxRtdpCQeF3N4JFJI0RPTWEIX2Zk5R7-FkmMDrb1D62bi6ftRQyXflH8N7Odc3gi0l95YKdcb2ccZOoCVnNRyjcc0wHPPcyjZloOAs85RWVKb0mufEb61_VQ0mZtJ9bDPKZG1genaX71sFWPDqf0I7ykHD-WgsF7l"/>
+</div>
+</div>
+</header>
+<div class="flex pt-16 h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant h-full w-[280px] flex flex-col p-md gap-sm shrink-0">
+<div class="flex items-center gap-sm mb-md px-sm">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-md">terminal</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold leading-tight">Workspace</h3>
+<p class="text-on-surface-variant text-[11px] uppercase tracking-wider font-bold">Admin Panel v2.0.4</p>
+</div>
+</div>
+<nav class="flex flex-col gap-xs flex-1">
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg bg-secondary-container text-on-secondary-container font-bold transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('general')">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">General</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('profile')">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('resume')">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="font-label-md text-label-md">Resume</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('social')">
+<span class="material-symbols-outlined text-[20px]">share</span>
+<span class="font-label-md text-label-md">Social Links</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('github')">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span class="font-label-md text-label-md">GitHub Integration</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('analytics')">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('seo')">
+<span class="material-symbols-outlined text-[20px]">language</span>
+<span class="font-label-md text-label-md">SEO</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('email')">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+<span class="font-label-md text-label-md">Email Config</span>
+</button>
+<button class="nav-tab flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200 cursor-pointer active:scale-95" onclick="switchTab('security')">
+<span class="material-symbols-outlined text-[20px]">security</span>
+<span class="font-label-md text-label-md">Security</span>
+</button>
+</nav>
+<div class="mt-auto flex flex-col gap-xs border-t border-outline-variant pt-md">
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Documentation</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 overflow-y-auto custom-scrollbar p-xl">
+<div class="max-w-3xl mx-auto space-y-xl">
+<!-- Section: Header -->
+<header class="flex justify-between items-end border-b border-outline-variant pb-md">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">General Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Configure your core site metadata and localization.</p>
+</div>
+<button class="px-md py-2 bg-primary text-white rounded-lg font-body-sm text-body-sm font-bold shadow-sm hover:opacity-90 transition-opacity">Save Changes</button>
+</header>
+<!-- Section: General -->
+<section class="space-y-lg animate-in fade-in duration-500" id="general-section">
+<div class="grid grid-cols-1 gap-lg">
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Site Title</label>
+<input class="w-full bg-white ghost-border rounded-lg px-md py-2 text-body-md font-body-md focus-ring outline-none transition-all" type="text" value="Portfolio | Senior Engineer"/>
+<p class="text-[11px] text-on-surface-variant italic">This appears in the browser tab and search results.</p>
+</div>
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Tagline</label>
+<textarea class="w-full bg-white ghost-border rounded-lg px-md py-2 text-body-md font-body-md focus-ring outline-none transition-all h-24">Specializing in distributed systems and high-frequency data pipelines. Building the future of cloud infrastructure.</textarea>
+</div>
+<div class="grid grid-cols-2 gap-lg">
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Time Zone</label>
+<select class="w-full bg-white ghost-border rounded-lg px-md py-2 text-body-md font-body-md focus-ring outline-none appearance-none cursor-pointer">
+<option>(GMT-08:00) Pacific Time (US &amp; Canada)</option>
+<option>(GMT+00:00) London</option>
+<option>(GMT+01:00) Paris</option>
+</select>
+</div>
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Primary Language</label>
+<div class="flex gap-base p-1 bg-surface-container rounded-lg ghost-border">
+<button class="flex-1 py-1.5 rounded bg-white shadow-sm font-body-sm text-body-sm font-bold">English</button>
+<button class="flex-1 py-1.5 rounded hover:bg-surface-variant font-body-sm text-body-sm">German</button>
+<button class="flex-1 py-1.5 rounded hover:bg-surface-variant font-body-sm text-body-sm">Japanese</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: GitHub Integration (Example) -->
+<section class="hidden space-y-lg animate-in slide-in-from-bottom-2 duration-300" id="github-section">
+<div class="bg-white ghost-border rounded-xl p-lg space-y-lg">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-4xl text-on-surface">code</span>
+<div>
+<h2 class="font-h2 text-h2">GitHub Integration</h2>
+<p class="text-body-sm text-on-surface-variant">Sync your open source contributions and repositories.</p>
+</div>
+</div>
+<div class="space-y-md">
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Personal Access Token</label>
+<input class="w-full bg-surface-container-low font-code text-code border-dashed border-2 border-outline-variant rounded-lg px-md py-2 focus:border-primary outline-none transition-all" type="password" value="ghp_************************"/>
+<div class="flex items-center gap-xs text-[11px] text-primary font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>Token Valid: Full Repo Access</span>
+</div>
+</div>
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Featured Repositories</label>
+<div class="grid grid-cols-2 gap-sm">
+<div class="ghost-border rounded-lg p-sm flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline">book</span>
+<span class="font-body-sm text-body-sm">distributed-scheduler</span>
+</div>
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="ghost-border rounded-lg p-sm flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline">book</span>
+<span class="font-body-sm text-body-sm">k8s-operator-sdk</span>
+</div>
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="ghost-border rounded-lg p-sm flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline">book</span>
+<span class="font-body-sm text-body-sm">rust-wasm-engine</span>
+</div>
+<input class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="ghost-border rounded-lg p-sm flex items-center justify-between hover:bg-surface-container-lowest transition-colors border-dashed text-outline-variant italic">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined">add</span>
+<span class="font-body-sm text-body-sm">Add custom repo</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-md bg-primary-fixed rounded-lg">
+<div>
+<h4 class="font-body-md text-body-md font-bold text-on-primary-fixed">Auto-Sync Frequency</h4>
+<p class="text-body-sm text-on-primary-fixed-variant">Repositories will refresh automatically via GitHub Webhooks.</p>
+</div>
+<select class="bg-white ghost-border rounded px-sm py-1 font-body-sm text-body-sm outline-none">
+<option>Every 1 hour</option>
+<option>Every 6 hours</option>
+<option>Every 24 hours</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- SEO Section (Example) -->
+<section class="hidden space-y-lg animate-in slide-in-from-bottom-2 duration-300" id="seo-section">
+<div class="space-y-lg">
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">Meta Description</label>
+<textarea class="w-full bg-white ghost-border rounded-lg px-md py-2 text-body-md font-body-md focus-ring outline-none transition-all h-24">Senior Software Engineer with 10+ years experience in distributed cloud architecture. Explore my portfolio of open source projects and technical articles.</textarea>
+<div class="flex justify-between">
+<p class="text-[11px] text-on-surface-variant italic">Recommended: 150-160 characters.</p>
+<p class="text-[11px] text-on-surface-variant font-bold">148 / 160</p>
+</div>
+</div>
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-outline uppercase">OpenGraph Image (OG:Image)</label>
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-sm group cursor-pointer hover:border-primary transition-all">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-60 transition-opacity" data-alt="A clean, professional OpenGraph preview image for a developer portfolio. It features a dark, high-contrast background with a subtle network mesh pattern in deep blue. In the foreground, bold white typography displays the name and title, complemented by an abstract 3D geometric shape on the right side. The overall aesthetic is minimal, high-tech, and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPslELdGxueqWdaNmEtkGJGGpklp7GcOeOCVrN3ZRhXPtlESBBCZBaPabyYEg7icKLZfnXY0hNWfEXnGvljEQ4J9POutFwjfs9AByj5pcrtocua6WU4971BB9QweZ2nf28DHi6J3kU3HJHATnmHlBLjsiMKA7rovQXoKq_CYTkZtWLJzoSNKt37dBirItPyihJOXlgNRDEayw-CEGqdibcYN68BNzxJ5quqlA-7xs0PGpth9Vc2wMN"/>
+<span class="material-symbols-outlined text-4xl text-on-surface relative z-10">image</span>
+<p class="font-body-sm text-body-sm font-bold relative z-10">Click to upload or drag &amp; drop</p>
+<p class="text-[11px] text-on-surface-variant relative z-10">PNG, JPG (1200x630 recommended)</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-lg bg-surface-container rounded-xl">
+<div>
+<h4 class="font-body-md text-body-md font-bold">Search Engine Visibility</h4>
+<p class="text-body-sm text-on-surface-variant">Discourage search engines from indexing this site.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-secondary-container rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Success State Toast (Hidden) -->
+<div class="fixed bottom-lg left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-lg py-sm rounded-full flex items-center gap-sm shadow-xl opacity-0 translate-y-10 transition-all pointer-events-none z-[100]" id="save-toast">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+<span class="font-body-sm text-body-sm">Changes saved successfully</span>
+</div>
+</div>
+</main>
+<!-- Right Inspector: Live Preview -->
+<aside class="hidden xl:flex flex-col w-[380px] bg-white border-l border-outline-variant shrink-0">
+<div class="p-md border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<span class="font-label-caps text-label-caps text-outline uppercase font-bold">Live System Preview</span>
+<div class="flex gap-xs">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+<div class="flex-1 p-lg bg-surface-variant overflow-y-auto custom-scrollbar">
+<!-- Mock Portfolio Browser Window -->
+<div class="bg-white rounded-lg shadow-2xl border border-outline-variant overflow-hidden flex flex-col min-h-[500px]">
+<!-- Browser Chrome -->
+<div class="bg-surface-container px-md py-2 flex items-center gap-md border-b border-outline-variant">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+</div>
+<div class="bg-white rounded px-sm py-0.5 flex-1 text-[10px] text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+<span id="preview-url">portfolio.dev/admin</span>
+</div>
+</div>
+<!-- Content Preview Area -->
+<div class="flex-1 p-md space-y-md">
+<nav class="flex justify-between items-center">
+<span class="font-bold text-[14px] text-primary" id="preview-title">Portfolio | Senior Engineer</span>
+<div class="flex gap-sm text-[10px] font-bold text-on-surface-variant">
+<span>Projects</span>
+<span>About</span>
+<span>Contact</span>
+</div>
+</nav>
+<div class="space-y-sm pt-xl">
+<div class="w-12 h-12 rounded-full bg-primary-fixed"></div>
+<h2 class="font-display text-[24px] leading-tight text-on-surface font-extrabold">I build scalable infrastructure.</h2>
+<p class="text-[12px] text-on-surface-variant leading-relaxed" id="preview-tagline">Specializing in distributed systems and high-frequency data pipelines. Building the future of cloud infrastructure.</p>
+</div>
+<div class="grid grid-cols-2 gap-sm mt-lg">
+<div class="h-20 rounded-lg bg-surface-container-high animate-pulse"></div>
+<div class="h-20 rounded-lg bg-surface-container-high animate-pulse"></div>
+</div>
+</div>
+<div class="p-md border-t border-outline-variant flex justify-center">
+<div class="flex gap-md">
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">share</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">code</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">mail</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-lowest border-t border-outline-variant">
+<div class="flex items-center justify-between text-[11px] font-body-sm text-on-surface-variant mb-2">
+<span>Performance Score</span>
+<span class="text-green-600 font-bold">98 / 100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[98%]"></div>
+</div>
+<div class="mt-md flex gap-sm">
+<button class="flex-1 py-1.5 ghost-border rounded font-body-sm text-body-sm hover:bg-surface-container transition-colors">Clear Cache</button>
+<button class="flex-1 py-1.5 bg-primary text-white rounded font-body-sm text-body-sm hover:bg-primary-container transition-colors">Publish Site</button>
+</div>
+</div>
+</aside>
+</div>
+<script>
+        function switchTab(tabId) {
+            // Hide all sections
+            const sections = ['general-section', 'github-section', 'seo-section'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Show target section if exists, else default to general (for demo purposes)
+            const activeSection = document.getElementById(tabId + '-section');
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            } else {
+                document.getElementById('general-section').classList.remove('hidden');
+            }
+
+            // Update tab styles
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'font-bold');
+                btn.classList.add('text-on-surface-variant', 'hover:bg-surface-variant');
+            });
+
+            const activeBtn = event.currentTarget;
+            activeBtn.classList.add('bg-secondary-container', 'text-on-secondary-container', 'font-bold');
+            activeBtn.classList.remove('text-on-surface-variant', 'hover:bg-surface-variant');
+
+            // Update main header text
+            const headerTitle = document.querySelector('h1');
+            const headerDesc = document.querySelector('header p');
+            
+            const titles = {
+                'general': ['General Settings', 'Configure your core site metadata and localization.'],
+                'profile': ['Profile Settings', 'Manage your personal identity and bio.'],
+                'resume': ['Resume & Career', 'Upload and manage your professional documents.'],
+                'social': ['Social Links', 'Connect your professional social networks.'],
+                'github': ['GitHub Integration', 'Sync your open source contributions and repositories.'],
+                'analytics': ['Analytics & Tracking', 'Monitor your traffic and visitor behavior.'],
+                'seo': ['Search Engine Optimization', 'Control how search engines see your portfolio.'],
+                'email': ['Email Configuration', 'Setup SMTP and contact form delivery.'],
+                'security': ['Security & Privacy', 'Protect your dashboard and personal data.']
+            };
+
+            if (titles[tabId]) {
+                headerTitle.textContent = titles[tabId][0];
+                headerDesc.textContent = titles[tabId][1];
+            }
+        }
+
+        // Live Preview Binding Logic
+        const siteTitleInput = document.querySelector('input[value="Portfolio | Senior Engineer"]');
+        const taglineTextarea = document.querySelector('textarea');
+        
+        const previewTitle = document.getElementById('preview-title');
+        const previewTagline = document.getElementById('preview-tagline');
+
+        siteTitleInput.addEventListener('input', (e) => {
+            previewTitle.textContent = e.target.value;
+        });
+
+        taglineTextarea.addEventListener('input', (e) => {
+            previewTagline.textContent = e.target.value;
+        });
+
+        // Save Toast Logic
+        document.querySelector('button.bg-primary').addEventListener('click', () => {
+            const toast = document.getElementById('save-toast');
+            toast.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        });
+    </script>
+</body></html>

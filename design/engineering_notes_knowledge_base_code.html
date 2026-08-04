@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOS | Engineering Notes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e2e4;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #c1c6d7;
+        }
+        body {
+            background-color: #f0f0f2;
+            overflow: hidden;
+        }
+        .os-window {
+            box-shadow: 0px 20px 50px rgba(0,0,0,0.08);
+            border: 1px solid #c1c6d7;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c1c6d7",
+                    "secondary": "#5f5e5e",
+                    "surface-tint": "#005bc1",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "inverse-on-surface": "#f0f0f2",
+                    "tertiary-fixed": "#ffdbcc",
+                    "background": "#f9f9fb",
+                    "on-secondary": "#ffffff",
+                    "outline": "#717786",
+                    "on-primary": "#ffffff",
+                    "on-background": "#1a1c1d",
+                    "surface": "#f9f9fb",
+                    "surface-container-highest": "#e2e2e4",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface-variant": "#414755",
+                    "surface-variant": "#e2e2e4",
+                    "surface-bright": "#f9f9fb",
+                    "on-primary-fixed": "#001a41",
+                    "primary-container": "#0070eb",
+                    "surface-dim": "#d9dadc",
+                    "secondary-container": "#e2dfde",
+                    "inverse-surface": "#2f3132",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-tertiary-fixed": "#351000",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e8e8ea",
+                    "on-primary-container": "#fefcff",
+                    "tertiary-fixed-dim": "#ffb595",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#004493",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#adc6ff",
+                    "on-tertiary-container": "#fffbff",
+                    "primary": "#0058bc",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#c64f00",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface-container": "#eeeef0",
+                    "on-surface": "#1a1c1d",
+                    "on-secondary-container": "#636262",
+                    "tertiary": "#9e3d00",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f3f3f5",
+                    "secondary-fixed": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar-width": "260px",
+                    "container-max": "1200px",
+                    "base": "4px",
+                    "xl": "40px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "body-md": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "h2": ["Geist"],
+                    "label-caps": ["Geist"],
+                    "code": ["JetBrains Mono"],
+                    "display": ["Geist"],
+                    "body-sm": ["Geist"],
+                    "h1": ["Geist"]
+            },
+            "fontSize": {
+                    "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="flex items-center justify-center h-screen p-xl">
+<!-- OS Window Wrapper -->
+<div class="os-window flex w-full h-full max-w-[1600px] bg-surface-container-lowest rounded-xl overflow-hidden relative">
+<!-- SIDE NAVBAR (From JSON) -->
+<!-- style_shell_layout applied: flex flex-col h-screen w-[sidebar-width] py-md -->
+<aside class="flex flex-col h-full w-[sidebar-width] py-md bg-surface-variant dark:bg-surface-variant border-r border-outline-variant dark:border-outline-variant z-50">
+<!-- Traffic Lights (Mac-style) -->
+<div class="flex gap-2 px-md mb-lg">
+<div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+</div>
+<!-- Brand Header -->
+<div class="px-md mb-xl">
+<h1 class="font-display text-h2 font-bold text-on-surface dark:text-on-surface">DevOS</h1>
+<p class="font-body-sm text-body-sm text-secondary">v2.4.0-stable</p>
+</div>
+<!-- CTA -->
+<div class="px-md mb-lg">
+<button class="w-full bg-primary-container text-on-primary-container py-sm px-md rounded-lg flex items-center justify-center gap-2 font-body-sm hover:opacity-90 transition-opacity active:scale-[0.98]">
+<span class="material-symbols-outlined">add</span>
+                    New Note
+                </button>
+</div>
+<!-- Primary Nav -->
+<nav class="flex-grow space-y-1 px-sm">
+<!-- Active Nav: Documentation -->
+<a class="flex items-center gap-3 px-md py-sm rounded-lg bg-surface-container-highest dark:bg-surface-container-highest text-primary dark:text-primary border-l-2 border-primary transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-body-sm">Documentation</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body-sm">Project Logs</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm">Architecture</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">code</span>
+<span class="font-body-sm">Snippets</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm">Settings</span>
+</a>
+<!-- Custom Sections for the prompt requirement -->
+<div class="pt-lg pb-sm px-md">
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Categories</p>
+</div>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-body-sm">Frontend</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<span class="font-body-sm">Backend</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-body-sm">AI/ML</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+<span class="font-body-sm">DevOps</span>
+</a>
+</nav>
+<!-- Footer Nav -->
+<div class="mt-auto px-sm border-t border-outline-variant pt-md">
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">cloud_done</span>
+<span class="font-body-sm">Cloud Sync</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-body-sm">System Info</span>
+</a>
+</div>
+</aside>
+<!-- MAIN STAGE -->
+<main class="flex flex-col flex-grow h-full bg-surface">
+<!-- TOP NAVBAR (From JSON) -->
+<!-- style_shell_layout applied: flex justify-between items-center w-full pr-lg h-16 z-40 bg-surface/80 backdrop-blur-md -->
+<header class="flex justify-between items-center w-full pr-lg h-16 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+<div class="flex items-center gap-lg pl-lg flex-grow">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-sm focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search documentation..." type="text"/>
+</div>
+<nav class="hidden md:flex gap-md">
+<a class="font-label-caps text-label-caps text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary py-5" href="#">Recent</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary py-5 transition-colors" href="#">Favorites</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary py-5 transition-colors" href="#">Shared</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="px-md py-1.5 border border-outline-variant rounded-lg font-label-caps text-label-caps text-on-surface hover:bg-surface-container-high transition-colors">Export</button>
+<button class="px-md py-1.5 bg-primary-container text-on-primary-container rounded-lg font-label-caps text-label-caps hover:opacity-90 transition-opacity">Publish</button>
+<div class="flex items-center gap-2 border-l border-outline-variant ml-2 pl-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded transition-colors">more_vert</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-2 border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a software engineer in a high-tech studio. The individual has a focused, intelligent expression. The lighting is cool-toned and cinematic, with soft shadows. The background is a blurred server room with blinking blue LEDs, reinforcing a sophisticated tech portfolio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3ubq6mmKLK6u_TFmyMZmQ5IVbhNcEazx2csJO1qGLhuhl9Bw5CaigCSu5TunqPo98AmcAX3rfR0aJMZe_PVnBhHwNZ7h4Pewm3fikKHMijSzZr_LKLCRVevqpEkD8m77cIijPkC_rwISmgxMBspie3ZQ1ssDyVgt0n6UIAoDUlb254noSyyngcJ7n5GGgvq_DD-v92UM8FkEUh8E4sURCZ11O08qpeiwKUlDXFkUWG1_oM57XhYvW"/>
+</div>
+</div>
+</div>
+</header>
+<!-- WORKSPACE -->
+<div class="flex flex-grow overflow-hidden">
+<!-- MIDDLE PANE: ARTICLE LIST -->
+<section class="w-[320px] lg:w-[380px] flex flex-col border-r border-outline-variant bg-surface-container-low">
+<div class="p-md flex justify-between items-center border-b border-outline-variant bg-surface-container-low/50">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Engineering Blog</span>
+<span class="material-symbols-outlined text-secondary text-sm">filter_list</span>
+</div>
+<div class="flex-grow overflow-y-auto custom-scrollbar p-sm space-y-2">
+<!-- Active Card -->
+<div class="p-md bg-surface-container-lowest border border-primary rounded-lg cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tight">Architecture</span>
+<span class="font-body-sm text-[11px] text-secondary">Oct 24</span>
+</div>
+<h3 class="font-h2 text-[16px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">Architecting Scalable Microservices</h3>
+<p class="font-body-sm text-secondary text-[13px] line-clamp-2 mb-3">Comprehensive guide on implementing event-driven patterns using Kafka and gRPC for distributed systems.</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-[11px]">8 min read</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span class="text-[11px]">Advanced</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-md hover:bg-surface-container-high transition-colors rounded-lg cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tight">Backend</span>
+<span class="font-body-sm text-[11px] text-secondary">Oct 21</span>
+</div>
+<h3 class="font-h2 text-[16px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">Mastering Postgres Indexing</h3>
+<p class="font-body-sm text-secondary text-[13px] line-clamp-2 mb-3">Deep dive into B-Tree, GIST, and GIN indexes for query optimization in high-traffic applications.</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-[11px]">12 min read</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-md hover:bg-surface-container-high transition-colors rounded-lg cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tight">AI/ML</span>
+<span class="font-body-sm text-[11px] text-secondary">Oct 18</span>
+</div>
+<h3 class="font-h2 text-[16px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">LLM Fine-tuning Strategies</h3>
+<p class="font-body-sm text-secondary text-[13px] line-clamp-2 mb-3">Practical approaches to LoRA and QLoRA for domain-specific language model adaptation.</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-[11px]">15 min read</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-md hover:bg-surface-container-high transition-colors rounded-lg cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tight">DevOps</span>
+<span class="font-body-sm text-[11px] text-secondary">Oct 12</span>
+</div>
+<h3 class="font-h2 text-[16px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">K8s GitOps with ArgoCD</h3>
+<p class="font-body-sm text-secondary text-[13px] line-clamp-2 mb-3">Implementing zero-touch deployments using declarative infrastructure and pull-based sync.</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-[11px]">6 min read</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- MAIN PANE: ARTICLE VIEW -->
+<section class="flex-grow flex flex-col relative bg-surface-container-lowest overflow-hidden">
+<div class="flex-grow overflow-y-auto custom-scrollbar">
+<div class="max-w-[800px] mx-auto py-xl px-lg lg:px-xl">
+<!-- Article Header -->
+<header class="mb-xl">
+<div class="flex items-center gap-2 mb-4">
+<img class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A detailed 50-100 word prompt describing a high-quality stylized avatar of a developer in a professional setting. The image should feature a soft blue and grey palette to match the light-mode UI. High-end digital art style with clean lines and modern professional vibes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGoOfDuvTqsYuNYgiOFugCLm4nem0TtXw_6xGPZP1P9h7tgIJdvSbB37rT8IBafcHpwRNhjBuDAMXA3hTAQgGO5r1cFCWGxH1TpDWxQLsDLz7KU1Q4s2Ujz-7JV135jtrjiLHR0OkARdQbPOA_D4CuuuHNQ4asKa3gr1UWHu0mfZxwk7U6XYCDXjeeP_rt536YXuOhWnAD_PpcFQYAZJC_3D89ayFYELF7LXUJsMIEZqj81SQFbygW"/>
+<div>
+<p class="font-body-sm font-bold text-on-surface">Alex Rivera</p>
+<p class="font-body-sm text-secondary">Lead System Architect • Updated Oct 24, 2023</p>
+</div>
+</div>
+<h1 class="font-display text-display text-on-surface leading-tight mb-lg tracking-tight">Architecting Scalable Microservices</h1>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label-caps text-label-caps rounded-lg">Architecture</span>
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label-caps text-label-caps rounded-lg">System Design</span>
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label-caps text-label-caps rounded-lg">Scalability</span>
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label-caps text-label-caps rounded-lg">Performance</span>
+</div>
+</header>
+<!-- Content -->
+<article class="font-body-lg text-on-surface space-y-lg">
+<p>In modern software engineering, the shift from monoliths to microservices has become standard. However, the true challenge isn't just splitting the database—it's managing the <strong>distributed complexity</strong> that arises from network latency, partial failures, and data consistency.</p>
+<h2 class="font-h1 text-h1 border-b border-outline-variant pb-2">The Service Boundary Conundrum</h2>
+<p>Defining service boundaries is more art than science. We leverage Domain-Driven Design (DDD) to identify Bounded Contexts. Each context represents a linguistic and functional boundary within our ecosystem.</p>
+<!-- Callout Box: Tip -->
+<div class="p-md rounded-lg border-l-4 border-primary bg-primary/5 flex gap-4">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<div class="font-body-md">
+<p class="font-bold text-primary mb-1">Architecture Tip</p>
+<p class="text-on-surface-variant">Prefer asynchronous communication via event buses (Kafka/RabbitMQ) over synchronous REST calls to decouple services and improve fault tolerance.</p>
+</div>
+</div>
+<p>Consider the following implementation of a Message Producer in Go. Notice how we handle the connection retry logic to ensure system resilience.</p>
+<!-- Syntax Highlighted Code Block -->
+<div class="rounded-xl overflow-hidden bg-[#1a1c1d] border border-outline-variant shadow-lg my-lg">
+<div class="flex items-center justify-between px-md py-2 bg-white/5 border-b border-white/10">
+<span class="font-code text-code text-outline-variant">producer.go</span>
+<button class="flex items-center gap-1 font-label-caps text-label-caps text-outline-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+                                            Copy
+                                        </button>
+</div>
+<pre class="p-md font-code text-code overflow-x-auto"><code class="text-white">
+<span class="text-purple-400">func</span> <span class="text-blue-400">main</span>() {
+    config := kafka.ConfigMap{<span class="text-green-400">"bootstrap.servers"</span>: <span class="text-green-400">"localhost"</span>}
+    p, err := kafka.NewProducer(&amp;config)
+    
+    <span class="text-secondary">// Retry logic omitted for brevity</span>
+    <span class="text-purple-400">if</span> err != nil {
+        log.Fatalf(<span class="text-green-400">"Failed to create producer: %s\n"</span>, err)
+    }
+
+    topic := <span class="text-green-400">"orders_topic"</span>
+    <span class="text-purple-400">for</span> _, word := <span class="text-purple-400">range</span> []<span class="text-blue-400">string</span>{<span class="text-green-400">"Welcome"</span>, <span class="text-green-400">"to"</span>, <span class="text-green-400">"Kafka"</span>} {
+        p.Produce(&amp;kafka.Message{
+            TopicPartition: kafka.TopicPartition{Topic: &amp;topic, Partition: kafka.PartitionAny},
+            Value:          []<span class="text-blue-400">byte</span>(word),
+        }, <span class="text-purple-400">nil</span>)
+    }
+}</code></pre>
+</div>
+<h2 class="font-h1 text-h1 border-b border-outline-variant pb-2">Visualization: Service Mesh</h2>
+<div class="w-full aspect-video rounded-xl border border-outline-variant bg-surface-container flex items-center justify-center overflow-hidden group relative">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 2D architectural diagram showing a microservices mesh. Icons represent different services connected by sleek, glowing blue lines representing data flow. The style is professional, high-fidelity technical illustration with a soft grey background and subtle drop shadows. No text, just clean geometric icons and connecting paths." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh6vT-hyiieShQVay6kjAvzKZYMQFJhAuGkuUC0_EndygDMFkLC2dJMkBSXgA-_jjp_e2GlwT_qOlMTHg2sgRCE7vRtETu2UrJ-0Su2OvSGZAeRlbrxygiMnFnhBb3NN_pruoz7Umnb1dE8H7vtP454sKrIB4rhP3ye3RMzTw227dWxxwJ2T_kmX2fD6Lda3pgaKxv5Um3VCiehKz-8PKybkQN7S8t5p8txVLjEmvPodbHIRPpEuY6"/>
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-white/90 backdrop-blur px-md py-2 rounded-lg font-body-sm shadow-xl text-primary font-bold">Open Full Diagram</button>
+</div>
+</div>
+<p>Beyond simple service-to-service calls, implementing a service mesh like Istio or Linkerd allows for advanced traffic management, mutual TLS, and observability without bloating your application code.</p>
+<!-- Warning Callout -->
+<div class="p-md rounded-lg border-l-4 border-error bg-error/5 flex gap-4 my-lg">
+<span class="material-symbols-outlined text-error">warning</span>
+<div class="font-body-md">
+<p class="font-bold text-error mb-1">Critical Performance Note</p>
+<p class="text-on-surface-variant">Over-segmenting services leads to the 'Death Star' architecture pattern. Ensure your operational maturity can handle the overhead of distributed tracing and logging before splitting your monolith further.</p>
+</div>
+</div>
+<p>To wrap up, scalability is not just about horizontal scaling of compute nodes. It is about architectural flexibility, data integrity, and the developer experience of managing those systems at scale.</p>
+</article>
+<footer class="mt-xl pt-lg border-t border-outline-variant flex justify-between items-center">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">thumb_up</span>
+<span class="font-label-caps">2.4k</span>
+</button>
+<button class="flex items-center gap-2 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-label-caps">128 Comments</span>
+</button>
+</div>
+<button class="flex items-center gap-2 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="font-label-caps">Save Note</span>
+</button>
+</footer>
+</div>
+</div>
+<!-- STICKY TOC -->
+<aside class="hidden xl:block absolute right-8 top-24 w-48">
+<div class="p-md border border-outline-variant rounded-xl bg-surface-container-low/50 backdrop-blur-sm">
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest mb-4">On this page</p>
+<nav class="space-y-3">
+<a class="block font-body-sm text-primary font-bold" href="#">Introduction</a>
+<a class="block font-body-sm text-secondary hover:text-primary transition-colors" href="#">Service Boundaries</a>
+<a class="block font-body-sm text-secondary hover:text-primary transition-colors" href="#">Kafka Implementation</a>
+<a class="block font-body-sm text-secondary hover:text-primary transition-colors" href="#">Service Mesh Mesh</a>
+<a class="block font-body-sm text-secondary hover:text-primary transition-colors" href="#">Final Conclusion</a>
+</nav>
+<div class="mt-6 pt-4 border-t border-outline-variant">
+<button class="w-full flex items-center justify-between text-secondary hover:text-primary transition-colors">
+<span class="font-body-sm">Jump to comments</span>
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+</button>
+</div>
+</div>
+</aside>
+</section>
+</div>
+</main>
+<!-- Tooltip/Hover Effect Overlay -->
+<div class="absolute pointer-events-none opacity-0 bg-inverse-surface text-inverse-on-surface px-2 py-1 rounded text-[10px] font-label-caps z-[100] transition-opacity duration-200" id="tooltip"></div>
+</div>
+<script>
+        // Simple micro-interaction for nav items
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // If it's not a real link, prevent default
+                if (link.getAttribute('href') === '#') e.preventDefault();
+                
+                // Visual feedback
+                link.classList.add('scale-95');
+                setTimeout(() => link.classList.remove('scale-95'), 100);
+            });
+        });
+
+        // Copy button interaction
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('Copy')) {
+                btn.addEventListener('click', () => {
+                    const originalContent = btn.innerHTML;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-sm">check</span> Copied!';
+                    btn.classList.add('text-green-400');
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.remove('text-green-400');
+                    }, 2000);
+                });
+            }
+        });
+
+        // Basic Tooltip implementation
+        const tooltip = document.getElementById('tooltip');
+        document.querySelectorAll('[title]').forEach(el => {
+            el.addEventListener('mouseenter', (e) => {
+                tooltip.innerText = el.getAttribute('title');
+                tooltip.style.opacity = '1';
+                tooltip.style.left = `${e.pageX + 10}px`;
+                tooltip.style.top = `${e.pageY + 10}px`;
+            });
+            el.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+        });
+    </script>
+</body></html>

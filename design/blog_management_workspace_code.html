@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevPortal - Article Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#e2dfde",
+                        "secondary-fixed": "#e5e2e1",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#ffffff",
+                        "primary": "#0058bc",
+                        "surface-container-highest": "#e2e2e4",
+                        "inverse-on-surface": "#f0f0f2",
+                        "secondary": "#5f5e5e",
+                        "background": "#f9f9fb",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "tertiary": "#9e3d00",
+                        "on-surface-variant": "#414755",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#636262",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary-container": "#fefcff",
+                        "inverse-primary": "#adc6ff",
+                        "surface-tint": "#005bc1",
+                        "surface-container": "#eeeef0",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-bright": "#f9f9fb",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#2f3132",
+                        "on-surface": "#1a1c1d",
+                        "on-background": "#1a1c1d",
+                        "surface-container-low": "#f3f3f5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e2e2e4",
+                        "outline": "#717786",
+                        "tertiary-container": "#c64f00",
+                        "surface": "#f9f9fb",
+                        "primary-container": "#0070eb",
+                        "on-tertiary-container": "#fffbff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-dim": "#d9dadc",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary-fixed": "#ffdbcc",
+                        "outline-variant": "#c1c6d7",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-high": "#e8e8ea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "sidebar-width": "260px",
+                        "container-max": "1200px",
+                        "xl": "40px",
+                        "sm": "8px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Geist"],
+                        "h1": ["Geist"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "h2": ["Geist"],
+                        "display": ["Geist"],
+                        "code": ["JetBrains Mono"],
+                        "body-sm": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        /* Custom ghost border for the IDE look */
+        .ghost-border { border: 1px solid rgba(0, 0, 0, 0.08); }
+        .editor-container { scrollbar-width: thin; scrollbar-color: #e2e2e4 transparent; }
+        .active-row { background-color: #f3f3f5; border-left: 2px solid #0058bc; }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar (The Anchor) -->
+<nav class="fixed left-0 top-0 h-full flex flex-col py-md w-sidebar-width bg-surface-container border-r border-outline-variant z-50">
+<div class="px-md mb-xl">
+<h1 class="font-h2 text-h2 font-bold text-on-surface">DevPortal</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Blog Engine v2.0</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-sm px-md py-sm transition-colors duration-150 ease-in-out text-on-surface-variant hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm transition-colors duration-150 ease-in-out bg-secondary-container text-on-secondary-container border-l-2 border-primary" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Articles</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm transition-colors duration-150 ease-in-out text-on-surface-variant hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-body-sm text-body-sm">Assets</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm transition-colors duration-150 ease-in-out text-on-surface-variant hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm transition-colors duration-150 ease-in-out text-on-surface-variant hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+<div class="px-md mt-auto pt-md">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-sm rounded-lg font-body-sm font-semibold transition-all hover:opacity-90">
+<span class="material-symbols-outlined">add</span>
+                New Post
+            </button>
+<div class="mt-md border-t border-outline-variant pt-md">
+<a class="flex items-center gap-sm py-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-sm text-body-sm">Logout</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Stage -->
+<main class="ml-sidebar-width min-h-screen flex flex-col relative">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-lg bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-lg flex-1">
+<div class="flex items-center gap-sm">
+<h2 class="font-h2 text-h2 font-black text-primary">Article Manager</h2>
+</div>
+<div class="relative w-96 max-w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-md py-xs bg-surface-container-low border border-outline-variant rounded-full font-body-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search articles..." type="text"/>
+</div>
+</div>
+<nav class="hidden lg:flex items-center gap-lg px-lg h-full">
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary font-bold h-full flex items-center px-xs" href="#">Drafts</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all h-full flex items-center px-xs" href="#">Published</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all h-full flex items-center px-xs" href="#">Scheduled</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all h-full flex items-center px-xs" href="#">Archived</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">visibility</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">share</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution headshot of a software developer with short hair, wearing a navy blue tech quarter-zip, smiling warmly in a bright, modern office with soft daylight. The background is slightly blurred showing glass partitions and minimalist tech aesthetic. The lighting is crisp and natural, highlighting professional confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE2yZS3HkGdE2MFOVEqxPW7KjUDD3ZfpeZ4hqtLwEIm5HJogQfrXsUsCezJIZD_v46Qr1J4JeBsmyqvlU5u1cFrYGuNhJ2Bg5V0F0kd76oIVydUvuAHRBxVcQLa06_FWBF8gnZv2bY1LVARRRq-qW2t-tzi2WMIDdK3YnwjjywxwxpvhPhpJFSfuSKIwQeZGPMp23Ki0l3sVsbLjprMbWx4vfMXHVnkhB0Y2JvHdwgx9l-VWr_Gqfq"/>
+</div>
+</div>
+</header>
+<!-- Content Area: Article Management View & Side-Panel -->
+<div class="flex-1 flex overflow-hidden">
+<!-- List View (Left Column) -->
+<div class="flex-1 p-lg overflow-y-auto bg-background transition-all duration-300" id="list-view">
+<div class="max-w-container-max mx-auto">
+<!-- Filters & Stats Row -->
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h3 class="font-h1 text-h1 text-on-surface">All Drafts</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your 12 ongoing writing projects.</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg flex items-center gap-xs font-body-sm hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
+                            </button>
+<button class="bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg flex items-center gap-xs font-body-sm hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">sort</span> Sort
+                            </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase">Title</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase">Status</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase">Category</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase">Tags</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase">Modified</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant uppercase"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1: Active -->
+<tr class="active-row group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="toggleEditor(true)">
+<td class="px-md py-md">
+<div class="flex flex-col">
+<span class="font-body-md font-bold text-on-surface">Architecting Distributed Systems with Rust</span>
+<span class="font-body-sm text-on-surface-variant truncate max-w-xs">Exploring the ownership model in heavy I/O applications...</span>
+</div>
+</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px] font-bold uppercase">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Draft
+                                        </span>
+</td>
+<td class="px-md py-md font-body-sm">Architecture</td>
+<td class="px-md py-md">
+<div class="flex gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded border border-outline-variant text-[11px] font-medium">Rust</span>
+<span class="px-1.5 py-0.5 rounded border border-outline-variant text-[11px] font-medium">Cloud</span>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">2 hours ago</td>
+<td class="px-md py-md text-right">
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">more_vert</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md">
+<div class="flex flex-col">
+<span class="font-body-md font-bold text-on-surface">The State of AI in Frontend Frameworks</span>
+<span class="font-body-sm text-on-surface-variant truncate max-w-xs">How LLMs are reshaping component development pipelines...</span>
+</div>
+</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold uppercase">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Scheduled
+                                        </span>
+</td>
+<td class="px-md py-md font-body-sm">Frontend</td>
+<td class="px-md py-md">
+<div class="flex gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded border border-outline-variant text-[11px] font-medium">AI</span>
+<span class="px-1.5 py-0.5 rounded border border-outline-variant text-[11px] font-medium">React</span>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">1 day ago</td>
+<td class="px-md py-md text-right">
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">more_vert</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md">
+<div class="flex flex-col">
+<span class="font-body-md font-bold text-on-surface">Post-Kubernetes: What Comes Next?</span>
+<span class="font-body-sm text-on-surface-variant truncate max-w-xs">A look at serverless abstractions and edge computing...</span>
+</div>
+</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px] font-bold uppercase">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Draft
+                                        </span>
+</td>
+<td class="px-md py-md font-body-sm">Cloud Native</td>
+<td class="px-md py-md">
+<div class="flex gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded border border-outline-variant text-[11px] font-medium">DevOps</span>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">3 days ago</td>
+<td class="px-md py-md text-right">
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Side-Panel Editor -->
+<aside class="w-[600px] border-l border-outline-variant bg-surface-container-lowest flex flex-col hidden overflow-hidden" id="editor-panel">
+<!-- Panel Header -->
+<div class="px-lg h-16 flex items-center justify-between border-b border-outline-variant bg-surface">
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" onclick="toggleEditor(false)">close</button>
+<h4 class="font-body-md font-bold">Edit Article</h4>
+</div>
+<div class="flex items-center gap-sm">
+<button class="bg-surface-container border border-outline-variant px-md py-1.5 rounded-lg font-body-sm font-semibold hover:bg-surface-container-high transition-colors">Preview</button>
+<button class="bg-primary text-on-primary px-md py-1.5 rounded-lg font-body-sm font-semibold hover:opacity-90 transition-opacity">Publish</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto editor-container p-lg space-y-lg">
+<!-- Slug & Header -->
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Permalinks</label>
+<div class="flex items-center gap-xs px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg">
+<span class="font-body-sm text-on-surface-variant">devportal.io/blog/</span>
+<input class="flex-1 bg-transparent border-none focus:ring-0 font-body-sm p-0" type="text" value="distributed-systems-rust"/>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">edit</span>
+</div>
+</div>
+<!-- The Editor Content -->
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Post Content</label>
+<div class="ghost-border rounded-xl p-lg min-h-[400px] bg-white">
+<h2 class="font-h1 text-h1 mb-md">Architecting Distributed Systems with Rust</h2>
+<p class="font-body-lg text-body-lg mb-lg">When we talk about distributed systems, performance is often the secondary concern after consistency. However, Rust's borrow checker provides a unique advantage...</p>
+<!-- Syntax Highlighted Code Block -->
+<div class="bg-[#1A1A1A] text-white p-lg rounded-lg font-code text-code mb-lg border border-black shadow-lg">
+<div class="flex justify-between items-center mb-md border-b border-white/10 pb-sm">
+<span class="text-white/40">main.rs</span>
+<span class="material-symbols-outlined text-[16px] text-white/40">content_copy</span>
+</div>
+<pre><code><span class="text-primary-fixed">use</span> tokio::net::TcpListener;
+<span class="text-primary-fixed">use</span> tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+<span class="text-secondary-fixed-dim">#[tokio::main]</span>
+<span class="text-primary-fixed">async fn</span> <span class="text-tertiary-fixed-dim">main</span>() -> Result<(), Box<<span class="text-primary-fixed">dyn</span> std::error::Error>> {
+    <span class="text-primary-fixed">let</span> listener = TcpListener::<span class="text-tertiary-fixed-dim">bind</span>(<span class="text-on-secondary-fixed">"127.0.0.1:8080"</span>).<span class="text-primary-fixed">await</span>?;
+
+    <span class="text-primary-fixed">loop</span> {
+        <span class="text-primary-fixed">let</span> (mut socket, _) = listener.<span class="text-tertiary-fixed-dim">accept</span>().<span class="text-primary-fixed">await</span>?;
+        <span class="text-secondary-fixed-dim">// Concurrent task processing...</span>
+    }
+}</code></pre>
+</div>
+<p class="font-body-md text-body-md">The <code>tokio</code> runtime allows for lightweight green threads that can handle millions of concurrent connections without the memory overhead of OS threads.</p>
+</div>
+</div>
+<!-- SEO Metadata -->
+<details class="group bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden" open="">
+<summary class="flex justify-between items-center px-md py-md cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">search</span>
+<span class="font-body-sm font-bold">SEO Metadata</span>
+</div>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-md space-y-md border-t border-outline-variant">
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Meta Description</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-sm font-body-sm focus:ring-2 focus:ring-primary/20 outline-none" rows="3">An in-depth look at building high-performance distributed systems using Rust and the Tokio runtime, focusing on safety and memory management.</textarea>
+</div>
+</div>
+</details>
+<!-- Media Assets -->
+<details class="group bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden">
+<summary class="flex justify-between items-center px-md py-md cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">image</span>
+<span class="font-body-sm font-bold">Media Assets</span>
+</div>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-md border-t border-outline-variant">
+<div class="grid grid-cols-2 gap-sm">
+<div class="aspect-video bg-surface-container-lowest rounded-lg border border-dashed border-outline flex flex-col items-center justify-center cursor-pointer hover:border-primary group/upload">
+<span class="material-symbols-outlined text-on-surface-variant group-hover/upload:text-primary">upload</span>
+<span class="text-[11px] font-label-caps mt-xs">Upload Image</span>
+</div>
+<div class="aspect-video bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden relative group/thumb">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 3D rendering of abstract networking nodes interconnected with thin blue glowing lines on a white architectural background. The scene is bright and clinical, using a high-key light mode aesthetic with soft shadows. It represents high-speed data transfer and distributed architecture with professional engineering precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw9B9JEYUi41m_DxaVLoZ0Q4qWr6ONh8WyagFx8HQk5z6zxOxN3A0cauO5-29Pkszybokdz7rnj_QeqnefFyMCgG5LdEEUo51y9s9Z1K9ARkQJb8l1nMkfG9kuy1NHe-CHbgIpWiepOkFCNgKJKK6XZKI2BkXaB8vMlpgUmuNpCyxVM5VbgJEzwQv0-q8d2iZuf502oWMbY1mTA1RoaerP_xmiYgrZMQZGGCMMzOOn-_oo56pN-eGS"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity">
+<button class="material-symbols-outlined text-white">delete</button>
+</div>
+</div>
+</div>
+</div>
+</details>
+</div>
+</aside>
+</div>
+</main>
+<script>
+        function toggleEditor(show) {
+            const panel = document.getElementById('editor-panel');
+            const listView = document.getElementById('list-view');
+            
+            if (show) {
+                panel.classList.remove('hidden');
+                panel.classList.add('animate-slide-in');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        // Simple row highlight management
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('active-row'));
+                row.classList.add('active-row');
+            });
+        });
+    </script>
+<style>
+        @keyframes slide-in {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .animate-slide-in {
+            animation: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</body></html>
