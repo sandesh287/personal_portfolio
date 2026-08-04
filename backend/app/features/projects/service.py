@@ -1,0 +1,181 @@
+from uuid import UUID
+
+from app.core.exceptions import ApiError
+from app.features.projects.repository import ProjectRepository
+from app.features.projects.schemas import (
+    ProjectCreateRequest,
+    ProjectFilters,
+    ProjectImagePayload,
+    ProjectPayload,
+    ProjectUpdateRequest,
+)
+from app.models.media_asset import MediaAsset
+from app.models.project import Project, ProjectImage
+from app.schemas.base import PaginatedPayload
+from app.services.base import BaseService
+from app.storage.service import MediaStorageService
+from app.utils.pagination import PaginationParams
+
+
+class ProjectService(BaseService):
+    def __init__(self, project_repository: ProjectRepository) -> None:
+        self.project_repository = project_repository
+
+    def list_projects(self, filters: ProjectFilters) -> PaginatedPayload[ProjectPayload]:
+        projects, total_items = self.project_repository.list_filtered(filters)
+        pagination = PaginationParams(page=filters.page, page_size=filters.page_size)
+        return PaginatedPayload(
+            items=[ProjectPayload.model_validate(project) for project in projects],
+            meta=pagination.build_meta(total_items),
+        )
+
+    def list_featured_projects(self, limit: int) -> list[ProjectPayload]:
+        projects = self.project_repository.get_featured(limit)
+        return [ProjectPayload.model_validate(project) for project in projects]
+
+    def get_project_details(self, slug: str) -> ProjectPayload:
+        project = self.project_repository.get_by_slug(slug)
+
+        if project is None or project.status != "published":
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        return ProjectPayload.model_validate(project)
+
+    def create_project(self, payload: ProjectCreateRequest) -> ProjectPayload:
+        if self.project_repository.slug_exists(payload.slug):
+            raise ApiError(
+                status_code=409,
+                message="Project slug already exists.",
+                code="duplicate_slug",
+            )
+
+        technologies = self._resolve_technologies(payload.technology_ids)
+        self._validate_category(payload.category_id)
+        project = Project(
+            title=payload.title,
+            slug=payload.slug,
+            summary=payload.summary,
+            description=payload.description,
+            category_id=payload.category_id,
+            cover_image_id=payload.cover_image_id,
+            repository_url=str(payload.repository_url) if payload.repository_url else None,
+            live_url=str(payload.live_url) if payload.live_url else None,
+            case_study_url=str(payload.case_study_url) if payload.case_study_url else None,
+            status=payload.status,
+            featured=payload.featured,
+            sort_order=payload.sort_order,
+        )
+        project.technologies = list(technologies)
+        self.project_repository.add(project)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(project)
+        return ProjectPayload.model_validate(self.project_repository.get_project_by_id(project.id))
+
+    def update_project(self, project_id: UUID, payload: ProjectUpdateRequest) -> ProjectPayload:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        update_data = payload.model_dump(exclude_unset=True)
+
+        if payload.slug and self.project_repository.slug_exists(
+            payload.slug,
+            exclude_project_id=project_id,
+        ):
+            raise ApiError(
+                status_code=409,
+                message="Project slug already exists.",
+                code="duplicate_slug",
+            )
+
+        if "category_id" in update_data:
+            self._validate_category(payload.category_id)
+
+        if payload.technology_ids is not None:
+            project.technologies = list(self._resolve_technologies(payload.technology_ids))
+            update_data.pop("technology_ids", None)
+
+        for key, value in update_data.items():
+            if key.endswith("_url") and value is not None:
+                value = str(value)
+            setattr(project, key, value)
+
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(project)
+        return ProjectPayload.model_validate(self.project_repository.get_project_by_id(project.id))
+
+    def delete_project(self, project_id: UUID) -> dict[str, bool]:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        self.project_repository.delete(project)
+        self.project_repository.db.commit()
+        return {"deleted": True}
+
+    async def upload_project_image(
+        self,
+        project_id: UUID,
+        filename: str,
+        content_type: str,
+        content: bytes,
+        media_storage_service: MediaStorageService,
+        caption: str | None = None,
+        sort_order: int = 0,
+    ) -> ProjectImagePayload:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        stored_file = (
+            await media_storage_service.save_upload(filename, content_type, content)
+        ).payload
+        media_asset = MediaAsset(
+            filename=stored_file.filename,
+            storage_path=stored_file.path,
+            public_url=stored_file.path,
+            content_type=stored_file.content_type,
+            size_bytes=stored_file.size,
+        )
+        project_image = ProjectImage(
+            project_id=project.id,
+            media_asset=media_asset,
+            caption=caption,
+            sort_order=sort_order,
+        )
+        self.project_repository.db.add(project_image)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(project_image)
+        return ProjectImagePayload(
+            id=project_image.id,
+            media_asset_id=media_asset.id,
+            url=media_asset.public_url,
+            caption=project_image.caption,
+            sort_order=project_image.sort_order,
+        )
+
+    def _validate_category(self, category_id: UUID | None) -> None:
+        if category_id is None:
+            return
+
+        if self.project_repository.get_category(category_id) is None:
+            raise ApiError(
+                status_code=422,
+                message="Project category does not exist.",
+                code="invalid_category",
+            )
+
+    def _resolve_technologies(self, technology_ids: list[UUID]):
+        technologies = self.project_repository.list_technologies_by_ids(technology_ids)
+
+        if len(technologies) != len(technology_ids):
+            raise ApiError(
+                status_code=422,
+                message="One or more technologies do not exist.",
+                code="invalid_technologies",
+            )
+
+        return technologies
