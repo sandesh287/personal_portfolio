@@ -1,0 +1,81 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { projectsApi } from "./api";
+import { projectQueryKeys } from "./queryKeys";
+import type {
+  FeaturedProjectsParams,
+  ProjectCreatePayload,
+  ProjectImageUploadPayload,
+  ProjectListParams,
+  ProjectUpdatePayload,
+} from "./types";
+
+export function useProjects(params?: ProjectListParams) {
+  return useQuery({
+    queryKey: projectQueryKeys.list(params),
+    queryFn: () => projectsApi.list(params),
+  });
+}
+
+export function useFeaturedProjects(params?: FeaturedProjectsParams) {
+  return useQuery({
+    queryKey: projectQueryKeys.featured(params),
+    queryFn: () => projectsApi.featured(params),
+  });
+}
+
+export function useProjectDetails(slug: string | undefined) {
+  return useQuery({
+    queryKey: projectQueryKeys.detail(slug ?? ""),
+    queryFn: () => projectsApi.details(slug ?? ""),
+    enabled: Boolean(slug),
+  });
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectCreatePayload) => projectsApi.create(payload),
+    onSuccess: async (project) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.featured() });
+      queryClient.setQueryData(projectQueryKeys.detail(project.slug), project);
+    },
+  });
+}
+
+export function useUpdateProject(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectUpdatePayload) => projectsApi.update(projectId, payload),
+    onSuccess: async (project) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.featured() });
+      queryClient.setQueryData(projectQueryKeys.detail(project.slug), project);
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (projectId: string) => projectsApi.remove(projectId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+    },
+  });
+}
+
+export function useUploadProjectImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectImageUploadPayload) => projectsApi.uploadImage(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+    },
+  });
+}

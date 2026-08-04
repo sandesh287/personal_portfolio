@@ -1,5 +1,6 @@
 import { httpClient } from "@/services/httpClient";
 import type { ApiResponse } from "@/types/api";
+import type { AxiosRequestConfig } from "axios";
 
 export const api = {
   get: httpClient.get,
@@ -9,7 +10,10 @@ export const api = {
   delete: httpClient.delete,
 };
 
-export async function getApiData<TData>(url: string): Promise<TData> {
-  const response = await httpClient.get<ApiResponse<TData>>(url);
+export async function getApiData<TData>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<TData> {
+  const response = await httpClient.get<ApiResponse<TData>>(url, config);
   return response.data.data;
 }
