@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
+import { WorkspaceLayout } from "@/layouts/WorkspaceLayout";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
@@ -10,16 +12,21 @@ export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-      { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
-      { path: "/projects", element: <PlaceholderPage title="Projects Explorer" /> },
-      { path: "/projects/:slug", element: <PlaceholderPage title="Project Details" /> },
-      { path: "/blog", element: <PlaceholderPage title="Engineering Notes" /> },
-      { path: "/blog/:slug", element: <PlaceholderPage title="Engineering Note" /> },
-      { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
-      { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
-      { path: "/skills", element: <PlaceholderPage title="Skills Graph" /> },
-      { path: "/experience", element: <PlaceholderPage title="Developer Profile" /> },
-      { path: "/contact", element: <PlaceholderPage title="Communication Terminal" /> },
+      {
+        element: <WorkspaceLayout />,
+        children: [
+          { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
+          { path: "/projects", element: <PlaceholderPage title="Projects Explorer" /> },
+          { path: "/projects/:slug", element: <PlaceholderPage title="Project Details" /> },
+          { path: "/blog", element: <PlaceholderPage title="Engineering Notes" /> },
+          { path: "/blog/:slug", element: <PlaceholderPage title="Engineering Note" /> },
+          { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
+          { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
+          { path: "/skills", element: <PlaceholderPage title="Skills Graph" /> },
+          { path: "/experience", element: <PlaceholderPage title="Developer Profile" /> },
+          { path: "/contact", element: <PlaceholderPage title="Communication Terminal" /> },
+        ],
+      },
     ],
   },
   {
@@ -46,5 +53,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: "*", element: <PlaceholderPage title="Not Found" /> },
+  { path: "*", element: <NotFoundPage /> },
 ]);
