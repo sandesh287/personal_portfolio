@@ -85,6 +85,10 @@ export interface FeaturedProjectsParams {
   limit?: number;
 }
 
+export interface TechnologyListParams {
+  category?: string;
+}
+
 export interface ProjectMutationPayload {
   title: string;
   slug: string;

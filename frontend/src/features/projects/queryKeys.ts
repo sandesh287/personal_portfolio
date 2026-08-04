@@ -1,4 +1,4 @@
-import type { FeaturedProjectsParams, ProjectListParams } from "./types";
+import type { FeaturedProjectsParams, ProjectListParams, TechnologyListParams } from "./types";
 
 export const projectQueryKeys = {
   all: ["projects"] as const,
@@ -6,6 +6,9 @@ export const projectQueryKeys = {
   list: (params?: ProjectListParams) => [...projectQueryKeys.lists(), params ?? {}] as const,
   featured: (params?: FeaturedProjectsParams) =>
     [...projectQueryKeys.all, "featured", params ?? {}] as const,
+  categories: () => [...projectQueryKeys.all, "categories"] as const,
+  technologies: (params?: TechnologyListParams) =>
+    [...projectQueryKeys.all, "technologies", params ?? {}] as const,
   details: () => [...projectQueryKeys.all, "detail"] as const,
   detail: (slug: string) => [...projectQueryKeys.details(), slug] as const,
 };

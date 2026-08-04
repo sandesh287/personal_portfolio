@@ -6,8 +6,8 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { routes } from "@/constants/routes";
-import { useProjects } from "@/features/projects";
-import type { Project, Technology } from "@/features/projects";
+import { useProjectCategories, useProjects, useTechnologies } from "@/features/projects";
+import type { Project, ProjectCategory, Technology } from "@/features/projects";
 import { cn } from "@/utils/cn";
 import { getErrorMessage } from "@/utils/errors";
 
@@ -15,6 +15,7 @@ const PAGE_SIZE = 8;
 
 export function ProjectsPage() {
   const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState<string | undefined>();
   const [technologyId, setTechnologyId] = useState<string | undefined>();
   const [page, setPage] = useState(1);
 
@@ -22,18 +23,25 @@ export function ProjectsPage() {
     page,
     pageSize: PAGE_SIZE,
     search: search.trim() || undefined,
+    categoryId,
     technologyId,
     sort: "sortOrder" as const,
     order: "asc" as const,
   };
 
   const { data, error, isError, isFetching, isLoading } = useProjects(queryParams);
+  const { data: categories = [], isLoading: areCategoriesLoading } = useProjectCategories();
+  const { data: technologies = [], isLoading: areTechnologiesLoading } = useTechnologies();
   const projects = useMemo(() => data?.items ?? [], [data?.items]);
   const meta = data?.meta;
-  const technologies = useMemo(() => collectTechnologies(projects), [projects]);
 
   function handleSearchChange(value: string) {
     setSearch(value);
+    setPage(1);
+  }
+
+  function handleCategoryChange(nextCategoryId: string | undefined) {
+    setCategoryId(nextCategoryId);
     setPage(1);
   }
 
@@ -62,7 +70,7 @@ export function ProjectsPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border p-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col gap-3 border-t border-border p-4">
           <label className="relative min-w-0 flex-1">
             <span className="sr-only">Search projects</span>
             <Search
@@ -81,21 +89,25 @@ export function ProjectsPage() {
             />
           </label>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <FilterChip
-              label="All"
-              isActive={!technologyId}
-              onClick={() => handleTechnologyChange(undefined)}
-            />
-            {technologies.slice(0, 6).map((technology) => (
-              <FilterChip
-                key={technology.id}
-                label={technology.name}
-                isActive={technologyId === technology.id}
-                onClick={() => handleTechnologyChange(technology.id)}
-              />
-            ))}
-          </div>
+          <FilterGroup
+            label="Category"
+            allLabel="All categories"
+            items={categories}
+            activeId={categoryId}
+            isLoading={areCategoriesLoading}
+            getItemLabel={(category) => category.name}
+            onChange={handleCategoryChange}
+          />
+
+          <FilterGroup
+            label="Technology"
+            allLabel="All tech"
+            items={technologies}
+            activeId={technologyId}
+            isLoading={areTechnologiesLoading}
+            getItemLabel={(technology) => technology.name}
+            onChange={handleTechnologyChange}
+          />
         </div>
       </header>
 
@@ -292,6 +304,47 @@ function FilterChip({
   );
 }
 
+function FilterGroup<TItem extends ProjectCategory | Technology>({
+  label,
+  allLabel,
+  items,
+  activeId,
+  isLoading,
+  getItemLabel,
+  onChange,
+}: {
+  label: string;
+  allLabel: string;
+  items: TItem[];
+  activeId: string | undefined;
+  isLoading: boolean;
+  getItemLabel: (item: TItem) => string;
+  onChange: (id: string | undefined) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-20 text-xs font-medium uppercase text-muted-foreground">{label}</span>
+      <FilterChip label={allLabel} isActive={!activeId} onClick={() => onChange(undefined)} />
+      {isLoading ? (
+        <>
+          <Skeleton className="h-8 w-20 rounded-full" />
+          <Skeleton className="h-8 w-24 rounded-full" />
+          <Skeleton className="h-8 w-16 rounded-full" />
+        </>
+      ) : (
+        items.map((item) => (
+          <FilterChip
+            key={item.id}
+            label={getItemLabel(item)}
+            isActive={activeId === item.id}
+            onClick={() => onChange(item.id)}
+          />
+        ))
+      )}
+    </div>
+  );
+}
+
 function ProjectStatusBadge({ status }: { status: Project["status"] }) {
   const isPublished = status === "published";
 
@@ -311,16 +364,4 @@ function ProjectStatusBadge({ status }: { status: Project["status"] }) {
       {status}
     </span>
   );
-}
-
-function collectTechnologies(projects: Project[]) {
-  const technologyMap = new Map<string, Technology>();
-
-  for (const project of projects) {
-    for (const technology of project.technologies) {
-      technologyMap.set(technology.id, technology);
-    }
-  }
-
-  return Array.from(technologyMap.values()).sort((left, right) => left.sortOrder - right.sortOrder);
 }

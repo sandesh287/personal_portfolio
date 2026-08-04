@@ -290,32 +290,47 @@ Paginated data:
 
 - Model fields: `id`, `name`, `slug`, `description`, `sortOrder`, `createdAt`, `updatedAt`
 
+### List Project Categories
+
+- Method: `GET`
+- URL: `/api/v1/projects/categories`
+- Authorization: public
+- Query: none
+- Response `200`: `ProjectCategory[]`
+- Errors: `429`
+
+Future admin CRUD endpoints:
+
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/project-categories` | public | List categories |
-| `GET` | `/api/v1/project-categories/{slug}` | public | Category details |
 | `POST` | `/api/v1/project-categories` | admin | Create category |
 | `PATCH` | `/api/v1/project-categories/{id}` | admin | Update category |
 | `DELETE` | `/api/v1/project-categories/{id}` | admin | Delete category |
 
-- List query: `page`, `pageSize`, `search`, `sort`, `order`
 - Create/update body: `name`, `slug`, `description`, `sortOrder`
-- Responses: single category or paginated categories
 - Errors: `401`, `403`, `404`, `409`, `422`
 
 ## Technologies
 
 - Model fields: `id`, `name`, `slug`, `category`, `icon`, `color`, `sortOrder`
 
+### List Technologies
+
+- Method: `GET`
+- URL: `/api/v1/projects/technologies`
+- Authorization: public
+- Query: `category`
+- Response `200`: `Technology[]`
+- Errors: `422`, `429`
+
+Future admin CRUD endpoints:
+
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/technologies` | public | List technologies |
-| `GET` | `/api/v1/technologies/{slug}` | public | Technology details |
 | `POST` | `/api/v1/technologies` | admin | Create technology |
 | `PATCH` | `/api/v1/technologies/{id}` | admin | Update technology |
 | `DELETE` | `/api/v1/technologies/{id}` | admin | Delete technology |
 
-- List query: `page`, `pageSize`, `search`, `category`, `sort`, `order`
 - Create/update body: `name`, `slug`, `category`, `icon`, `color`, `sortOrder`
 - Errors: `401`, `403`, `404`, `409`, `422`
 

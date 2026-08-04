@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from app.auth.security import create_access_token
 from app.models.media_asset import MediaAsset
 from app.models.project import Project, ProjectCategory, ProjectImage, Technology
@@ -154,6 +156,53 @@ def test_featured_projects_endpoint(client: TestClient, db_session: Session) -> 
     items = response.json()["data"]
     assert len(items) == 1
     assert items[0]["slug"] == "featured-project"
+
+
+def test_project_categories_endpoint_returns_ordered_active_categories(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    db_session.add_all(
+        [
+            ProjectCategory(name="Data Science", slug="data-science", sort_order=2),
+            ProjectCategory(name="React", slug="react", sort_order=1),
+            ProjectCategory(
+                name="Archived",
+                slug="archived",
+                sort_order=3,
+                deleted_at=datetime(2026, 1, 1, tzinfo=UTC),
+            ),
+        ]
+    )
+    db_session.commit()
+
+    response = client.get("/api/v1/projects/categories")
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert [category["slug"] for category in payload] == ["react", "data-science"]
+    assert payload[0]["sortOrder"] == 1
+
+
+def test_technologies_endpoint_supports_category_filter(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    db_session.add_all(
+        [
+            Technology(name="React", slug="react", category="frontend", sort_order=2),
+            Technology(name="TypeScript", slug="typescript", category="frontend", sort_order=1),
+            Technology(name="Python", slug="python", category="data-science", sort_order=3),
+        ]
+    )
+    db_session.commit()
+
+    response = client.get("/api/v1/projects/technologies", params={"category": "frontend"})
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert [technology["slug"] for technology in payload] == ["typescript", "react"]
+    assert {technology["category"] for technology in payload} == {"frontend"}
 
 
 def test_project_details_only_returns_published_projects(

@@ -3,8 +3,10 @@ export {
   useCreateProject,
   useDeleteProject,
   useFeaturedProjects,
+  useProjectCategories,
   useProjectDetails,
   useProjects,
+  useTechnologies,
   useUpdateProject,
   useUploadProjectImage,
 } from "./hooks";
@@ -25,4 +27,5 @@ export type {
   ProjectVideo,
   SortDirection,
   Technology,
+  TechnologyListParams,
 } from "./types";

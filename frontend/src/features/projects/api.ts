@@ -10,7 +10,10 @@ import type {
   ProjectImageUploadPayload,
   ProjectListParams,
   ProjectListResponse,
+  ProjectCategory,
   ProjectUpdatePayload,
+  Technology,
+  TechnologyListParams,
 } from "./types";
 
 const PROJECTS_ENDPOINT = "/projects";
@@ -34,6 +37,16 @@ export const projectsApi = {
 
   featured(params?: FeaturedProjectsParams) {
     return getApiData<Project[]>(`${PROJECTS_ENDPOINT}/featured`, {
+      params: compactParams(params),
+    });
+  },
+
+  categories() {
+    return getApiData<ProjectCategory[]>(`${PROJECTS_ENDPOINT}/categories`);
+  },
+
+  technologies(params?: TechnologyListParams) {
+    return getApiData<Technology[]>(`${PROJECTS_ENDPOINT}/technologies`, {
       params: compactParams(params),
     });
   },

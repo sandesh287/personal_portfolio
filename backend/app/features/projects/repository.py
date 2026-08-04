@@ -33,12 +33,31 @@ class ProjectRepository(BaseRepository[Project]):
         )
         return self.db.scalars(statement).unique().all()
 
+    def list_categories(self) -> Sequence[ProjectCategory]:
+        statement = (
+            select(ProjectCategory)
+            .where(ProjectCategory.deleted_at.is_(None))
+            .order_by(ProjectCategory.sort_order.asc(), ProjectCategory.name.asc())
+        )
+        return self.db.scalars(statement).all()
+
+    def list_technologies(self, category: str | None = None) -> Sequence[Technology]:
+        statement = select(Technology).where(Technology.deleted_at.is_(None))
+
+        if category:
+            statement = statement.where(Technology.category == category)
+
+        statement = statement.order_by(Technology.sort_order.asc(), Technology.name.asc())
+        return self.db.scalars(statement).all()
+
     def list_filtered(self, filters: ProjectFilters) -> tuple[Sequence[Project], int]:
         statement = self._apply_filters(self.base_query(), filters)
         total_items = self._count(statement)
-        statement = self._with_relationships(self._apply_sort(statement, filters)).offset(
-            (filters.page - 1) * filters.page_size
-        ).limit(filters.page_size)
+        statement = (
+            self._with_relationships(self._apply_sort(statement, filters))
+            .offset((filters.page - 1) * filters.page_size)
+            .limit(filters.page_size)
+        )
         return self.db.scalars(statement).unique().all(), total_items
 
     def slug_exists(self, slug: str, *, exclude_project_id: UUID | None = None) -> bool:

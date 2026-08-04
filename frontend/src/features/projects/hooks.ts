@@ -8,6 +8,7 @@ import type {
   ProjectImageUploadPayload,
   ProjectListParams,
   ProjectUpdatePayload,
+  TechnologyListParams,
 } from "./types";
 
 export function useProjects(params?: ProjectListParams) {
@@ -21,6 +22,20 @@ export function useFeaturedProjects(params?: FeaturedProjectsParams) {
   return useQuery({
     queryKey: projectQueryKeys.featured(params),
     queryFn: () => projectsApi.featured(params),
+  });
+}
+
+export function useProjectCategories() {
+  return useQuery({
+    queryKey: projectQueryKeys.categories(),
+    queryFn: () => projectsApi.categories(),
+  });
+}
+
+export function useTechnologies(params?: TechnologyListParams) {
+  return useQuery({
+    queryKey: projectQueryKeys.technologies(params),
+    queryFn: () => projectsApi.technologies(params),
   });
 }
 

@@ -4,6 +4,7 @@ from uuid import UUID
 from app.auth.dependencies import CurrentUser, require_admin
 from app.features.projects.dependencies import get_project_service
 from app.features.projects.schemas import (
+    ProjectCategoryPayload,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
@@ -12,6 +13,7 @@ from app.features.projects.schemas import (
     ProjectStatus,
     ProjectUpdateRequest,
     SortDirection,
+    TechnologyPayload,
 )
 from app.features.projects.service import ProjectService
 from app.schemas.base import ApiResponse, PaginatedPayload
@@ -55,6 +57,21 @@ async def list_featured_projects(
     limit: Annotated[int, Query(ge=1, le=24)] = 6,
 ) -> ApiResponse[list[ProjectPayload]]:
     return ApiResponse(data=project_service.list_featured_projects(limit))
+
+
+@router.get("/categories", response_model=ApiResponse[list[ProjectCategoryPayload]])
+async def list_project_categories(
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[list[ProjectCategoryPayload]]:
+    return ApiResponse(data=project_service.list_project_categories())
+
+
+@router.get("/technologies", response_model=ApiResponse[list[TechnologyPayload]])
+async def list_technologies(
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+    category: str | None = None,
+) -> ApiResponse[list[TechnologyPayload]]:
+    return ApiResponse(data=project_service.list_technologies(category))
 
 
 @router.get("/{slug}", response_model=ApiResponse[ProjectPayload])

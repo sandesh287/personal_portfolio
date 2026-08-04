@@ -3,11 +3,13 @@ from uuid import UUID
 from app.core.exceptions import ApiError
 from app.features.projects.repository import ProjectRepository
 from app.features.projects.schemas import (
+    ProjectCategoryPayload,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
     ProjectPayload,
     ProjectUpdateRequest,
+    TechnologyPayload,
 )
 from app.models.media_asset import MediaAsset
 from app.models.project import Project, ProjectImage
@@ -32,6 +34,14 @@ class ProjectService(BaseService):
     def list_featured_projects(self, limit: int) -> list[ProjectPayload]:
         projects = self.project_repository.get_featured(limit)
         return [ProjectPayload.model_validate(project) for project in projects]
+
+    def list_project_categories(self) -> list[ProjectCategoryPayload]:
+        categories = self.project_repository.list_categories()
+        return [ProjectCategoryPayload.model_validate(category) for category in categories]
+
+    def list_technologies(self, category: str | None = None) -> list[TechnologyPayload]:
+        technologies = self.project_repository.list_technologies(category)
+        return [TechnologyPayload.model_validate(technology) for technology in technologies]
 
     def get_project_details(self, slug: str) -> ProjectPayload:
         project = self.project_repository.get_by_slug(slug)
