@@ -33,6 +33,25 @@ class ProjectCategoryPayload(ApiSchema):
     sort_order: int
 
 
+class ProjectCategoryCreateRequest(ApiSchema):
+    name: str = Field(min_length=2, max_length=120)
+    slug: str = Field(min_length=2, max_length=140, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    description: str | None = None
+    sort_order: int = Field(default=0, ge=0)
+
+
+class ProjectCategoryUpdateRequest(ApiSchema):
+    name: str | None = Field(default=None, min_length=2, max_length=120)
+    slug: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=140,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    )
+    description: str | None = None
+    sort_order: int | None = Field(default=None, ge=0)
+
+
 class TechnologyPayload(ApiSchema):
     id: UUID
     name: str
@@ -41,6 +60,29 @@ class TechnologyPayload(ApiSchema):
     icon: str | None = None
     color: str | None = None
     sort_order: int
+
+
+class TechnologyCreateRequest(ApiSchema):
+    name: str = Field(min_length=2, max_length=120)
+    slug: str = Field(min_length=2, max_length=140, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    category: str = Field(min_length=2, max_length=80)
+    icon: str | None = Field(default=None, max_length=120)
+    color: str | None = Field(default=None, max_length=32)
+    sort_order: int = Field(default=0, ge=0)
+
+
+class TechnologyUpdateRequest(ApiSchema):
+    name: str | None = Field(default=None, min_length=2, max_length=120)
+    slug: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=140,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    )
+    category: str | None = Field(default=None, min_length=2, max_length=80)
+    icon: str | None = Field(default=None, max_length=120)
+    color: str | None = Field(default=None, max_length=32)
+    sort_order: int | None = Field(default=None, ge=0)
 
 
 class ProjectImagePayload(ApiSchema):

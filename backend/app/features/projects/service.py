@@ -3,16 +3,20 @@ from uuid import UUID
 from app.core.exceptions import ApiError
 from app.features.projects.repository import ProjectRepository
 from app.features.projects.schemas import (
+    ProjectCategoryCreateRequest,
     ProjectCategoryPayload,
+    ProjectCategoryUpdateRequest,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
     ProjectPayload,
     ProjectUpdateRequest,
+    TechnologyCreateRequest,
     TechnologyPayload,
+    TechnologyUpdateRequest,
 )
 from app.models.media_asset import MediaAsset
-from app.models.project import Project, ProjectImage
+from app.models.project import Project, ProjectCategory, ProjectImage, Technology
 from app.schemas.base import PaginatedPayload
 from app.services.base import BaseService
 from app.storage.service import MediaStorageService
@@ -39,9 +43,144 @@ class ProjectService(BaseService):
         categories = self.project_repository.list_categories()
         return [ProjectCategoryPayload.model_validate(category) for category in categories]
 
+    def create_project_category(
+        self,
+        payload: ProjectCategoryCreateRequest,
+    ) -> ProjectCategoryPayload:
+        if self.project_repository.category_slug_exists(payload.slug):
+            raise ApiError(
+                status_code=409,
+                message="Project category slug already exists.",
+                code="duplicate_category_slug",
+            )
+
+        category = ProjectCategory(**payload.model_dump())
+        self.project_repository.db.add(category)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(category)
+        return ProjectCategoryPayload.model_validate(category)
+
+    def update_project_category(
+        self,
+        category_id: UUID,
+        payload: ProjectCategoryUpdateRequest,
+    ) -> ProjectCategoryPayload:
+        category = self.project_repository.get_category_by_id(category_id)
+
+        if category is None:
+            raise ApiError(
+                status_code=404,
+                message="Project category not found.",
+                code="project_category_not_found",
+            )
+
+        if payload.slug and self.project_repository.category_slug_exists(
+            payload.slug,
+            exclude_category_id=category_id,
+        ):
+            raise ApiError(
+                status_code=409,
+                message="Project category slug already exists.",
+                code="duplicate_category_slug",
+            )
+
+        for key, value in payload.model_dump(exclude_unset=True).items():
+            setattr(category, key, value)
+
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(category)
+        return ProjectCategoryPayload.model_validate(category)
+
+    def delete_project_category(self, category_id: UUID) -> dict[str, bool]:
+        category = self.project_repository.get_category_by_id(category_id)
+
+        if category is None:
+            raise ApiError(
+                status_code=404,
+                message="Project category not found.",
+                code="project_category_not_found",
+            )
+
+        if self.project_repository.count_projects_for_category(category_id) > 0:
+            raise ApiError(
+                status_code=409,
+                message="Project category is assigned to one or more projects.",
+                code="project_category_in_use",
+            )
+
+        category.mark_deleted()
+        self.project_repository.db.commit()
+        return {"deleted": True}
+
     def list_technologies(self, category: str | None = None) -> list[TechnologyPayload]:
         technologies = self.project_repository.list_technologies(category)
         return [TechnologyPayload.model_validate(technology) for technology in technologies]
+
+    def create_technology(self, payload: TechnologyCreateRequest) -> TechnologyPayload:
+        if self.project_repository.technology_slug_exists(payload.slug):
+            raise ApiError(
+                status_code=409,
+                message="Technology slug already exists.",
+                code="duplicate_technology_slug",
+            )
+
+        technology = Technology(**payload.model_dump())
+        self.project_repository.db.add(technology)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(technology)
+        return TechnologyPayload.model_validate(technology)
+
+    def update_technology(
+        self,
+        technology_id: UUID,
+        payload: TechnologyUpdateRequest,
+    ) -> TechnologyPayload:
+        technology = self.project_repository.get_technology_by_id(technology_id)
+
+        if technology is None:
+            raise ApiError(
+                status_code=404,
+                message="Technology not found.",
+                code="technology_not_found",
+            )
+
+        if payload.slug and self.project_repository.technology_slug_exists(
+            payload.slug,
+            exclude_technology_id=technology_id,
+        ):
+            raise ApiError(
+                status_code=409,
+                message="Technology slug already exists.",
+                code="duplicate_technology_slug",
+            )
+
+        for key, value in payload.model_dump(exclude_unset=True).items():
+            setattr(technology, key, value)
+
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(technology)
+        return TechnologyPayload.model_validate(technology)
+
+    def delete_technology(self, technology_id: UUID) -> dict[str, bool]:
+        technology = self.project_repository.get_technology_by_id(technology_id)
+
+        if technology is None:
+            raise ApiError(
+                status_code=404,
+                message="Technology not found.",
+                code="technology_not_found",
+            )
+
+        if self.project_repository.count_projects_for_technology(technology_id) > 0:
+            raise ApiError(
+                status_code=409,
+                message="Technology is assigned to one or more projects.",
+                code="technology_in_use",
+            )
+
+        technology.mark_deleted()
+        self.project_repository.db.commit()
+        return {"deleted": True}
 
     def get_project_details(self, slug: str) -> ProjectPayload:
         project = self.project_repository.get_by_slug(slug)

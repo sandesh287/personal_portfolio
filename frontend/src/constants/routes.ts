@@ -12,6 +12,8 @@ export const routes = {
   admin: "/admin",
   adminLogin: "/admin/login",
   adminProjects: "/admin/projects",
+  adminProjectCategories: "/admin/project-categories",
+  adminTechnologies: "/admin/technologies",
   adminBlog: "/admin/blog",
   adminSkills: "/admin/skills",
   adminExperience: "/admin/experience",

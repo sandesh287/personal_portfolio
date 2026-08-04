@@ -41,6 +41,40 @@ class ProjectRepository(BaseRepository[Project]):
         )
         return self.db.scalars(statement).all()
 
+    def get_category_by_id(self, category_id: UUID) -> ProjectCategory | None:
+        statement = select(ProjectCategory).where(
+            ProjectCategory.id == category_id,
+            ProjectCategory.deleted_at.is_(None),
+        )
+        return self.db.scalars(statement).first()
+
+    def category_slug_exists(
+        self,
+        slug: str,
+        *,
+        exclude_category_id: UUID | None = None,
+    ) -> bool:
+        statement = select(ProjectCategory.id).where(
+            ProjectCategory.slug == slug,
+            ProjectCategory.deleted_at.is_(None),
+        )
+
+        if exclude_category_id:
+            statement = statement.where(ProjectCategory.id != exclude_category_id)
+
+        return self.db.scalar(statement) is not None
+
+    def count_projects_for_category(self, category_id: UUID) -> int:
+        statement = (
+            select(func.count())
+            .select_from(Project)
+            .where(
+                Project.category_id == category_id,
+                Project.deleted_at.is_(None),
+            )
+        )
+        return self.db.scalar(statement) or 0
+
     def list_technologies(self, category: str | None = None) -> Sequence[Technology]:
         statement = select(Technology).where(Technology.deleted_at.is_(None))
 
@@ -49,6 +83,38 @@ class ProjectRepository(BaseRepository[Project]):
 
         statement = statement.order_by(Technology.sort_order.asc(), Technology.name.asc())
         return self.db.scalars(statement).all()
+
+    def get_technology_by_id(self, technology_id: UUID) -> Technology | None:
+        statement = select(Technology).where(
+            Technology.id == technology_id,
+            Technology.deleted_at.is_(None),
+        )
+        return self.db.scalars(statement).first()
+
+    def technology_slug_exists(
+        self,
+        slug: str,
+        *,
+        exclude_technology_id: UUID | None = None,
+    ) -> bool:
+        statement = select(Technology.id).where(
+            Technology.slug == slug,
+            Technology.deleted_at.is_(None),
+        )
+
+        if exclude_technology_id:
+            statement = statement.where(Technology.id != exclude_technology_id)
+
+        return self.db.scalar(statement) is not None
+
+    def count_projects_for_technology(self, technology_id: UUID) -> int:
+        statement = (
+            select(func.count())
+            .select_from(Project)
+            .join(Project.technologies)
+            .where(Project.deleted_at.is_(None), Technology.id == technology_id)
+        )
+        return self.db.scalar(statement) or 0
 
     def list_filtered(self, filters: ProjectFilters) -> tuple[Sequence[Project], int]:
         statement = self._apply_filters(self.base_query(), filters)

@@ -5,11 +5,15 @@ import { projectQueryKeys } from "./queryKeys";
 import type {
   AdminProjectListParams,
   FeaturedProjectsParams,
+  ProjectCategoryCreatePayload,
+  ProjectCategoryUpdatePayload,
   ProjectCreatePayload,
   ProjectImageUploadPayload,
   ProjectListParams,
   ProjectUpdatePayload,
+  TechnologyCreatePayload,
   TechnologyListParams,
+  TechnologyUpdatePayload,
 } from "./types";
 
 export function useProjects(params?: ProjectListParams) {
@@ -40,10 +44,90 @@ export function useProjectCategories() {
   });
 }
 
+export function useCreateProjectCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectCategoryCreatePayload) => projectsApi.createCategory(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.categories() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
+  });
+}
+
+export function useUpdateProjectCategory(categoryId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectCategoryUpdatePayload) =>
+      projectsApi.updateCategory(categoryId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.categories() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
+  });
+}
+
+export function useDeleteProjectCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (categoryId: string) => projectsApi.removeCategory(categoryId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.categories() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
+  });
+}
+
 export function useTechnologies(params?: TechnologyListParams) {
   return useQuery({
     queryKey: projectQueryKeys.technologies(params),
     queryFn: () => projectsApi.technologies(params),
+  });
+}
+
+export function useCreateTechnology() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: TechnologyCreatePayload) => projectsApi.createTechnology(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.technologies() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
+  });
+}
+
+export function useUpdateTechnology(technologyId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: TechnologyUpdatePayload) =>
+      projectsApi.updateTechnology(technologyId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.technologies() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
+  });
+}
+
+export function useDeleteTechnology() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (technologyId: string) => projectsApi.removeTechnology(technologyId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.technologies() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.adminLists() });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.lists() });
+    },
   });
 }
 

@@ -21,6 +21,18 @@ const AdminProjectsPage = lazy(() =>
   })),
 );
 
+const AdminProjectCategoriesPage = lazy(() =>
+  import("@/pages/admin/AdminProjectTaxonomyPage").then((module) => ({
+    default: () => <module.AdminProjectTaxonomyPage mode="categories" />,
+  })),
+);
+
+const AdminTechnologiesPage = lazy(() =>
+  import("@/pages/admin/AdminProjectTaxonomyPage").then((module) => ({
+    default: () => <module.AdminProjectTaxonomyPage mode="technologies" />,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -69,6 +81,14 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <PlaceholderPage title="Admin Dashboard" /> },
           { path: "projects", element: <LazyRoute component={AdminProjectsPage} /> },
+          {
+            path: "project-categories",
+            element: <LazyRoute component={AdminProjectCategoriesPage} />,
+          },
+          {
+            path: "technologies",
+            element: <LazyRoute component={AdminTechnologiesPage} />,
+          },
           { path: "blog", element: <PlaceholderPage title="Blog Admin" /> },
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
           { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },

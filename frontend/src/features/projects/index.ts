@@ -1,14 +1,20 @@
 export { projectsApi } from "./api";
 export {
   useAdminProjects,
+  useCreateProjectCategory,
   useCreateProject,
+  useCreateTechnology,
+  useDeleteProjectCategory,
   useDeleteProject,
+  useDeleteTechnology,
   useFeaturedProjects,
   useProjectCategories,
   useProjectDetails,
   useProjects,
   useTechnologies,
+  useUpdateProjectCategory,
   useUpdateProject,
+  useUpdateTechnology,
   useUploadProjectImage,
 } from "./hooks";
 export { projectQueryKeys } from "./queryKeys";
@@ -17,6 +23,7 @@ export type {
   FeaturedProjectsParams,
   Project,
   ProjectCategory,
+  ProjectCategoryCreatePayload,
   ProjectCreatePayload,
   ProjectImage,
   ProjectImageUploadPayload,
@@ -25,9 +32,14 @@ export type {
   ProjectMutationPayload,
   ProjectSortField,
   ProjectStatus,
+  ProjectCategoryMutationPayload,
+  ProjectCategoryUpdatePayload,
   ProjectUpdatePayload,
   ProjectVideo,
   SortDirection,
   Technology,
+  TechnologyCreatePayload,
   TechnologyListParams,
+  TechnologyMutationPayload,
+  TechnologyUpdatePayload,
 } from "./types";

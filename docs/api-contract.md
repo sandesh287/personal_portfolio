@@ -312,9 +312,9 @@ Future admin CRUD endpoints:
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `POST` | `/api/v1/project-categories` | admin | Create category |
-| `PATCH` | `/api/v1/project-categories/{id}` | admin | Update category |
-| `DELETE` | `/api/v1/project-categories/{id}` | admin | Delete category |
+| `POST` | `/api/v1/projects/categories` | admin | Create category |
+| `PATCH` | `/api/v1/projects/categories/{id}` | admin | Update category |
+| `DELETE` | `/api/v1/projects/categories/{id}` | admin | Delete category |
 
 - Create/update body: `name`, `slug`, `description`, `sortOrder`
 - Errors: `401`, `403`, `404`, `409`, `422`
@@ -336,9 +336,9 @@ Future admin CRUD endpoints:
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `POST` | `/api/v1/technologies` | admin | Create technology |
-| `PATCH` | `/api/v1/technologies/{id}` | admin | Update technology |
-| `DELETE` | `/api/v1/technologies/{id}` | admin | Delete technology |
+| `POST` | `/api/v1/projects/technologies` | admin | Create technology |
+| `PATCH` | `/api/v1/projects/technologies/{id}` | admin | Update technology |
+| `DELETE` | `/api/v1/projects/technologies/{id}` | admin | Delete technology |
 
 - Create/update body: `name`, `slug`, `category`, `icon`, `color`, `sortOrder`
 - Errors: `401`, `403`, `404`, `409`, `422`

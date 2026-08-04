@@ -9,6 +9,7 @@ import {
   Newspaper,
   Settings,
   Sparkles,
+  Tags,
   Upload,
   UserRound,
   Wrench,
@@ -37,6 +38,8 @@ export const workspaceNavigation: NavigationItem[] = [
 export const adminNavigation: NavigationItem[] = [
   { label: "Dashboard", href: routes.admin, icon: BarChart3 },
   { label: "Projects", href: routes.adminProjects, icon: Code2 },
+  { label: "Categories", href: routes.adminProjectCategories, icon: Tags },
+  { label: "Technologies", href: routes.adminTechnologies, icon: Wrench },
   { label: "Blog", href: routes.adminBlog, icon: Newspaper },
   { label: "Skills", href: routes.adminSkills, icon: Wrench },
   { label: "Experience", href: routes.adminExperience, icon: BriefcaseBusiness },

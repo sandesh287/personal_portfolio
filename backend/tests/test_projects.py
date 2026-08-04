@@ -251,6 +251,150 @@ def test_technologies_endpoint_supports_category_filter(
     assert {technology["category"] for technology in payload} == {"frontend"}
 
 
+def test_admin_can_manage_project_categories(
+    client: TestClient,
+    admin_user: User,
+) -> None:
+    headers = auth_headers(admin_user)
+
+    create_response = client.post(
+        "/api/v1/projects/categories",
+        json={
+            "name": "Backend",
+            "slug": "backend",
+            "description": "Backend projects",
+            "sortOrder": 5,
+        },
+        headers=headers,
+    )
+
+    assert create_response.status_code == 201
+    category_id = create_response.json()["data"]["id"]
+
+    update_response = client.patch(
+        f"/api/v1/projects/categories/{category_id}",
+        json={"name": "Backend Systems", "sortOrder": 6},
+        headers=headers,
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["data"]["name"] == "Backend Systems"
+
+    delete_response = client.delete(
+        f"/api/v1/projects/categories/{category_id}",
+        headers=headers,
+    )
+
+    assert delete_response.status_code == 200
+    assert delete_response.json()["data"]["deleted"] is True
+
+
+def test_category_delete_is_blocked_when_in_use(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    category = ProjectCategory(name="React", slug="react", sort_order=1)
+    project = Project(
+        title="React Project",
+        slug="react-project",
+        summary="Uses category",
+        status="draft",
+        category=category,
+    )
+    db_session.add(project)
+    db_session.commit()
+    db_session.refresh(category)
+
+    response = client.delete(
+        f"/api/v1/projects/categories/{category.id}",
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 409
+    assert response.json()["errors"][0]["code"] == "project_category_in_use"
+
+
+def test_admin_can_manage_technologies(
+    client: TestClient,
+    admin_user: User,
+) -> None:
+    headers = auth_headers(admin_user)
+
+    create_response = client.post(
+        "/api/v1/projects/technologies",
+        json={
+            "name": "FastAPI",
+            "slug": "fastapi",
+            "category": "backend",
+            "icon": "server",
+            "color": "#009688",
+            "sortOrder": 7,
+        },
+        headers=headers,
+    )
+
+    assert create_response.status_code == 201
+    technology_id = create_response.json()["data"]["id"]
+
+    update_response = client.patch(
+        f"/api/v1/projects/technologies/{technology_id}",
+        json={"name": "FastAPI Framework", "sortOrder": 8},
+        headers=headers,
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["data"]["name"] == "FastAPI Framework"
+
+    delete_response = client.delete(
+        f"/api/v1/projects/technologies/{technology_id}",
+        headers=headers,
+    )
+
+    assert delete_response.status_code == 200
+    assert delete_response.json()["data"]["deleted"] is True
+
+
+def test_technology_delete_is_blocked_when_in_use(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    technology = Technology(name="React", slug="react", category="frontend", sort_order=1)
+    project = Project(
+        title="React Project",
+        slug="react-project",
+        summary="Uses technology",
+        status="draft",
+    )
+    project.technologies = [technology]
+    db_session.add(project)
+    db_session.commit()
+    db_session.refresh(technology)
+
+    response = client.delete(
+        f"/api/v1/projects/technologies/{technology.id}",
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 409
+    assert response.json()["errors"][0]["code"] == "technology_in_use"
+
+
+def test_category_and_technology_writes_require_admin(client: TestClient) -> None:
+    category_response = client.post(
+        "/api/v1/projects/categories",
+        json={"name": "Blocked", "slug": "blocked"},
+    )
+    technology_response = client.post(
+        "/api/v1/projects/technologies",
+        json={"name": "Blocked", "slug": "blocked", "category": "frontend"},
+    )
+
+    assert category_response.status_code == 401
+    assert technology_response.status_code == 401
+
+
 def test_project_details_only_returns_published_projects(
     client: TestClient,
     db_session: Session,

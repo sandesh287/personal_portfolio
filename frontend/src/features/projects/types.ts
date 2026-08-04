@@ -91,6 +91,30 @@ export interface TechnologyListParams {
   category?: string;
 }
 
+export interface ProjectCategoryMutationPayload {
+  name: string;
+  slug: string;
+  description?: string | null;
+  sortOrder?: number;
+}
+
+export type ProjectCategoryCreatePayload = ProjectCategoryMutationPayload;
+
+export type ProjectCategoryUpdatePayload = Partial<ProjectCategoryMutationPayload>;
+
+export interface TechnologyMutationPayload {
+  name: string;
+  slug: string;
+  category: string;
+  icon?: string | null;
+  color?: string | null;
+  sortOrder?: number;
+}
+
+export type TechnologyCreatePayload = TechnologyMutationPayload;
+
+export type TechnologyUpdatePayload = Partial<TechnologyMutationPayload>;
+
 export interface ProjectMutationPayload {
   title: string;
   slug: string;

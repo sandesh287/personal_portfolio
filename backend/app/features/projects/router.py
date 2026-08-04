@@ -4,7 +4,9 @@ from uuid import UUID
 from app.auth.dependencies import CurrentUser, require_admin
 from app.features.projects.dependencies import get_project_service
 from app.features.projects.schemas import (
+    ProjectCategoryCreateRequest,
     ProjectCategoryPayload,
+    ProjectCategoryUpdateRequest,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
@@ -13,7 +15,9 @@ from app.features.projects.schemas import (
     ProjectStatus,
     ProjectUpdateRequest,
     SortDirection,
+    TechnologyCreateRequest,
     TechnologyPayload,
+    TechnologyUpdateRequest,
 )
 from app.features.projects.service import ProjectService
 from app.schemas.base import ApiResponse, PaginatedPayload
@@ -72,6 +76,79 @@ async def list_technologies(
     category: str | None = None,
 ) -> ApiResponse[list[TechnologyPayload]]:
     return ApiResponse(data=project_service.list_technologies(category))
+
+
+@router.post("/categories", response_model=ApiResponse[ProjectCategoryPayload], status_code=201)
+async def create_project_category(
+    payload: ProjectCategoryCreateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectCategoryPayload]:
+    return ApiResponse(
+        data=project_service.create_project_category(payload),
+        message="Project category created.",
+    )
+
+
+@router.patch("/categories/{category_id}", response_model=ApiResponse[ProjectCategoryPayload])
+async def update_project_category(
+    category_id: UUID,
+    payload: ProjectCategoryUpdateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectCategoryPayload]:
+    return ApiResponse(
+        data=project_service.update_project_category(category_id, payload),
+        message="Project category updated.",
+    )
+
+
+@router.delete("/categories/{category_id}", response_model=ApiResponse[dict[str, bool]])
+async def delete_project_category(
+    category_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[dict[str, bool]]:
+    return ApiResponse(
+        data=project_service.delete_project_category(category_id),
+        message="Project category deleted.",
+    )
+
+
+@router.post("/technologies", response_model=ApiResponse[TechnologyPayload], status_code=201)
+async def create_technology(
+    payload: TechnologyCreateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[TechnologyPayload]:
+    return ApiResponse(
+        data=project_service.create_technology(payload), message="Technology created."
+    )
+
+
+@router.patch("/technologies/{technology_id}", response_model=ApiResponse[TechnologyPayload])
+async def update_technology(
+    technology_id: UUID,
+    payload: TechnologyUpdateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[TechnologyPayload]:
+    return ApiResponse(
+        data=project_service.update_technology(technology_id, payload),
+        message="Technology updated.",
+    )
+
+
+@router.delete("/technologies/{technology_id}", response_model=ApiResponse[dict[str, bool]])
+async def delete_technology(
+    technology_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[dict[str, bool]]:
+    return ApiResponse(
+        data=project_service.delete_technology(technology_id),
+        message="Technology deleted.",
+    )
 
 
 @router.get("/admin", response_model=ApiResponse[PaginatedPayload[ProjectPayload]])
