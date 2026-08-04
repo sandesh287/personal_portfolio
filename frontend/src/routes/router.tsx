@@ -6,6 +6,7 @@ import { PublicLayout } from "@/layouts/PublicLayout";
 import { WorkspaceLayout } from "@/layouts/WorkspaceLayout";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { AdminProjectsPage } from "@/pages/admin/AdminProjectsPage";
 import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
 import { ProjectsPage } from "@/pages/projects/ProjectsPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
@@ -43,7 +44,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <PlaceholderPage title="Admin Dashboard" /> },
-          { path: "projects", element: <PlaceholderPage title="Projects Admin" /> },
+          { path: "projects", element: <AdminProjectsPage /> },
           { path: "blog", element: <PlaceholderPage title="Blog Admin" /> },
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
           { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },
