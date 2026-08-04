@@ -6,6 +6,8 @@ import { PublicLayout } from "@/layouts/PublicLayout";
 import { WorkspaceLayout } from "@/layouts/WorkspaceLayout";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { ProjectDetailsPage } from "@/pages/projects/ProjectDetailsPage";
+import { ProjectsPage } from "@/pages/projects/ProjectsPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -16,8 +18,8 @@ export const router = createBrowserRouter([
         element: <WorkspaceLayout />,
         children: [
           { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
-          { path: "/projects", element: <PlaceholderPage title="Projects Explorer" /> },
-          { path: "/projects/:slug", element: <PlaceholderPage title="Project Details" /> },
+          { path: "/projects", element: <ProjectsPage /> },
+          { path: "/projects/:slug", element: <ProjectDetailsPage /> },
           { path: "/blog", element: <PlaceholderPage title="Engineering Notes" /> },
           { path: "/blog/:slug", element: <PlaceholderPage title="Engineering Note" /> },
           { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
