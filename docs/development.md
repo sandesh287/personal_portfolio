@@ -43,6 +43,24 @@ Health check:
 http://127.0.0.1:8000/api/v1/health
 ```
 
+## Database
+
+Run migrations from the repository root:
+
+```powershell
+.\.venv\Scripts\alembic.exe -c backend\alembic.ini upgrade head
+```
+
+Seed the single admin user:
+
+```powershell
+$env:ADMIN_EMAIL="admin@example.com"
+$env:ADMIN_PASSWORD="replace-with-a-secure-admin-password"
+.\.venv\Scripts\python.exe -m app.cli.seed_admin
+```
+
+The seed command creates the admin user only if the email does not already exist.
+
 Run only the frontend:
 
 ```powershell

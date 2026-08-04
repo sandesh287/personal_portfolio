@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     rate_limit_window_seconds: int = 60
     github_username: str | None = None
     github_token: str | None = None
+    admin_email: str | None = None
+    admin_password: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
