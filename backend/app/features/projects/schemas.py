@@ -108,9 +108,39 @@ class ProjectVideoPayload(ApiSchema):
     media_asset_id: UUID | None = None
     provider: str
     external_url: str | None = None
+    url: str | None = None
     title: str | None = None
     caption: str | None = None
     sort_order: int
+
+
+class ProjectVideoAttachRequest(ApiSchema):
+    media_asset_id: UUID
+    title: str | None = Field(default=None, max_length=180)
+    caption: str | None = Field(default=None, max_length=255)
+    sort_order: int = Field(default=0, ge=0)
+
+
+class ProjectExternalVideoCreateRequest(ApiSchema):
+    external_url: HttpUrl
+    title: str | None = Field(default=None, max_length=180)
+    caption: str | None = Field(default=None, max_length=255)
+    sort_order: int = Field(default=0, ge=0)
+
+    @field_validator("external_url")
+    @classmethod
+    def validate_video_host(cls, value: HttpUrl) -> HttpUrl:
+        host = (value.host or "").lower()
+        allowed_hosts = ("youtube.com", "youtu.be", "vimeo.com")
+        if not any(host == allowed or host.endswith(f".{allowed}") for allowed in allowed_hosts):
+            raise ValueError("Only YouTube and Vimeo URLs are supported.")
+        return value
+
+
+class ProjectVideoUpdateRequest(ApiSchema):
+    title: str | None = Field(default=None, max_length=180)
+    caption: str | None = Field(default=None, max_length=255)
+    sort_order: int | None = Field(default=None, ge=0)
 
 
 class ProjectPayload(ApiSchema):

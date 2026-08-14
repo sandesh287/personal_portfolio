@@ -20,4 +20,5 @@ export const projectQueryKeys = {
   details: () => [...projectQueryKeys.all, "detail"] as const,
   detail: (slug: string) => [...projectQueryKeys.details(), slug] as const,
   images: (projectId: string) => [...projectQueryKeys.all, "images", projectId] as const,
+  videos: (projectId: string) => [...projectQueryKeys.all, "videos", projectId] as const,
 };

@@ -311,6 +311,23 @@ Paginated data:
 - Responses: `ProjectImage`, `Project`, or `{ "deleted": true }`
 - Errors: `401`, `403`, `404`, `409`, `413`, `422`
 
+### Project Videos
+
+| Method | URL | Auth | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/projects/{id}/videos` | admin | List project videos |
+| `POST` | `/api/v1/projects/{id}/videos/attach` | admin | Attach a Media Library video |
+| `POST` | `/api/v1/projects/{id}/videos/external` | admin | Add a YouTube or Vimeo video |
+| `PATCH` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Update video metadata |
+| `DELETE` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Remove a project video |
+
+- Attach body: `mediaAssetId`, optional `title`, `caption`, `sortOrder`
+- External body: `externalUrl`, optional `title`, `caption`, `sortOrder`
+- Update body: optional `title`, `caption`, `sortOrder`
+- Supported external providers: YouTube and Vimeo
+- Removing a project video does not delete its Media Library asset
+- Errors: `401`, `403`, `404`, `409`, `422`
+
 ## Project Categories
 
 - Model fields: `id`, `name`, `slug`, `description`, `sortOrder`, `createdAt`, `updatedAt`

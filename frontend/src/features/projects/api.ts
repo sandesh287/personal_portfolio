@@ -11,6 +11,10 @@ import type {
   ProjectImage,
   ProjectImageAttachPayload,
   ProjectImageUploadPayload,
+  ProjectVideo,
+  ProjectVideoAttachPayload,
+  ProjectExternalVideoCreatePayload,
+  ProjectVideoUpdatePayload,
   ProjectListParams,
   ProjectListResponse,
   ProjectCategory,
@@ -118,6 +122,10 @@ export const projectsApi = {
     return getApiData<ProjectImage[]>(`${PROJECTS_ENDPOINT}/${projectId}/images`);
   },
 
+  videos(projectId: string) {
+    return getApiData<ProjectVideo[]>(`${PROJECTS_ENDPOINT}/${projectId}/videos`);
+  },
+
   async create(payload: ProjectCreatePayload) {
     const response = await httpClient.post<ApiResponse<Project>>(PROJECTS_ENDPOINT, payload);
     return response.data.data;
@@ -177,6 +185,37 @@ export const projectsApi = {
     const response = await httpClient.patch<ApiResponse<Project>>(
       `${PROJECTS_ENDPOINT}/${projectId}/cover-image`,
       { imageId },
+    );
+    return response.data.data;
+  },
+
+  async attachVideo({ projectId, ...payload }: ProjectVideoAttachPayload) {
+    const response = await httpClient.post<ApiResponse<ProjectVideo>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/videos/attach`,
+      payload,
+    );
+    return response.data.data;
+  },
+
+  async createExternalVideo({ projectId, ...payload }: ProjectExternalVideoCreatePayload) {
+    const response = await httpClient.post<ApiResponse<ProjectVideo>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/videos/external`,
+      payload,
+    );
+    return response.data.data;
+  },
+
+  async removeVideo(projectId: string, videoId: string) {
+    const response = await httpClient.delete<ApiResponse<{ deleted: boolean }>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/videos/${videoId}`,
+    );
+    return response.data.data;
+  },
+
+  async updateVideo({ projectId, videoId, ...payload }: ProjectVideoUpdatePayload) {
+    const response = await httpClient.patch<ApiResponse<ProjectVideo>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/videos/${videoId}`,
+      payload,
     );
     return response.data.data;
   },

@@ -12,6 +12,9 @@ import type {
   ProjectCreatePayload,
   ProjectImageUploadPayload,
   ProjectImageAttachPayload,
+  ProjectVideoAttachPayload,
+  ProjectExternalVideoCreatePayload,
+  ProjectVideoUpdatePayload,
   ProjectListParams,
   ProjectUpdatePayload,
   TechnologyCreatePayload,
@@ -150,6 +153,14 @@ export function useProjectImages(projectId: string | undefined) {
   });
 }
 
+export function useProjectVideos(projectId: string | undefined) {
+  return useQuery({
+    queryKey: projectQueryKeys.videos(projectId ?? ""),
+    queryFn: () => projectsApi.videos(projectId ?? ""),
+    enabled: Boolean(projectId),
+  });
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
@@ -235,6 +246,52 @@ export function useDeleteProjectImage() {
     onSuccess: async (_result, payload) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+    },
+  });
+}
+
+export function useAttachProjectVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProjectVideoAttachPayload) => projectsApi.attachVideo(payload),
+    onSuccess: async (_video, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
+    },
+  });
+}
+
+export function useCreateExternalProjectVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProjectExternalVideoCreatePayload) =>
+      projectsApi.createExternalVideo(payload),
+    onSuccess: async (_video, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
+    },
+  });
+}
+
+export function useDeleteProjectVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ projectId, videoId }: { projectId: string; videoId: string }) =>
+      projectsApi.removeVideo(projectId, videoId),
+    onSuccess: async (_result, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
+    },
+  });
+}
+
+export function useUpdateProjectVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProjectVideoUpdatePayload) => projectsApi.updateVideo(payload),
+    onSuccess: async (_video, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
     },
   });
 }

@@ -8,17 +8,21 @@ from app.features.projects.schemas import (
     ProjectCategoryUpdateRequest,
     ProjectCoverImageRequest,
     ProjectCreateRequest,
+    ProjectExternalVideoCreateRequest,
     ProjectFilters,
     ProjectImageAttachRequest,
     ProjectImagePayload,
     ProjectPayload,
     ProjectUpdateRequest,
+    ProjectVideoAttachRequest,
+    ProjectVideoPayload,
+    ProjectVideoUpdateRequest,
     TechnologyCreateRequest,
     TechnologyPayload,
     TechnologyUpdateRequest,
 )
 from app.models.media_asset import MediaAsset
-from app.models.project import Project, ProjectCategory, ProjectImage, Technology
+from app.models.project import Project, ProjectCategory, ProjectImage, ProjectVideo, Technology
 from app.schemas.base import PaginatedPayload
 from app.services.base import BaseService
 from app.storage.service import MediaStorageService
@@ -371,6 +375,119 @@ class ProjectService(BaseService):
         project_image.mark_deleted()
         self.project_repository.db.commit()
         return {"deleted": True}
+
+    def list_project_videos(self, project_id: UUID) -> list[ProjectVideoPayload]:
+        self._get_project(project_id)
+        videos = self.project_repository.list_project_videos(project_id)
+        return [ProjectVideoPayload.model_validate(video) for video in videos]
+
+    def attach_project_video(
+        self,
+        project_id: UUID,
+        payload: ProjectVideoAttachRequest,
+    ) -> ProjectVideoPayload:
+        project = self._get_project(project_id)
+        media_asset = self.project_repository.db.get(MediaAsset, payload.media_asset_id)
+        if media_asset is None or media_asset.deleted_at is not None:
+            raise ApiError(
+                status_code=404, message="Media asset not found.", code="media_not_found"
+            )
+        if not media_asset.content_type.startswith("video/"):
+            raise ApiError(
+                status_code=422,
+                message="Only video assets can be attached as project videos.",
+                code="invalid_project_video",
+            )
+        if self.project_repository.get_project_video_by_media_asset(
+            project_id,
+            payload.media_asset_id,
+        ):
+            raise ApiError(
+                status_code=409,
+                message="Media asset is already attached to this project.",
+                code="project_video_exists",
+            )
+
+        video = ProjectVideo(
+            project_id=project.id,
+            media_asset=media_asset,
+            provider="local",
+            title=payload.title,
+            caption=payload.caption,
+            sort_order=payload.sort_order,
+        )
+        self.project_repository.db.add(video)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(video)
+        return ProjectVideoPayload.model_validate(video)
+
+    def create_external_project_video(
+        self,
+        project_id: UUID,
+        payload: ProjectExternalVideoCreateRequest,
+    ) -> ProjectVideoPayload:
+        project = self._get_project(project_id)
+        external_url = str(payload.external_url)
+        if self.project_repository.get_project_video_by_external_url(project_id, external_url):
+            raise ApiError(
+                status_code=409,
+                message="External video is already attached to this project.",
+                code="project_video_exists",
+            )
+
+        host = (payload.external_url.host or "").lower()
+        provider = "vimeo" if host == "vimeo.com" or host.endswith(".vimeo.com") else "youtube"
+        video = ProjectVideo(
+            project_id=project.id,
+            provider=provider,
+            external_url=external_url,
+            title=payload.title,
+            caption=payload.caption,
+            sort_order=payload.sort_order,
+        )
+        self.project_repository.db.add(video)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(video)
+        return ProjectVideoPayload.model_validate(video)
+
+    def delete_project_video(self, project_id: UUID, video_id: UUID) -> dict[str, bool]:
+        self._get_project(project_id)
+        video = self.project_repository.get_project_video(project_id, video_id)
+        if video is None:
+            raise ApiError(
+                status_code=404,
+                message="Project video not found.",
+                code="project_video_not_found",
+            )
+        video.mark_deleted()
+        self.project_repository.db.commit()
+        return {"deleted": True}
+
+    def update_project_video(
+        self,
+        project_id: UUID,
+        video_id: UUID,
+        payload: ProjectVideoUpdateRequest,
+    ) -> ProjectVideoPayload:
+        self._get_project(project_id)
+        video = self.project_repository.get_project_video(project_id, video_id)
+        if video is None:
+            raise ApiError(
+                status_code=404,
+                message="Project video not found.",
+                code="project_video_not_found",
+            )
+        for field, value in payload.model_dump(exclude_unset=True).items():
+            setattr(video, field, value)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(video)
+        return ProjectVideoPayload.model_validate(video)
+
+    def _get_project(self, project_id: UUID) -> Project:
+        project = self.project_repository.get_project_by_id(project_id)
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+        return project
 
     async def upload_project_image(
         self,

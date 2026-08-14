@@ -3,6 +3,7 @@ import {
   CalendarDays,
   Code2,
   ExternalLink,
+  Film,
   Github,
   ImageIcon,
   Layers3,
@@ -229,41 +230,120 @@ function ProjectDetails({ project }: { project: Project }) {
 }
 
 function ProjectMedia({ project }: { project: Project }) {
+  const hasMedia = project.images.length > 0 || project.videos.length > 0;
+
   return (
     <section id="media" className="p-4 lg:p-6">
       <h2 className="text-xl font-semibold text-foreground">Media</h2>
       {project.images.length > 0 ? (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {project.images.map((image) => (
-            <figure
-              key={image.id}
-              className="overflow-hidden rounded-md border border-border bg-background"
-            >
-              {image.url ? (
-                <img src={image.url} alt={image.caption ?? ""} className="h-52 w-full object-cover" />
-              ) : (
-                <div className="flex h-52 items-center justify-center bg-muted text-muted-foreground">
-                  <ImageIcon className="h-8 w-8" aria-hidden="true" />
-                </div>
-              )}
-              {image.caption ? (
-                <figcaption className="border-t border-border p-3 text-sm text-muted-foreground">
-                  {image.caption}
-                </figcaption>
-              ) : null}
-            </figure>
-          ))}
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold text-foreground">Screenshots</h3>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {project.images.map((image) => (
+              <figure
+                key={image.id}
+                className="overflow-hidden rounded-md border border-border bg-background"
+              >
+                {image.url ? (
+                  <img
+                    src={image.url}
+                    alt={image.caption ?? ""}
+                    className="h-52 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-52 items-center justify-center bg-muted text-muted-foreground">
+                    <ImageIcon className="h-8 w-8" aria-hidden="true" />
+                  </div>
+                )}
+                {image.caption ? (
+                  <figcaption className="border-t border-border p-3 text-sm text-muted-foreground">
+                    {image.caption}
+                  </figcaption>
+                ) : null}
+              </figure>
+            ))}
+          </div>
         </div>
-      ) : (
+      ) : null}
+
+      {project.videos.length > 0 ? (
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-foreground">Videos</h3>
+          <div className="mt-3 grid gap-3 lg:grid-cols-2">
+            {project.videos.map((video) => {
+              const embedUrl = getVideoEmbedUrl(video.provider, video.externalUrl);
+              return (
+                <figure
+                  key={video.id}
+                  className="overflow-hidden rounded-md border border-border bg-background"
+                >
+                  {video.provider === "local" && video.url ? (
+                    <video controls preload="metadata" className="aspect-video w-full bg-black">
+                      <source src={video.url} />
+                    </video>
+                  ) : embedUrl ? (
+                    <iframe
+                      src={embedUrl}
+                      title={video.title || `${video.provider} project video`}
+                      className="aspect-video w-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="flex aspect-video items-center justify-center bg-muted text-muted-foreground">
+                      <Film className="h-8 w-8" aria-hidden="true" />
+                    </div>
+                  )}
+                  {video.title || video.caption ? (
+                    <figcaption className="border-t border-border p-3">
+                      {video.title ? (
+                        <p className="text-sm font-medium text-foreground">{video.title}</p>
+                      ) : null}
+                      {video.caption ? (
+                        <p className="mt-1 text-sm text-muted-foreground">{video.caption}</p>
+                      ) : null}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {!hasMedia ? (
         <div className="mt-4">
           <EmptyState
             title="No project media yet"
             description="Screenshots and demos will appear here once they are uploaded from the admin workspace."
           />
         </div>
-      )}
+      ) : null}
     </section>
   );
+}
+
+function getVideoEmbedUrl(provider: string, externalUrl: string | null) {
+  if (!externalUrl) {
+    return null;
+  }
+
+  const url = new URL(externalUrl);
+  if (provider === "youtube") {
+    const videoId =
+      url.hostname === "youtu.be"
+        ? url.pathname.split("/").filter(Boolean)[0]
+        : url.searchParams.get("v") ??
+          url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1];
+    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null;
+  }
+
+  if (provider === "vimeo") {
+    const videoId = url.pathname.split("/").filter(Boolean).find((part) => /^\d+$/.test(part));
+    return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
+  }
+
+  return null;
 }
 
 function ProjectDetailsSkeleton() {

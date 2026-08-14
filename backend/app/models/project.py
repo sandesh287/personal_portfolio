@@ -122,3 +122,9 @@ class ProjectVideo(BaseModel):
 
     project: Mapped[Project] = relationship(back_populates="videos")
     media_asset: Mapped[MediaAsset | None] = relationship()
+
+    @property
+    def url(self) -> str | None:
+        if self.external_url:
+            return self.external_url
+        return self.media_asset.public_url if self.media_asset else None

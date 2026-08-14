@@ -9,6 +9,7 @@ from app.features.projects.schemas import (
     ProjectCategoryUpdateRequest,
     ProjectCoverImageRequest,
     ProjectCreateRequest,
+    ProjectExternalVideoCreateRequest,
     ProjectFilters,
     ProjectImageAttachRequest,
     ProjectImagePayload,
@@ -16,6 +17,9 @@ from app.features.projects.schemas import (
     ProjectSortField,
     ProjectStatus,
     ProjectUpdateRequest,
+    ProjectVideoAttachRequest,
+    ProjectVideoPayload,
+    ProjectVideoUpdateRequest,
     SortDirection,
     TechnologyCreateRequest,
     TechnologyPayload,
@@ -298,4 +302,74 @@ async def delete_project_image(
     return ApiResponse(
         data=project_service.delete_project_image(project_id, image_id),
         message="Project image deleted.",
+    )
+
+
+@router.get("/{project_id}/videos", response_model=ApiResponse[list[ProjectVideoPayload]])
+async def list_project_videos(
+    project_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[list[ProjectVideoPayload]]:
+    return ApiResponse(data=project_service.list_project_videos(project_id))
+
+
+@router.post(
+    "/{project_id}/videos/attach",
+    response_model=ApiResponse[ProjectVideoPayload],
+    status_code=201,
+)
+async def attach_project_video(
+    project_id: UUID,
+    payload: ProjectVideoAttachRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectVideoPayload]:
+    return ApiResponse(
+        data=project_service.attach_project_video(project_id, payload),
+        message="Media asset attached as project video.",
+    )
+
+
+@router.post(
+    "/{project_id}/videos/external",
+    response_model=ApiResponse[ProjectVideoPayload],
+    status_code=201,
+)
+async def create_external_project_video(
+    project_id: UUID,
+    payload: ProjectExternalVideoCreateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectVideoPayload]:
+    return ApiResponse(
+        data=project_service.create_external_project_video(project_id, payload),
+        message="External project video created.",
+    )
+
+
+@router.delete("/{project_id}/videos/{video_id}", response_model=ApiResponse[dict[str, bool]])
+async def delete_project_video(
+    project_id: UUID,
+    video_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[dict[str, bool]]:
+    return ApiResponse(
+        data=project_service.delete_project_video(project_id, video_id),
+        message="Project video removed.",
+    )
+
+
+@router.patch("/{project_id}/videos/{video_id}", response_model=ApiResponse[ProjectVideoPayload])
+async def update_project_video(
+    project_id: UUID,
+    video_id: UUID,
+    payload: ProjectVideoUpdateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectVideoPayload]:
+    return ApiResponse(
+        data=project_service.update_project_video(project_id, video_id, payload),
+        message="Project video updated.",
     )

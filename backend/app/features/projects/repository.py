@@ -60,6 +60,54 @@ class ProjectRepository(BaseRepository[Project]):
         )
         return self.db.scalars(statement).first()
 
+    def list_project_videos(self, project_id: UUID) -> Sequence[ProjectVideo]:
+        statement = (
+            select(ProjectVideo)
+            .where(
+                ProjectVideo.project_id == project_id,
+                ProjectVideo.deleted_at.is_(None),
+            )
+            .order_by(ProjectVideo.sort_order.asc(), ProjectVideo.created_at.asc())
+            .options(selectinload(ProjectVideo.media_asset))
+        )
+        return self.db.scalars(statement).all()
+
+    def get_project_video(self, project_id: UUID, video_id: UUID) -> ProjectVideo | None:
+        statement = (
+            select(ProjectVideo)
+            .where(
+                ProjectVideo.id == video_id,
+                ProjectVideo.project_id == project_id,
+                ProjectVideo.deleted_at.is_(None),
+            )
+            .options(selectinload(ProjectVideo.media_asset))
+        )
+        return self.db.scalars(statement).first()
+
+    def get_project_video_by_media_asset(
+        self,
+        project_id: UUID,
+        media_asset_id: UUID,
+    ) -> ProjectVideo | None:
+        statement = select(ProjectVideo).where(
+            ProjectVideo.project_id == project_id,
+            ProjectVideo.media_asset_id == media_asset_id,
+            ProjectVideo.deleted_at.is_(None),
+        )
+        return self.db.scalars(statement).first()
+
+    def get_project_video_by_external_url(
+        self,
+        project_id: UUID,
+        external_url: str,
+    ) -> ProjectVideo | None:
+        statement = select(ProjectVideo).where(
+            ProjectVideo.project_id == project_id,
+            ProjectVideo.external_url == external_url,
+            ProjectVideo.deleted_at.is_(None),
+        )
+        return self.db.scalars(statement).first()
+
     def get_featured(self, limit: int = 6) -> Sequence[Project]:
         statement = (
             self._with_relationships(self.base_query())

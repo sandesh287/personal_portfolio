@@ -42,9 +42,34 @@ export interface ProjectVideo {
   mediaAssetId: string | null;
   provider: string;
   externalUrl: string | null;
+  url: string | null;
   title: string | null;
   caption: string | null;
   sortOrder: number;
+}
+
+export interface ProjectVideoAttachPayload {
+  projectId: string;
+  mediaAssetId: string;
+  title?: string | null;
+  caption?: string | null;
+  sortOrder?: number;
+}
+
+export interface ProjectExternalVideoCreatePayload {
+  projectId: string;
+  externalUrl: string;
+  title?: string | null;
+  caption?: string | null;
+  sortOrder?: number;
+}
+
+export interface ProjectVideoUpdatePayload {
+  projectId: string;
+  videoId: string;
+  title?: string | null;
+  caption?: string | null;
+  sortOrder?: number;
 }
 
 export interface Project {

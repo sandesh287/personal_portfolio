@@ -2,6 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Check,
   Edit3,
+  ExternalLink,
+  Film,
   FolderKanban,
   ImageIcon,
   Loader2,
@@ -43,11 +45,16 @@ import {
 import {
   useAdminProjects,
   useAttachProjectImage,
+  useAttachProjectVideo,
+  useCreateExternalProjectVideo,
   useCreateProject,
   useDeleteProject,
   useDeleteProjectImage,
+  useDeleteProjectVideo,
   useProjectCategories,
   useProjectImages,
+  useProjectVideos,
+  useUpdateProjectVideo,
   useTechnologies,
   useSetProjectCoverImage,
   useUpdateProject,
@@ -58,6 +65,7 @@ import type {
   ProjectCategory,
   ProjectCreatePayload,
   ProjectStatus,
+  ProjectVideo,
   Technology,
 } from "@/features/projects";
 import { cn } from "@/utils/cn";
@@ -354,6 +362,7 @@ function ProjectMediaModal({
   onProjectChange: (project: Project) => void;
   onClose: () => void;
 }) {
+  const [mediaMode, setMediaMode] = useState<"images" | "videos">("images");
   const [librarySearch, setLibrarySearch] = useState("");
   const [caption, setCaption] = useState("");
   const [sortOrder, setSortOrder] = useState(0);
@@ -386,6 +395,7 @@ function ProjectMediaModal({
 
   useEffect(() => {
     if (isOpen) {
+      setMediaMode("images");
       setCaption("");
       setLibrarySearch("");
       setSortOrder(0);
@@ -477,6 +487,29 @@ function ProjectMediaModal({
     >
       {!project ? null : (
         <div className="space-y-4">
+          <div className="inline-flex rounded-md border border-border bg-muted p-1">
+            <Button
+              type="button"
+              size="sm"
+              variant={mediaMode === "images" ? "primary" : "ghost"}
+              leftIcon={<ImageIcon className="h-4 w-4" />}
+              onClick={() => setMediaMode("images")}
+            >
+              Images
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={mediaMode === "videos" ? "primary" : "ghost"}
+              leftIcon={<Film className="h-4 w-4" />}
+              onClick={() => setMediaMode("videos")}
+            >
+              Videos
+            </Button>
+          </div>
+
+          {mediaMode === "images" ? (
+            <>
           <section className="border-b border-border pb-4">
             <div className="flex items-center gap-2">
               <Upload className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -699,9 +732,352 @@ function ProjectMediaModal({
               ) : null}
             </section>
           </div>
+            </>
+          ) : (
+            <ProjectVideosWorkspace project={project} isOpen={isOpen} />
+          )}
         </div>
       )}
     </Modal>
+  );
+}
+
+function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen: boolean }) {
+  const [search, setSearch] = useState("");
+  const [externalUrl, setExternalUrl] = useState("");
+  const [title, setTitle] = useState("");
+  const [sortOrder, setSortOrder] = useState(0);
+  const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCaption, setEditCaption] = useState("");
+  const [editSortOrder, setEditSortOrder] = useState(0);
+  const videosQuery = useProjectVideos(project.id);
+  const libraryQuery = useMediaList(
+    {
+      page: 1,
+      pageSize: 100,
+      search: search.trim() || undefined,
+      contentType: "video",
+      sort: "created_at",
+      order: "desc",
+    },
+    isOpen,
+  );
+  const attachVideo = useAttachProjectVideo();
+  const createExternalVideo = useCreateExternalProjectVideo();
+  const deleteVideo = useDeleteProjectVideo();
+  const updateVideo = useUpdateProjectVideo();
+  const attachedMediaIds = useMemo(
+    () => new Set(videosQuery.data?.flatMap((video) => video.mediaAssetId ?? []) ?? []),
+    [videosQuery.data],
+  );
+  const isSubmitting =
+    attachVideo.isPending ||
+    createExternalVideo.isPending ||
+    deleteVideo.isPending ||
+    updateVideo.isPending;
+
+  function startEditing(video: ProjectVideo) {
+    setEditingVideoId(video.id);
+    setEditTitle(video.title ?? "");
+    setEditCaption(video.caption ?? "");
+    setEditSortOrder(video.sortOrder);
+  }
+
+  async function handleUpdate() {
+    if (!editingVideoId) {
+      return;
+    }
+    try {
+      await updateVideo.mutateAsync({
+        projectId: project.id,
+        videoId: editingVideoId,
+        title: editTitle.trim() || null,
+        caption: editCaption.trim() || null,
+        sortOrder: editSortOrder,
+      });
+      setEditingVideoId(null);
+      toast.success("Video details updated.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Video details could not be updated."));
+    }
+  }
+
+  async function handleAttach(mediaAssetId: string) {
+    try {
+      await attachVideo.mutateAsync({ projectId: project.id, mediaAssetId });
+      toast.success("Video added to project.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Video could not be added to the project."));
+    }
+  }
+
+  async function handleCreateExternalVideo() {
+    const normalizedUrl = externalUrl.trim();
+    if (!normalizedUrl) {
+      toast.error("Enter a YouTube or Vimeo URL.");
+      return;
+    }
+
+    try {
+      await createExternalVideo.mutateAsync({
+        projectId: project.id,
+        externalUrl: normalizedUrl,
+        title: title.trim() || null,
+        sortOrder,
+      });
+      setExternalUrl("");
+      setTitle("");
+      setSortOrder(0);
+      toast.success("External video added.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "External video could not be added."));
+    }
+  }
+
+  async function handleDelete(videoId: string) {
+    if (!window.confirm("Remove this video from the project?")) {
+      return;
+    }
+    try {
+      await deleteVideo.mutateAsync({ projectId: project.id, videoId });
+      toast.success("Video removed from project.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Video could not be removed."));
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <section className="border-b border-border pb-4">
+        <div className="flex items-center gap-2">
+          <ExternalLink className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-foreground">Add external video</h3>
+        </div>
+        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(15rem,1.5fr)_minmax(12rem,1fr)_6rem_auto] lg:items-end">
+          <FormField label="YouTube or Vimeo URL">
+            <TextInput
+              type="url"
+              value={externalUrl}
+              onChange={(event) => setExternalUrl(event.target.value)}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </FormField>
+          <FormField label="Title">
+            <TextInput
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Optional title"
+            />
+          </FormField>
+          <FormField label="Order">
+            <TextInput
+              type="number"
+              min={0}
+              value={sortOrder}
+              onChange={(event) => setSortOrder(Number(event.target.value))}
+            />
+          </FormField>
+          <Button
+            type="button"
+            leftIcon={<ExternalLink className="h-4 w-4" />}
+            disabled={!externalUrl.trim()}
+            isLoading={createExternalVideo.isPending}
+            onClick={() => void handleCreateExternalVideo()}
+          >
+            Add link
+          </Button>
+        </div>
+      </section>
+
+      <div className="grid min-h-[28rem] gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.9fr)]">
+        <section className="min-w-0 lg:border-r lg:border-border lg:pr-5">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Video library</h3>
+              <p className="text-xs text-muted-foreground">Reuse videos uploaded to Media Library.</p>
+            </div>
+            <label className="relative w-full sm:w-64">
+              <span className="sr-only">Search video library</span>
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <TextInput
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search videos..."
+                className="pl-9"
+              />
+            </label>
+          </div>
+
+          {libraryQuery.isLoading ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-[4/3]" />
+              ))}
+            </div>
+          ) : null}
+          {libraryQuery.isError ? (
+            <EmptyState title="Video library could not be loaded" description={getErrorMessage(libraryQuery.error)} />
+          ) : null}
+          {!libraryQuery.isLoading && libraryQuery.data?.items.length === 0 ? (
+            <EmptyState
+              title="No library videos found"
+              description="Upload video files from the Media Library, then return here to attach them."
+            />
+          ) : null}
+          {libraryQuery.data?.items.length ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {libraryQuery.data.items.map((media) => {
+                const isAttached = attachedMediaIds.has(media.id);
+                return (
+                  <article key={media.id} className="overflow-hidden rounded-md border border-border bg-background">
+                    <div className="flex aspect-[4/3] items-center justify-center bg-muted text-muted-foreground">
+                      <Film className="h-8 w-8" aria-hidden="true" />
+                    </div>
+                    <div className="flex items-center gap-2 p-2">
+                      <p className="min-w-0 flex-1 truncate text-xs font-medium" title={media.originalFilename}>
+                        {media.originalFilename}
+                      </p>
+                      <Button
+                        type="button"
+                        variant={isAttached ? "ghost" : "secondary"}
+                        size="sm"
+                        leftIcon={isAttached ? <Check className="h-3.5 w-3.5" /> : undefined}
+                        disabled={isAttached || isSubmitting}
+                        onClick={() => void handleAttach(media.id)}
+                      >
+                        {isAttached ? "Added" : "Add"}
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : null}
+        </section>
+
+        <section className="min-w-0">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-foreground">Project videos</h3>
+            <p className="text-xs text-muted-foreground">{videosQuery.data?.length ?? 0} attached</p>
+          </div>
+          {videosQuery.isLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-24" />
+              <Skeleton className="h-24" />
+            </div>
+          ) : null}
+          {videosQuery.isError ? (
+            <EmptyState title="Videos could not be loaded" description={getErrorMessage(videosQuery.error)} />
+          ) : null}
+          {videosQuery.data?.length === 0 ? (
+            <EmptyState
+              title="No project videos"
+              description="Add a library video or an external YouTube/Vimeo link."
+            />
+          ) : null}
+          {videosQuery.data?.length ? (
+            <div className="space-y-3">
+              {videosQuery.data.map((video) => (
+                <article key={video.id} className="flex gap-3 rounded-md border border-border bg-background p-3">
+                  <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
+                    <Film className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {video.title ||
+                            (video.provider === "local"
+                              ? "Uploaded video"
+                              : video.provider === "youtube"
+                                ? "YouTube video"
+                                : "Vimeo video")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{video.provider} | Order {video.sortOrder}</p>
+                      </div>
+                      {video.url ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => window.open(video.url ?? "", "_blank", "noopener,noreferrer")}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Open video
+                        </Button>
+                      ) : null}
+                    </div>
+                    {editingVideoId === video.id ? (
+                      <div className="mt-3 space-y-2 border-t border-border pt-3">
+                        <TextInput
+                          value={editTitle}
+                          onChange={(event) => setEditTitle(event.target.value)}
+                          placeholder="Video title"
+                        />
+                        <TextInput
+                          value={editCaption}
+                          onChange={(event) => setEditCaption(event.target.value)}
+                          placeholder="Optional caption"
+                        />
+                        <div className="flex items-center gap-2">
+                          <TextInput
+                            type="number"
+                            min={0}
+                            value={editSortOrder}
+                            onChange={(event) => setEditSortOrder(Number(event.target.value))}
+                            className="w-20"
+                            aria-label="Video order"
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            isLoading={updateVideo.isPending}
+                            onClick={() => void handleUpdate()}
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingVideoId(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-2 flex gap-1.5">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={isSubmitting}
+                          onClick={() => startEditing(video)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          disabled={isSubmitting}
+                          onClick={() => void handleDelete(video.id)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      </div>
+    </div>
   );
 }
 

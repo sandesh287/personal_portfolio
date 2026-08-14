@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 from app.auth.security import create_access_token
 from app.models.media_asset import MediaAsset
-from app.models.project import Project, ProjectCategory, ProjectImage, Technology
+from app.models.project import Project, ProjectCategory, ProjectImage, ProjectVideo, Technology
 from app.models.user import User
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -638,3 +638,147 @@ def test_project_gallery_rejects_non_image_library_asset(
 
     assert response.status_code == 422
     assert response.json()["errors"][0]["code"] == "invalid_project_image"
+
+
+def test_admin_can_attach_and_remove_library_video(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Video Project",
+        slug="video-project",
+        summary="Uses shared video",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="demo.mp4",
+        original_filename="demo.mp4",
+        storage_path="uploads/demo.mp4",
+        public_url="http://testserver/uploads/demo.mp4",
+        content_type="video/mp4",
+        size_bytes=512,
+    )
+    db_session.add_all([project, media])
+    db_session.commit()
+    headers = auth_headers(admin_user)
+
+    attached = client.post(
+        f"/api/v1/projects/{project.id}/videos/attach",
+        json={"mediaAssetId": str(media.id), "title": "Demo", "sortOrder": 2},
+        headers=headers,
+    )
+
+    assert attached.status_code == 201
+    video = attached.json()["data"]
+    assert video["provider"] == "local"
+    assert video["url"] == media.public_url
+    assert db_session.query(MediaAsset).count() == 1
+
+    duplicate = client.post(
+        f"/api/v1/projects/{project.id}/videos/attach",
+        json={"mediaAssetId": str(media.id)},
+        headers=headers,
+    )
+    assert duplicate.status_code == 409
+
+    listed = client.get(f"/api/v1/projects/{project.id}/videos", headers=headers)
+    assert listed.status_code == 200
+    assert listed.json()["data"][0]["id"] == video["id"]
+
+    removed = client.delete(
+        f"/api/v1/projects/{project.id}/videos/{video['id']}",
+        headers=headers,
+    )
+    assert removed.status_code == 200
+    assert db_session.query(MediaAsset).count() == 1
+
+
+def test_admin_can_add_youtube_and_vimeo_project_videos(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="External Videos",
+        slug="external-videos",
+        summary="Uses hosted videos",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+    headers = auth_headers(admin_user)
+
+    youtube = client.post(
+        f"/api/v1/projects/{project.id}/videos/external",
+        json={"externalUrl": "https://www.youtube.com/watch?v=abc123", "title": "Walkthrough"},
+        headers=headers,
+    )
+    vimeo = client.post(
+        f"/api/v1/projects/{project.id}/videos/external",
+        json={"externalUrl": "https://vimeo.com/123456", "title": "Case study"},
+        headers=headers,
+    )
+
+    assert youtube.status_code == 201
+    assert youtube.json()["data"]["provider"] == "youtube"
+    assert vimeo.status_code == 201
+    assert vimeo.json()["data"]["provider"] == "vimeo"
+    assert db_session.query(ProjectVideo).count() == 2
+
+    video_id = youtube.json()["data"]["id"]
+    updated = client.patch(
+        f"/api/v1/projects/{project.id}/videos/{video_id}",
+        json={"title": "Updated walkthrough", "caption": "New caption", "sortOrder": 4},
+        headers=headers,
+    )
+    assert updated.status_code == 200
+    assert updated.json()["data"]["title"] == "Updated walkthrough"
+    assert updated.json()["data"]["sortOrder"] == 4
+
+    duplicate = client.post(
+        f"/api/v1/projects/{project.id}/videos/external",
+        json={"externalUrl": "https://www.youtube.com/watch?v=abc123"},
+        headers=headers,
+    )
+    assert duplicate.status_code == 409
+
+
+def test_project_video_validation_and_authorization(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Protected Videos",
+        slug="protected-videos",
+        summary="Validates video inputs",
+        status="draft",
+    )
+    image = MediaAsset(
+        filename="preview.png",
+        original_filename="preview.png",
+        storage_path="uploads/preview.png",
+        public_url="http://testserver/uploads/preview.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project, image])
+    db_session.commit()
+
+    assert client.get(f"/api/v1/projects/{project.id}/videos").status_code == 401
+
+    invalid_asset = client.post(
+        f"/api/v1/projects/{project.id}/videos/attach",
+        json={"mediaAssetId": str(image.id)},
+        headers=auth_headers(admin_user),
+    )
+    assert invalid_asset.status_code == 422
+    assert invalid_asset.json()["errors"][0]["code"] == "invalid_project_video"
+
+    invalid_host = client.post(
+        f"/api/v1/projects/{project.id}/videos/external",
+        json={"externalUrl": "https://example.com/video"},
+        headers=auth_headers(admin_user),
+    )
+    assert invalid_host.status_code == 422
