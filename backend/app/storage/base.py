@@ -9,6 +9,7 @@ class StoredFile:
     filename: str
     content_type: str
     size: int
+    public_url: str | None = None
 
 
 class StorageProvider(ABC):

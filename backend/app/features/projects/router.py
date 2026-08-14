@@ -7,6 +7,7 @@ from app.features.projects.schemas import (
     ProjectCategoryCreateRequest,
     ProjectCategoryPayload,
     ProjectCategoryUpdateRequest,
+    ProjectCoverImageRequest,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
@@ -218,6 +219,28 @@ async def delete_project(
     return ApiResponse(data=project_service.delete_project(project_id), message="Project deleted.")
 
 
+@router.get("/{project_id}/images", response_model=ApiResponse[list[ProjectImagePayload]])
+async def list_project_images(
+    project_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[list[ProjectImagePayload]]:
+    return ApiResponse(data=project_service.list_project_images(project_id))
+
+
+@router.patch("/{project_id}/cover-image", response_model=ApiResponse[ProjectPayload])
+async def set_project_cover_image(
+    project_id: UUID,
+    payload: ProjectCoverImageRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectPayload]:
+    return ApiResponse(
+        data=project_service.set_project_cover_image(project_id, payload),
+        message="Project cover image updated.",
+    )
+
+
 @router.post(
     "/{project_id}/images",
     response_model=ApiResponse[ProjectImagePayload],
@@ -244,4 +267,17 @@ async def upload_project_image(
             sort_order=sort_order,
         ),
         message="Project image uploaded.",
+    )
+
+
+@router.delete("/{project_id}/images/{image_id}", response_model=ApiResponse[dict[str, bool]])
+async def delete_project_image(
+    project_id: UUID,
+    image_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[dict[str, bool]]:
+    return ApiResponse(
+        data=project_service.delete_project_image(project_id, image_id),
+        message="Project image deleted.",
     )

@@ -295,6 +295,20 @@ Paginated data:
 - Response `200`: `{ "deleted": true }`
 - Errors: `401`, `403`, `404`
 
+### Project Images
+
+| Method | URL | Auth | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/projects/{id}/images` | admin | List project images |
+| `POST` | `/api/v1/projects/{id}/images` | admin | Upload project image |
+| `PATCH` | `/api/v1/projects/{id}/cover-image` | admin | Set or clear cover image |
+| `DELETE` | `/api/v1/projects/{id}/images/{imageId}` | admin | Delete project image |
+
+- Upload body: `multipart/form-data` with `file`, `caption`, `sortOrder`
+- Cover body: `{ "imageId": "uuid" }`; use `null` to clear
+- Responses: `ProjectImage`, `Project`, or `{ "deleted": true }`
+- Errors: `401`, `403`, `404`, `413`, `422`
+
 ## Project Categories
 
 - Model fields: `id`, `name`, `slug`, `description`, `sortOrder`, `createdAt`, `updatedAt`

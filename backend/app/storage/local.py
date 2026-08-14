@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import quote
 from uuid import uuid4
 
 from app.core.settings import settings
@@ -20,6 +21,7 @@ class LocalStorageProvider(StorageProvider):
             filename=filename,
             content_type=content_type,
             size=len(content),
+            public_url=f"{settings.public_base_url}/uploads/{quote(storage_name)}",
         )
 
     async def delete(self, path: str) -> None:

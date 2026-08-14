@@ -173,10 +173,20 @@ export function ProjectsPage() {
 }
 
 function ProjectRow({ project }: { project: Project }) {
+  const coverImage =
+    project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
+    project.images[0]?.url;
+
   return (
     <article className="group flex flex-col gap-4 rounded-md border border-border bg-background p-4 transition-colors hover:border-primary/60 sm:flex-row">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-        <Code2 className="h-5 w-5" aria-hidden="true" />
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        {coverImage ? (
+          <img src={coverImage} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Code2 className="h-5 w-5" aria-hidden="true" />
+          </div>
+        )}
       </div>
 
       <div className="min-w-0 flex-1">

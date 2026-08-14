@@ -489,3 +489,76 @@ def test_admin_can_upload_project_image(
     assert payload["sortOrder"] == 2
     assert db_session.query(MediaAsset).count() == 1
     assert db_session.query(ProjectImage).count() == 1
+
+
+def test_admin_can_manage_project_images_and_cover(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Media Project",
+        slug="media-project",
+        summary="Project with media",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+    db_session.refresh(project)
+    headers = auth_headers(admin_user)
+
+    upload_response = client.post(
+        f"/api/v1/projects/{project.id}/images",
+        data={"caption": "Cover preview", "sortOrder": "1"},
+        files={"file": ("cover.png", b"fake-image", "image/png")},
+        headers=headers,
+    )
+
+    assert upload_response.status_code == 201
+    image_id = upload_response.json()["data"]["id"]
+
+    list_response = client.get(f"/api/v1/projects/{project.id}/images", headers=headers)
+
+    assert list_response.status_code == 200
+    assert list_response.json()["data"][0]["id"] == image_id
+    assert list_response.json()["data"][0]["url"] is not None
+
+    cover_response = client.patch(
+        f"/api/v1/projects/{project.id}/cover-image",
+        json={"imageId": image_id},
+        headers=headers,
+    )
+
+    assert cover_response.status_code == 200
+    assert (
+        cover_response.json()["data"]["coverImageId"]
+        == upload_response.json()["data"]["mediaAssetId"]
+    )
+
+    delete_response = client.delete(
+        f"/api/v1/projects/{project.id}/images/{image_id}",
+        headers=headers,
+    )
+
+    assert delete_response.status_code == 200
+    db_session.refresh(project)
+    assert project.cover_image_id is None
+
+
+def test_project_image_management_requires_admin(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    project = Project(
+        title="Protected Media Project",
+        slug="protected-media-project",
+        summary="Project with protected media",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+    db_session.refresh(project)
+
+    response = client.get(f"/api/v1/projects/{project.id}/images")
+
+    assert response.status_code == 401

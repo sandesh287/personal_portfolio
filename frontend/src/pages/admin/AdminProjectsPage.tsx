@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Edit3,
   FolderKanban,
+  ImageIcon,
   Loader2,
   Plus,
   RefreshCw,
@@ -40,9 +41,13 @@ import {
   useAdminProjects,
   useCreateProject,
   useDeleteProject,
+  useDeleteProjectImage,
   useProjectCategories,
+  useProjectImages,
   useTechnologies,
+  useSetProjectCoverImage,
   useUpdateProject,
+  useUploadProjectImage,
 } from "@/features/projects";
 import type {
   Project,
@@ -86,7 +91,9 @@ export function AdminProjectsPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [mediaProject, setMediaProject] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isMediaOpen, setIsMediaOpen] = useState(false);
 
   const queryParams = {
     page,
@@ -113,6 +120,11 @@ export function AdminProjectsPage() {
   function openEditForm(project: Project) {
     setEditingProject(project);
     setIsFormOpen(true);
+  }
+
+  function openMediaManager(project: Project) {
+    setMediaProject(project);
+    setIsMediaOpen(true);
   }
 
   async function handleDelete(project: Project) {
@@ -254,6 +266,15 @@ export function AdminProjectsPage() {
                           </Button>
                           <Button
                             type="button"
+                            variant="secondary"
+                            size="sm"
+                            leftIcon={<ImageIcon className="h-4 w-4" />}
+                            onClick={() => openMediaManager(project)}
+                          >
+                            Media
+                          </Button>
+                          <Button
+                            type="button"
                             variant="danger"
                             size="sm"
                             leftIcon={<Trash2 className="h-4 w-4" />}
@@ -308,7 +329,242 @@ export function AdminProjectsPage() {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
       />
+      <ProjectMediaModal
+        project={mediaProject}
+        isOpen={isMediaOpen}
+        onProjectChange={setMediaProject}
+        onClose={() => setIsMediaOpen(false)}
+      />
     </section>
+  );
+}
+
+function ProjectMediaModal({
+  project,
+  isOpen,
+  onProjectChange,
+  onClose,
+}: {
+  project: Project | null;
+  isOpen: boolean;
+  onProjectChange: (project: Project) => void;
+  onClose: () => void;
+}) {
+  const [caption, setCaption] = useState("");
+  const [sortOrder, setSortOrder] = useState(0);
+  const [file, setFile] = useState<File | null>(null);
+  const imagesQuery = useProjectImages(project?.id);
+  const uploadImage = useUploadProjectImage();
+  const setCoverImage = useSetProjectCoverImage();
+  const deleteImage = useDeleteProjectImage();
+  const isSubmitting = uploadImage.isPending || setCoverImage.isPending || deleteImage.isPending;
+
+  useEffect(() => {
+    if (isOpen) {
+      setCaption("");
+      setSortOrder(0);
+      setFile(null);
+    }
+  }, [isOpen]);
+
+  async function handleUpload() {
+    if (!project || !file) {
+      toast.error("Choose an image before uploading.");
+      return;
+    }
+
+    try {
+      await uploadImage.mutateAsync({
+        projectId: project.id,
+        file,
+        caption: caption.trim() || null,
+        sortOrder,
+      });
+      setCaption("");
+      setSortOrder(0);
+      setFile(null);
+      toast.success("Project image uploaded.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Project image could not be uploaded."));
+    }
+  }
+
+  async function handleSetCover(imageId: string | null) {
+    if (!project) {
+      return;
+    }
+
+    try {
+      const updatedProject = await setCoverImage.mutateAsync({ projectId: project.id, imageId });
+      onProjectChange(updatedProject);
+      toast.success(imageId ? "Cover image updated." : "Cover image cleared.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Cover image could not be updated."));
+    }
+  }
+
+  async function handleDeleteImage(imageId: string) {
+    if (!project) {
+      return;
+    }
+
+    const confirmed = window.confirm("Delete this project image?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteImage.mutateAsync({ projectId: project.id, imageId });
+      const deletedImage = imagesQuery.data?.find((image) => image.id === imageId);
+
+      if (deletedImage?.mediaAssetId === project.coverImageId) {
+        onProjectChange({ ...project, coverImageId: null });
+      }
+
+      toast.success("Project image deleted.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Project image could not be deleted."));
+    }
+  }
+
+  return (
+    <Modal
+      title="Project media"
+      description={project ? `Manage images for ${project.title}.` : undefined}
+      isOpen={isOpen}
+      onClose={onClose}
+      className="max-w-4xl"
+    >
+      {!project ? null : (
+        <div className="space-y-5">
+          <section className="rounded-md border border-border bg-background p-4">
+            <h3 className="text-sm font-semibold text-foreground">Upload image</h3>
+            <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem]">
+              <FormField label="Image file">
+                <TextInput
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+                />
+              </FormField>
+              <FormField label="Caption">
+                <TextInput
+                  value={caption}
+                  onChange={(event) => setCaption(event.target.value)}
+                  placeholder="Optional caption"
+                />
+              </FormField>
+              <FormField label="Sort">
+                <TextInput
+                  type="number"
+                  min={0}
+                  value={sortOrder}
+                  onChange={(event) => setSortOrder(Number(event.target.value))}
+                />
+              </FormField>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <Button
+                type="button"
+                onClick={() => void handleUpload()}
+                isLoading={uploadImage.isPending}
+                disabled={!file}
+              >
+                Upload image
+              </Button>
+            </div>
+          </section>
+
+          <section>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold text-foreground">Gallery</h3>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => void handleSetCover(null)}
+                disabled={!project.coverImageId || isSubmitting}
+              >
+                Clear cover
+              </Button>
+            </div>
+
+            {imagesQuery.isLoading ? (
+              <div className="grid gap-3 md:grid-cols-2">
+                <Skeleton className="h-40" />
+                <Skeleton className="h-40" />
+              </div>
+            ) : null}
+
+            {imagesQuery.isError ? (
+              <EmptyState
+                title="Images could not be loaded"
+                description={getErrorMessage(imagesQuery.error)}
+              />
+            ) : null}
+
+            {imagesQuery.data?.length === 0 ? (
+              <EmptyState
+                title="No project images yet"
+                description="Upload images to create a gallery and choose a cover."
+              />
+            ) : null}
+
+            {imagesQuery.data && imagesQuery.data.length > 0 ? (
+              <div className="grid gap-3 md:grid-cols-2">
+                {imagesQuery.data.map((image) => {
+                  const isCover = project.coverImageId === image.mediaAssetId;
+
+                  return (
+                    <article
+                      key={image.id}
+                      className="overflow-hidden rounded-md border border-border bg-background"
+                    >
+                      {image.url ? (
+                        <img src={image.url} alt={image.caption ?? ""} className="h-40 w-full object-cover" />
+                      ) : (
+                        <div className="flex h-40 items-center justify-center bg-muted text-muted-foreground">
+                          <ImageIcon className="h-8 w-8" aria-hidden="true" />
+                        </div>
+                      )}
+                      <div className="space-y-3 p-3">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {image.caption || "Untitled image"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">Sort order {image.sortOrder}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant={isCover ? "primary" : "secondary"}
+                            size="sm"
+                            onClick={() => void handleSetCover(image.id)}
+                            disabled={isCover || isSubmitting}
+                          >
+                            {isCover ? "Cover" : "Set cover"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            onClick={() => void handleDeleteImage(image.id)}
+                            isLoading={deleteImage.isPending}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : null}
+          </section>
+        </div>
+      )}
+    </Modal>
   );
 }
 

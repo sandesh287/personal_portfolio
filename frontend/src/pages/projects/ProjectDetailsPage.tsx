@@ -106,7 +106,9 @@ export function ProjectDetailsPage() {
 }
 
 function ProjectHero({ project }: { project: Project }) {
-  const heroImage = project.images[0]?.url;
+  const heroImage =
+    project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
+    project.images[0]?.url;
 
   return (
     <section id="overview" className="border-b border-border p-4 lg:p-6">

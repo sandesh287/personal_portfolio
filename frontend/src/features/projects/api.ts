@@ -6,6 +6,7 @@ import type {
   AdminProjectListParams,
   FeaturedProjectsParams,
   Project,
+  ProjectCoverImagePayload,
   ProjectCreatePayload,
   ProjectImage,
   ProjectImageUploadPayload,
@@ -112,6 +113,10 @@ export const projectsApi = {
     return getApiData<Project>(`${PROJECTS_ENDPOINT}/${slug}`);
   },
 
+  images(projectId: string) {
+    return getApiData<ProjectImage[]>(`${PROJECTS_ENDPOINT}/${projectId}/images`);
+  },
+
   async create(payload: ProjectCreatePayload) {
     const response = await httpClient.post<ApiResponse<Project>>(PROJECTS_ENDPOINT, payload);
     return response.data.data;
@@ -151,6 +156,21 @@ export const projectsApi = {
       },
     );
 
+    return response.data.data;
+  },
+
+  async setCoverImage({ projectId, imageId }: ProjectCoverImagePayload) {
+    const response = await httpClient.patch<ApiResponse<Project>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/cover-image`,
+      { imageId },
+    );
+    return response.data.data;
+  },
+
+  async removeImage(projectId: string, imageId: string) {
+    const response = await httpClient.delete<ApiResponse<{ deleted: boolean }>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/images/${imageId}`,
+    );
     return response.data.data;
   },
 };

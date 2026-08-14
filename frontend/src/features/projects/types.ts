@@ -142,4 +142,9 @@ export interface ProjectImageUploadPayload {
   sortOrder?: number;
 }
 
+export interface ProjectCoverImagePayload {
+  projectId: string;
+  imageId: string | null;
+}
+
 export type ProjectListResponse = PaginatedPayload<Project>;

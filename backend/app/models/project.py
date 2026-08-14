@@ -100,6 +100,10 @@ class ProjectImage(BaseModel):
     project: Mapped[Project] = relationship(back_populates="images")
     media_asset: Mapped[MediaAsset] = relationship()
 
+    @property
+    def url(self) -> str | None:
+        return self.media_asset.public_url
+
 
 class ProjectVideo(BaseModel):
     __tablename__ = "project_videos"

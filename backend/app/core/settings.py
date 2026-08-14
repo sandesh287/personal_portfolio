@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
     upload_root: str = "uploads"
+    public_base_url: str = "http://127.0.0.1:8000"
     max_upload_size_mb: int = 10
     rate_limit_requests: int = 120
     rate_limit_window_seconds: int = 60

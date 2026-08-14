@@ -6,6 +6,7 @@ from app.features.projects.schemas import (
     ProjectCategoryCreateRequest,
     ProjectCategoryPayload,
     ProjectCategoryUpdateRequest,
+    ProjectCoverImageRequest,
     ProjectCreateRequest,
     ProjectFilters,
     ProjectImagePayload,
@@ -264,6 +265,69 @@ class ProjectService(BaseService):
         self.project_repository.db.commit()
         return {"deleted": True}
 
+    def list_project_images(self, project_id: UUID) -> list[ProjectImagePayload]:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        images = self.project_repository.list_project_images(project_id)
+        return [ProjectImagePayload.model_validate(image) for image in images]
+
+    def set_project_cover_image(
+        self,
+        project_id: UUID,
+        payload: ProjectCoverImageRequest,
+    ) -> ProjectPayload:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        if payload.image_id is None:
+            project.cover_image_id = None
+            self.project_repository.db.commit()
+            self.project_repository.db.refresh(project)
+            return ProjectPayload.model_validate(
+                self.project_repository.get_project_by_id(project.id)
+            )
+
+        project_image = self.project_repository.get_project_image(project_id, payload.image_id)
+
+        if project_image is None:
+            raise ApiError(
+                status_code=404,
+                message="Project image not found.",
+                code="project_image_not_found",
+            )
+
+        project.cover_image_id = project_image.media_asset_id
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(project)
+        return ProjectPayload.model_validate(self.project_repository.get_project_by_id(project.id))
+
+    def delete_project_image(self, project_id: UUID, image_id: UUID) -> dict[str, bool]:
+        project = self.project_repository.get_project_by_id(project_id)
+
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        project_image = self.project_repository.get_project_image(project_id, image_id)
+
+        if project_image is None:
+            raise ApiError(
+                status_code=404,
+                message="Project image not found.",
+                code="project_image_not_found",
+            )
+
+        if project.cover_image_id == project_image.media_asset_id:
+            project.cover_image_id = None
+
+        project_image.mark_deleted()
+        self.project_repository.db.commit()
+        return {"deleted": True}
+
     async def upload_project_image(
         self,
         project_id: UUID,
@@ -285,7 +349,7 @@ class ProjectService(BaseService):
         media_asset = MediaAsset(
             filename=stored_file.filename,
             storage_path=stored_file.path,
-            public_url=stored_file.path,
+            public_url=stored_file.public_url,
             content_type=stored_file.content_type,
             size_bytes=stored_file.size,
         )

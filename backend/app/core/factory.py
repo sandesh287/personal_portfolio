@@ -16,6 +16,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.staticfiles import StaticFiles
 
 
 @asynccontextmanager
@@ -52,5 +53,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(api_router, prefix=settings.api_v1_prefix)
+    app.mount(
+        "/uploads",
+        StaticFiles(directory=settings.upload_root, check_dir=False),
+        name="uploads",
+    )
 
     return app

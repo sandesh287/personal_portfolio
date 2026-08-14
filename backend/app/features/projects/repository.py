@@ -2,10 +2,10 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from app.features.projects.schemas import ProjectFilters, ProjectSortField, SortDirection
-from app.models.project import Project, ProjectCategory, Technology
+from app.models.project import Project, ProjectCategory, ProjectImage, ProjectVideo, Technology
 from app.repositories.base import BaseRepository
 from sqlalchemy import Select, func, or_, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, selectinload, with_loader_criteria
 
 
 class ProjectRepository(BaseRepository[Project]):
@@ -23,6 +23,30 @@ class ProjectRepository(BaseRepository[Project]):
     def get_project_by_id(self, project_id: UUID) -> Project | None:
         statement = self._with_relationships(self.base_query()).where(Project.id == project_id)
         return self.db.scalars(statement).first()
+
+    def get_project_image(self, project_id: UUID, image_id: UUID) -> ProjectImage | None:
+        statement = (
+            select(ProjectImage)
+            .where(
+                ProjectImage.id == image_id,
+                ProjectImage.project_id == project_id,
+                ProjectImage.deleted_at.is_(None),
+            )
+            .options(selectinload(ProjectImage.media_asset))
+        )
+        return self.db.scalars(statement).first()
+
+    def list_project_images(self, project_id: UUID) -> Sequence[ProjectImage]:
+        statement = (
+            select(ProjectImage)
+            .where(
+                ProjectImage.project_id == project_id,
+                ProjectImage.deleted_at.is_(None),
+            )
+            .order_by(ProjectImage.sort_order.asc(), ProjectImage.created_at.asc())
+            .options(selectinload(ProjectImage.media_asset))
+        )
+        return self.db.scalars(statement).all()
 
     def get_featured(self, limit: int = 6) -> Sequence[Project]:
         statement = (
@@ -208,4 +232,6 @@ class ProjectRepository(BaseRepository[Project]):
             selectinload(Project.technologies),
             selectinload(Project.images),
             selectinload(Project.videos),
+            with_loader_criteria(ProjectImage, ProjectImage.deleted_at.is_(None)),
+            with_loader_criteria(ProjectVideo, ProjectVideo.deleted_at.is_(None)),
         )

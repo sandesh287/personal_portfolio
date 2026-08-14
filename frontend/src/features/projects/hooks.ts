@@ -5,6 +5,7 @@ import { projectQueryKeys } from "./queryKeys";
 import type {
   AdminProjectListParams,
   FeaturedProjectsParams,
+  ProjectCoverImagePayload,
   ProjectCategoryCreatePayload,
   ProjectCategoryUpdatePayload,
   ProjectCreatePayload,
@@ -139,6 +140,14 @@ export function useProjectDetails(slug: string | undefined) {
   });
 }
 
+export function useProjectImages(projectId: string | undefined) {
+  return useQuery({
+    queryKey: projectQueryKeys.images(projectId ?? ""),
+    queryFn: () => projectsApi.images(projectId ?? ""),
+    enabled: Boolean(projectId),
+  });
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
@@ -183,8 +192,34 @@ export function useUploadProjectImage() {
 
   return useMutation({
     mutationFn: (payload: ProjectImageUploadPayload) => projectsApi.uploadImage(payload),
-    onSuccess: async () => {
+    onSuccess: async (_image, payload) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+    },
+  });
+}
+
+export function useSetProjectCoverImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectCoverImagePayload) => projectsApi.setCoverImage(payload),
+    onSuccess: async (_project, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+    },
+  });
+}
+
+export function useDeleteProjectImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ projectId, imageId }: { projectId: string; imageId: string }) =>
+      projectsApi.removeImage(projectId, imageId),
+    onSuccess: async (_result, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
     },
   });
 }

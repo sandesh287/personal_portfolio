@@ -93,6 +93,10 @@ class ProjectImagePayload(ApiSchema):
     sort_order: int
 
 
+class ProjectCoverImageRequest(ApiSchema):
+    image_id: UUID | None = None
+
+
 class ProjectVideoPayload(ApiSchema):
     id: UUID
     media_asset_id: UUID | None = None
