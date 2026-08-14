@@ -10,6 +10,7 @@ from app.features.projects.schemas import (
     ProjectCoverImageRequest,
     ProjectCreateRequest,
     ProjectFilters,
+    ProjectImageAttachRequest,
     ProjectImagePayload,
     ProjectPayload,
     ProjectSortField,
@@ -238,6 +239,23 @@ async def set_project_cover_image(
     return ApiResponse(
         data=project_service.set_project_cover_image(project_id, payload),
         message="Project cover image updated.",
+    )
+
+
+@router.post(
+    "/{project_id}/images/attach",
+    response_model=ApiResponse[ProjectImagePayload],
+    status_code=201,
+)
+async def attach_project_image(
+    project_id: UUID,
+    payload: ProjectImageAttachRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectImagePayload]:
+    return ApiResponse(
+        data=project_service.attach_project_image(project_id, payload),
+        message="Media asset attached to project.",
     )
 
 

@@ -33,6 +33,12 @@ const AdminTechnologiesPage = lazy(() =>
   })),
 );
 
+const AdminMediaPage = lazy(() =>
+  import("@/pages/admin/AdminMediaPage").then((module) => ({
+    default: module.AdminMediaPage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -93,7 +99,7 @@ export const router = createBrowserRouter([
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
           { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },
           { path: "resume", element: <PlaceholderPage title="Resume Admin" /> },
-          { path: "media", element: <PlaceholderPage title="Media Library" /> },
+          { path: "media", element: <LazyRoute component={AdminMediaPage} /> },
           { path: "messages", element: <PlaceholderPage title="Messages" /> },
           { path: "settings", element: <PlaceholderPage title="Settings" /> },
         ],

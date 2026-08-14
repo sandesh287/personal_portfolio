@@ -142,6 +142,13 @@ export interface ProjectImageUploadPayload {
   sortOrder?: number;
 }
 
+export interface ProjectImageAttachPayload {
+  projectId: string;
+  mediaAssetId: string;
+  caption?: string | null;
+  sortOrder?: number;
+}
+
 export interface ProjectCoverImagePayload {
   projectId: string;
   imageId: string | null;

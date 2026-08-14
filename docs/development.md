@@ -45,11 +45,21 @@ http://127.0.0.1:8000/api/v1/health
 
 ## Database
 
-Run migrations from the repository root:
+Run migrations from the backend directory (to ensure .env file is found):
+
+```powershell
+cd backend
+..\.venv\Scripts\alembic.exe upgrade head
+cd ..
+```
+
+Or use the repository root command:
 
 ```powershell
 .\.venv\Scripts\alembic.exe -c backend\alembic.ini upgrade head
 ```
+
+**Note:** If using a remote database (e.g., Neon), ensure your DATABASE_URL in `backend/.env` is correctly configured.
 
 Seed the single admin user:
 

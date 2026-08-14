@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Check,
   Edit3,
   FolderKanban,
   ImageIcon,
@@ -8,6 +9,7 @@ import {
   RefreshCw,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +31,7 @@ import {
 } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useMediaList } from "@/features/media";
 import {
   Table,
   TableBody,
@@ -39,6 +42,7 @@ import {
 } from "@/components/ui/Table";
 import {
   useAdminProjects,
+  useAttachProjectImage,
   useCreateProject,
   useDeleteProject,
   useDeleteProjectImage,
@@ -350,18 +354,40 @@ function ProjectMediaModal({
   onProjectChange: (project: Project) => void;
   onClose: () => void;
 }) {
+  const [librarySearch, setLibrarySearch] = useState("");
   const [caption, setCaption] = useState("");
   const [sortOrder, setSortOrder] = useState(0);
   const [file, setFile] = useState<File | null>(null);
   const imagesQuery = useProjectImages(project?.id);
+  const libraryQuery = useMediaList(
+    {
+      page: 1,
+      pageSize: 100,
+      search: librarySearch.trim() || undefined,
+      contentType: "image",
+      sort: "created_at",
+      order: "desc",
+    },
+    isOpen,
+  );
+  const attachImage = useAttachProjectImage();
   const uploadImage = useUploadProjectImage();
   const setCoverImage = useSetProjectCoverImage();
   const deleteImage = useDeleteProjectImage();
-  const isSubmitting = uploadImage.isPending || setCoverImage.isPending || deleteImage.isPending;
+  const isSubmitting =
+    attachImage.isPending ||
+    uploadImage.isPending ||
+    setCoverImage.isPending ||
+    deleteImage.isPending;
+  const attachedMediaIds = useMemo(
+    () => new Set(imagesQuery.data?.map((image) => image.mediaAssetId) ?? []),
+    [imagesQuery.data],
+  );
 
   useEffect(() => {
     if (isOpen) {
       setCaption("");
+      setLibrarySearch("");
       setSortOrder(0);
       setFile(null);
     }
@@ -386,6 +412,19 @@ function ProjectMediaModal({
       toast.success("Project image uploaded.");
     } catch (error) {
       toast.error(getErrorMessage(error, "Project image could not be uploaded."));
+    }
+  }
+
+  async function handleAttach(mediaAssetId: string) {
+    if (!project) {
+      return;
+    }
+
+    try {
+      await attachImage.mutateAsync({ projectId: project.id, mediaAssetId });
+      toast.success("Image added to project.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Image could not be added to the project."));
     }
   }
 
@@ -434,13 +473,16 @@ function ProjectMediaModal({
       description={project ? `Manage images for ${project.title}.` : undefined}
       isOpen={isOpen}
       onClose={onClose}
-      className="max-w-4xl"
+      className="max-w-6xl"
     >
       {!project ? null : (
-        <div className="space-y-5">
-          <section className="rounded-md border border-border bg-background p-4">
-            <h3 className="text-sm font-semibold text-foreground">Upload image</h3>
-            <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem]">
+        <div className="space-y-4">
+          <section className="border-b border-border pb-4">
+            <div className="flex items-center gap-2">
+              <Upload className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-foreground">Upload new image</h3>
+            </div>
+            <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(15rem,1.4fr)_minmax(12rem,1fr)_6rem_auto] lg:items-end">
               <FormField label="Image file">
                 <TextInput
                   type="file"
@@ -455,7 +497,7 @@ function ProjectMediaModal({
                   placeholder="Optional caption"
                 />
               </FormField>
-              <FormField label="Sort">
+              <FormField label="Order">
                 <TextInput
                   type="number"
                   min={0}
@@ -463,105 +505,200 @@ function ProjectMediaModal({
                   onChange={(event) => setSortOrder(Number(event.target.value))}
                 />
               </FormField>
-            </div>
-            <div className="mt-4 flex justify-end">
               <Button
                 type="button"
+                leftIcon={<Upload className="h-4 w-4" />}
                 onClick={() => void handleUpload()}
                 isLoading={uploadImage.isPending}
                 disabled={!file}
               >
-                Upload image
+                Upload
               </Button>
             </div>
           </section>
 
-          <section>
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold text-foreground">Gallery</h3>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => void handleSetCover(null)}
-                disabled={!project.coverImageId || isSubmitting}
-              >
-                Clear cover
-              </Button>
-            </div>
-
-            {imagesQuery.isLoading ? (
-              <div className="grid gap-3 md:grid-cols-2">
-                <Skeleton className="h-40" />
-                <Skeleton className="h-40" />
+          <div className="grid min-h-[28rem] gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.9fr)]">
+            <section className="min-w-0 lg:border-r lg:border-border lg:pr-5">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Media library</h3>
+                  <p className="text-xs text-muted-foreground">Choose an existing image to reuse.</p>
+                </div>
+                <label className="relative w-full sm:w-64">
+                  <span className="sr-only">Search media library</span>
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <TextInput
+                    value={librarySearch}
+                    onChange={(event) => setLibrarySearch(event.target.value)}
+                    placeholder="Search images..."
+                    className="pl-9"
+                  />
+                </label>
               </div>
-            ) : null}
 
-            {imagesQuery.isError ? (
-              <EmptyState
-                title="Images could not be loaded"
-                description={getErrorMessage(imagesQuery.error)}
-              />
-            ) : null}
+              {libraryQuery.isLoading ? (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className="aspect-[4/3]" />
+                  ))}
+                </div>
+              ) : null}
 
-            {imagesQuery.data?.length === 0 ? (
-              <EmptyState
-                title="No project images yet"
-                description="Upload images to create a gallery and choose a cover."
-              />
-            ) : null}
+              {libraryQuery.isError ? (
+                <EmptyState
+                  title="Media library could not be loaded"
+                  description={getErrorMessage(libraryQuery.error)}
+                />
+              ) : null}
 
-            {imagesQuery.data && imagesQuery.data.length > 0 ? (
-              <div className="grid gap-3 md:grid-cols-2">
-                {imagesQuery.data.map((image) => {
-                  const isCover = project.coverImageId === image.mediaAssetId;
+              {!libraryQuery.isLoading && libraryQuery.data?.items.length === 0 ? (
+                <EmptyState
+                  title="No library images found"
+                  description="Upload an image above or adjust your search."
+                />
+              ) : null}
 
-                  return (
-                    <article
-                      key={image.id}
-                      className="overflow-hidden rounded-md border border-border bg-background"
-                    >
-                      {image.url ? (
-                        <img src={image.url} alt={image.caption ?? ""} className="h-40 w-full object-cover" />
-                      ) : (
-                        <div className="flex h-40 items-center justify-center bg-muted text-muted-foreground">
-                          <ImageIcon className="h-8 w-8" aria-hidden="true" />
+              {libraryQuery.data?.items.length ? (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {libraryQuery.data.items.map((media) => {
+                    const isAttached = attachedMediaIds.has(media.id);
+                    return (
+                      <article
+                        key={media.id}
+                        className="group overflow-hidden rounded-md border border-border bg-background"
+                      >
+                        <div className="aspect-[4/3] bg-muted">
+                          {media.publicUrl ? (
+                            <img
+                              src={media.publicUrl}
+                              alt={media.altText || media.originalFilename}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">
+                              <ImageIcon className="h-7 w-7" aria-hidden="true" />
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div className="space-y-3 p-3">
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {image.caption || "Untitled image"}
+                        <div className="flex items-center gap-2 p-2">
+                          <p className="min-w-0 flex-1 truncate text-xs font-medium" title={media.originalFilename}>
+                            {media.originalFilename}
                           </p>
-                          <p className="text-xs text-muted-foreground">Sort order {image.sortOrder}</p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
                           <Button
                             type="button"
-                            variant={isCover ? "primary" : "secondary"}
+                            variant={isAttached ? "ghost" : "secondary"}
                             size="sm"
-                            onClick={() => void handleSetCover(image.id)}
-                            disabled={isCover || isSubmitting}
+                            leftIcon={isAttached ? <Check className="h-3.5 w-3.5" /> : undefined}
+                            disabled={isAttached || isSubmitting}
+                            onClick={() => void handleAttach(media.id)}
                           >
-                            {isCover ? "Cover" : "Set cover"}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="danger"
-                            size="sm"
-                            onClick={() => void handleDeleteImage(image.id)}
-                            isLoading={deleteImage.isPending}
-                          >
-                            Delete
+                            {isAttached ? "Added" : "Add"}
                           </Button>
                         </div>
-                      </div>
-                    </article>
-                  );
-                })}
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </section>
+
+            <section className="min-w-0">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Project gallery</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {imagesQuery.data?.length ?? 0} attached
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void handleSetCover(null)}
+                  disabled={!project.coverImageId || isSubmitting}
+                >
+                  Clear cover
+                </Button>
               </div>
-            ) : null}
-          </section>
+
+              {imagesQuery.isLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-24" />
+                  <Skeleton className="h-24" />
+                </div>
+              ) : null}
+
+              {imagesQuery.isError ? (
+                <EmptyState title="Gallery could not be loaded" description={getErrorMessage(imagesQuery.error)} />
+              ) : null}
+
+              {imagesQuery.data?.length === 0 ? (
+                <EmptyState
+                  title="No images attached"
+                  description="Add an image from the library to build this project gallery."
+                />
+              ) : null}
+
+              {imagesQuery.data && imagesQuery.data.length > 0 ? (
+                <div className="space-y-3">
+                  {imagesQuery.data.map((image) => {
+                    const isCover = project.coverImageId === image.mediaAssetId;
+
+                    return (
+                      <article
+                        key={image.id}
+                        className={cn(
+                          "flex gap-3 rounded-md border bg-background p-2",
+                          isCover ? "border-primary" : "border-border",
+                        )}
+                      >
+                        {image.url ? (
+                          <img
+                            src={image.url}
+                            alt={image.caption ?? ""}
+                            className="h-20 w-24 shrink-0 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-20 w-24 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
+                            <ImageIcon className="h-6 w-6" aria-hidden="true" />
+                          </div>
+                        )}
+                        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+                          <div>
+                            <p className="truncate text-sm font-medium text-foreground">
+                              {image.caption || "Project image"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">Order {image.sortOrder}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            <Button
+                              type="button"
+                              variant={isCover ? "primary" : "secondary"}
+                              size="sm"
+                              onClick={() => void handleSetCover(image.id)}
+                              disabled={isCover || isSubmitting}
+                            >
+                              {isCover ? "Cover" : "Set cover"}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => void handleDeleteImage(image.id)}
+                              disabled={isSubmitting}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </section>
+          </div>
         </div>
       )}
     </Modal>

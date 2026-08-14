@@ -12,20 +12,22 @@ class LocalStorageProvider(StorageProvider):
         ensure_directory(self.root)
 
     async def save(self, filename: str, content_type: str, content: bytes) -> StoredFile:
-        storage_name = f"{uuid4()}-{filename}"
+        safe_filename = Path(filename).name
+        storage_name = f"{uuid4()}-{safe_filename}"
         target = self.root / storage_name
         target.write_bytes(content)
 
         return StoredFile(
             path=str(target),
-            filename=filename,
+            filename=safe_filename,
             content_type=content_type,
             size=len(content),
             public_url=f"{settings.public_base_url}/uploads/{quote(storage_name)}",
         )
 
     async def delete(self, path: str) -> None:
-        target = Path(path)
+        target = Path(path).resolve()
+        root = self.root.resolve()
 
-        if target.exists():
+        if target.parent == root and target.exists():
             target.unlink()

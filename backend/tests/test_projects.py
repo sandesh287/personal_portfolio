@@ -562,3 +562,79 @@ def test_project_image_management_requires_admin(
     response = client.get(f"/api/v1/projects/{project.id}/images")
 
     assert response.status_code == 401
+
+
+def test_admin_can_attach_library_image_to_project(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Library Project",
+        slug="library-project",
+        summary="Uses shared media",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="stored-preview.png",
+        original_filename="preview.png",
+        storage_path="uploads/stored-preview.png",
+        public_url="http://testserver/uploads/stored-preview.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project, media])
+    db_session.commit()
+    headers = auth_headers(admin_user)
+
+    response = client.post(
+        f"/api/v1/projects/{project.id}/images/attach",
+        json={"mediaAssetId": str(media.id), "caption": "Shared preview", "sortOrder": 3},
+        headers=headers,
+    )
+
+    assert response.status_code == 201
+    assert response.json()["data"]["mediaAssetId"] == str(media.id)
+    assert response.json()["data"]["caption"] == "Shared preview"
+    assert db_session.query(MediaAsset).count() == 1
+    assert db_session.query(ProjectImage).count() == 1
+
+    duplicate = client.post(
+        f"/api/v1/projects/{project.id}/images/attach",
+        json={"mediaAssetId": str(media.id)},
+        headers=headers,
+    )
+    assert duplicate.status_code == 409
+    assert duplicate.json()["errors"][0]["code"] == "project_image_exists"
+
+
+def test_project_gallery_rejects_non_image_library_asset(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="PDF Project",
+        slug="pdf-project",
+        summary="Rejects PDF gallery assets",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="resume.pdf",
+        original_filename="resume.pdf",
+        storage_path="uploads/resume.pdf",
+        public_url="http://testserver/uploads/resume.pdf",
+        content_type="application/pdf",
+        size_bytes=128,
+    )
+    db_session.add_all([project, media])
+    db_session.commit()
+
+    response = client.post(
+        f"/api/v1/projects/{project.id}/images/attach",
+        json={"mediaAssetId": str(media.id)},
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 422
+    assert response.json()["errors"][0]["code"] == "invalid_project_image"

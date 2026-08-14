@@ -301,13 +301,15 @@ Paginated data:
 | --- | --- | --- | --- |
 | `GET` | `/api/v1/projects/{id}/images` | admin | List project images |
 | `POST` | `/api/v1/projects/{id}/images` | admin | Upload project image |
+| `POST` | `/api/v1/projects/{id}/images/attach` | admin | Attach a Media Library image |
 | `PATCH` | `/api/v1/projects/{id}/cover-image` | admin | Set or clear cover image |
 | `DELETE` | `/api/v1/projects/{id}/images/{imageId}` | admin | Delete project image |
 
 - Upload body: `multipart/form-data` with `file`, `caption`, `sortOrder`
+- Attach body: `{ "mediaAssetId": "uuid", "caption": "optional", "sortOrder": 0 }`
 - Cover body: `{ "imageId": "uuid" }`; use `null` to clear
 - Responses: `ProjectImage`, `Project`, or `{ "deleted": true }`
-- Errors: `401`, `403`, `404`, `413`, `422`
+- Errors: `401`, `403`, `404`, `409`, `413`, `422`
 
 ## Project Categories
 
@@ -465,6 +467,8 @@ Future admin CRUD endpoints:
 
 ## Media Library
 
+**Implemented** - Admin media library foundation with upload, search, and management.
+
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
 | `GET` | `/api/v1/media` | admin | List media assets |
@@ -473,10 +477,14 @@ Future admin CRUD endpoints:
 | `PATCH` | `/api/v1/media/{id}` | admin | Update alt text/metadata |
 | `DELETE` | `/api/v1/media/{id}` | admin | Delete media |
 
-- List query: `page`, `pageSize`, `search`, `contentType`, `sort`, `order`
-- Upload body: `multipart/form-data` with `file`, `altText`
+- List query: `page`, `pageSize`, `search`, `contentType`, `folder`, `sort`, `order`
+- Sort values: `created_at`, `original_filename`, `size_bytes`; order: `asc`, `desc`
+- Upload body: `multipart/form-data` with `file`, optional `altText`, optional `folder`
+- Update body: optional `altText`, optional `folder`
 - Response: `MediaAsset`
-- Errors: `401`, `403`, `404`, `413`, `422`
+- Errors: `401`, `403`, `404`, `409` when referenced, `413`, `422`
+- Supported file types: images, videos, PDFs
+- Max file size: 10MB
 
 ## Messages / Communication Terminal
 

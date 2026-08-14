@@ -48,6 +48,18 @@ class ProjectRepository(BaseRepository[Project]):
         )
         return self.db.scalars(statement).all()
 
+    def get_project_image_by_media_asset(
+        self,
+        project_id: UUID,
+        media_asset_id: UUID,
+    ) -> ProjectImage | None:
+        statement = select(ProjectImage).where(
+            ProjectImage.project_id == project_id,
+            ProjectImage.media_asset_id == media_asset_id,
+            ProjectImage.deleted_at.is_(None),
+        )
+        return self.db.scalars(statement).first()
+
     def get_featured(self, limit: int = 6) -> Sequence[Project]:
         statement = (
             self._with_relationships(self.base_query())

@@ -9,6 +9,7 @@ from app.features.projects.schemas import (
     ProjectCoverImageRequest,
     ProjectCreateRequest,
     ProjectFilters,
+    ProjectImageAttachRequest,
     ProjectImagePayload,
     ProjectPayload,
     ProjectUpdateRequest,
@@ -274,6 +275,49 @@ class ProjectService(BaseService):
         images = self.project_repository.list_project_images(project_id)
         return [ProjectImagePayload.model_validate(image) for image in images]
 
+    def attach_project_image(
+        self,
+        project_id: UUID,
+        payload: ProjectImageAttachRequest,
+    ) -> ProjectImagePayload:
+        project = self.project_repository.get_project_by_id(project_id)
+        if project is None:
+            raise ApiError(status_code=404, message="Project not found.", code="project_not_found")
+
+        media_asset = self.project_repository.db.get(MediaAsset, payload.media_asset_id)
+        if media_asset is None or media_asset.deleted_at is not None:
+            raise ApiError(
+                status_code=404,
+                message="Media asset not found.",
+                code="media_not_found",
+            )
+        if not media_asset.content_type.startswith("image/"):
+            raise ApiError(
+                status_code=422,
+                message="Only image assets can be attached to a project gallery.",
+                code="invalid_project_image",
+            )
+        if self.project_repository.get_project_image_by_media_asset(
+            project_id,
+            payload.media_asset_id,
+        ):
+            raise ApiError(
+                status_code=409,
+                message="Media asset is already attached to this project.",
+                code="project_image_exists",
+            )
+
+        project_image = ProjectImage(
+            project_id=project.id,
+            media_asset=media_asset,
+            caption=payload.caption,
+            sort_order=payload.sort_order,
+        )
+        self.project_repository.db.add(project_image)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(project_image)
+        return ProjectImagePayload.model_validate(project_image)
+
     def set_project_cover_image(
         self,
         project_id: UUID,
@@ -348,6 +392,7 @@ class ProjectService(BaseService):
         ).payload
         media_asset = MediaAsset(
             filename=stored_file.filename,
+            original_filename=filename,
             storage_path=stored_file.path,
             public_url=stored_file.public_url,
             content_type=stored_file.content_type,

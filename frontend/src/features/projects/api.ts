@@ -9,6 +9,7 @@ import type {
   ProjectCoverImagePayload,
   ProjectCreatePayload,
   ProjectImage,
+  ProjectImageAttachPayload,
   ProjectImageUploadPayload,
   ProjectListParams,
   ProjectListResponse,
@@ -156,6 +157,19 @@ export const projectsApi = {
       },
     );
 
+    return response.data.data;
+  },
+
+  async attachImage({
+    projectId,
+    mediaAssetId,
+    caption,
+    sortOrder = 0,
+  }: ProjectImageAttachPayload) {
+    const response = await httpClient.post<ApiResponse<ProjectImage>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/images/attach`,
+      { mediaAssetId, caption, sortOrder },
+    );
     return response.data.data;
   },
 

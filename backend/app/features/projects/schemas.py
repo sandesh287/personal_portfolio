@@ -97,6 +97,12 @@ class ProjectCoverImageRequest(ApiSchema):
     image_id: UUID | None = None
 
 
+class ProjectImageAttachRequest(ApiSchema):
+    media_asset_id: UUID
+    caption: str | None = Field(default=None, max_length=255)
+    sort_order: int = Field(default=0, ge=0)
+
+
 class ProjectVideoPayload(ApiSchema):
     id: UUID
     media_asset_id: UUID | None = None

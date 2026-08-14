@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { mediaKeys } from "@/features/media/queryKeys";
 
 import { projectsApi } from "./api";
 import { projectQueryKeys } from "./queryKeys";
@@ -10,6 +11,7 @@ import type {
   ProjectCategoryUpdatePayload,
   ProjectCreatePayload,
   ProjectImageUploadPayload,
+  ProjectImageAttachPayload,
   ProjectListParams,
   ProjectUpdatePayload,
   TechnologyCreatePayload,
@@ -192,6 +194,19 @@ export function useUploadProjectImage() {
 
   return useMutation({
     mutationFn: (payload: ProjectImageUploadPayload) => projectsApi.uploadImage(payload),
+    onSuccess: async (_image, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+      await queryClient.invalidateQueries({ queryKey: mediaKeys.all });
+    },
+  });
+}
+
+export function useAttachProjectImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ProjectImageAttachPayload) => projectsApi.attachImage(payload),
     onSuccess: async (_image, payload) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
