@@ -13,6 +13,7 @@ from app.features.projects.schemas import (
     ProjectFilters,
     ProjectImageAttachRequest,
     ProjectImagePayload,
+    ProjectImageUpdateRequest,
     ProjectPayload,
     ProjectSortField,
     ProjectStatus,
@@ -20,6 +21,7 @@ from app.features.projects.schemas import (
     ProjectVideoAttachRequest,
     ProjectVideoPayload,
     ProjectVideoUpdateRequest,
+    ReorderRequest,
     SortDirection,
     TechnologyCreateRequest,
     TechnologyPayload,
@@ -292,6 +294,36 @@ async def upload_project_image(
     )
 
 
+@router.patch(
+    "/{project_id}/images/reorder",
+    response_model=ApiResponse[list[ProjectImagePayload]],
+)
+async def reorder_project_images(
+    project_id: UUID,
+    payload: ReorderRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[list[ProjectImagePayload]]:
+    return ApiResponse(
+        data=project_service.reorder_project_images(project_id, payload),
+        message="Project images reordered.",
+    )
+
+
+@router.patch("/{project_id}/images/{image_id}", response_model=ApiResponse[ProjectImagePayload])
+async def update_project_image(
+    project_id: UUID,
+    image_id: UUID,
+    payload: ProjectImageUpdateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[ProjectImagePayload]:
+    return ApiResponse(
+        data=project_service.update_project_image(project_id, image_id, payload),
+        message="Project image updated.",
+    )
+
+
 @router.delete("/{project_id}/images/{image_id}", response_model=ApiResponse[dict[str, bool]])
 async def delete_project_image(
     project_id: UUID,
@@ -345,6 +377,22 @@ async def create_external_project_video(
     return ApiResponse(
         data=project_service.create_external_project_video(project_id, payload),
         message="External project video created.",
+    )
+
+
+@router.patch(
+    "/{project_id}/videos/reorder",
+    response_model=ApiResponse[list[ProjectVideoPayload]],
+)
+async def reorder_project_videos(
+    project_id: UUID,
+    payload: ReorderRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    project_service: Annotated[ProjectService, Depends(get_project_service)],
+) -> ApiResponse[list[ProjectVideoPayload]]:
+    return ApiResponse(
+        data=project_service.reorder_project_videos(project_id, payload),
+        message="Project videos reordered.",
     )
 
 

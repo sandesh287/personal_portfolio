@@ -10,11 +10,13 @@ import type {
   ProjectCategoryCreatePayload,
   ProjectCategoryUpdatePayload,
   ProjectCreatePayload,
+  ProjectImageUpdatePayload,
   ProjectImageUploadPayload,
   ProjectImageAttachPayload,
   ProjectVideoAttachPayload,
   ProjectExternalVideoCreatePayload,
   ProjectVideoUpdatePayload,
+  ReorderPayload,
   ProjectListParams,
   ProjectUpdatePayload,
   TechnologyCreatePayload,
@@ -290,6 +292,39 @@ export function useUpdateProjectVideo() {
   return useMutation({
     mutationFn: (payload: ProjectVideoUpdatePayload) => projectsApi.updateVideo(payload),
     onSuccess: async (_video, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
+    },
+  });
+}
+
+export function useUpdateProjectImage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProjectImageUpdatePayload) => projectsApi.updateImage(payload),
+    onSuccess: async (_image, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+    },
+  });
+}
+
+export function useReorderProjectImages() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ReorderPayload) => projectsApi.reorderImages(payload),
+    onSuccess: async (_images, payload) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.images(payload.projectId) });
+    },
+  });
+}
+
+export function useReorderProjectVideos() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ReorderPayload) => projectsApi.reorderVideos(payload),
+    onSuccess: async (_videos, payload) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.videos(payload.projectId) });
     },

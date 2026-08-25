@@ -72,6 +72,23 @@ export interface ProjectVideoUpdatePayload {
   sortOrder?: number;
 }
 
+export interface ProjectImageUpdatePayload {
+  projectId: string;
+  imageId: string;
+  caption?: string | null;
+  sortOrder?: number;
+}
+
+export interface ReorderItem {
+  id: string;
+  sortOrder: number;
+}
+
+export interface ReorderPayload {
+  projectId: string;
+  items: ReorderItem[];
+}
+
 export interface Project {
   id: string;
   title: string;

@@ -10,11 +10,13 @@ import type {
   ProjectCreatePayload,
   ProjectImage,
   ProjectImageAttachPayload,
+  ProjectImageUpdatePayload,
   ProjectImageUploadPayload,
   ProjectVideo,
   ProjectVideoAttachPayload,
   ProjectExternalVideoCreatePayload,
   ProjectVideoUpdatePayload,
+  ReorderPayload,
   ProjectListParams,
   ProjectListResponse,
   ProjectCategory,
@@ -216,6 +218,30 @@ export const projectsApi = {
     const response = await httpClient.patch<ApiResponse<ProjectVideo>>(
       `${PROJECTS_ENDPOINT}/${projectId}/videos/${videoId}`,
       payload,
+    );
+    return response.data.data;
+  },
+
+  async updateImage({ projectId, imageId, ...payload }: ProjectImageUpdatePayload) {
+    const response = await httpClient.patch<ApiResponse<ProjectImage>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/images/${imageId}`,
+      payload,
+    );
+    return response.data.data;
+  },
+
+  async reorderImages({ projectId, items }: ReorderPayload) {
+    const response = await httpClient.patch<ApiResponse<ProjectImage[]>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/images/reorder`,
+      { items },
+    );
+    return response.data.data;
+  },
+
+  async reorderVideos({ projectId, items }: ReorderPayload) {
+    const response = await httpClient.patch<ApiResponse<ProjectVideo[]>>(
+      `${PROJECTS_ENDPOINT}/${projectId}/videos/reorder`,
+      { items },
     );
     return response.data.data;
   },

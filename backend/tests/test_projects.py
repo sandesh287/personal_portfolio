@@ -782,3 +782,398 @@ def test_project_video_validation_and_authorization(
         headers=auth_headers(admin_user),
     )
     assert invalid_host.status_code == 422
+
+
+def test_admin_can_update_project_image_metadata(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Image Meta Project",
+        slug="image-meta-project",
+        summary="Test image metadata update",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="gallery.png",
+        original_filename="gallery.png",
+        storage_path="uploads/gallery.png",
+        public_url="http://testserver/uploads/gallery.png",
+        content_type="image/png",
+        size_bytes=256,
+    )
+    db_session.add_all([project, media])
+    db_session.commit()
+    image = ProjectImage(
+        project_id=project.id,
+        media_asset_id=media.id,
+        caption="Original caption",
+        sort_order=0,
+    )
+    db_session.add(image)
+    db_session.commit()
+    db_session.refresh(image)
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/{image.id}",
+        json={"caption": "Updated caption", "sortOrder": 5},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert payload["caption"] == "Updated caption"
+    assert payload["sortOrder"] == 5
+    db_session.refresh(media)
+    assert media.deleted_at is None
+
+
+def test_admin_can_reorder_project_images(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Reorder Images Project",
+        slug="reorder-images-project",
+        summary="Test image reorder",
+        status="draft",
+    )
+    media1 = MediaAsset(
+        filename="img1.png",
+        original_filename="img1.png",
+        storage_path="uploads/img1.png",
+        public_url="http://testserver/uploads/img1.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    media2 = MediaAsset(
+        filename="img2.png",
+        original_filename="img2.png",
+        storage_path="uploads/img2.png",
+        public_url="http://testserver/uploads/img2.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project, media1, media2])
+    db_session.commit()
+    img1 = ProjectImage(project_id=project.id, media_asset_id=media1.id, sort_order=0)
+    img2 = ProjectImage(project_id=project.id, media_asset_id=media2.id, sort_order=1)
+    db_session.add_all([img1, img2])
+    db_session.commit()
+    db_session.refresh(img1)
+    db_session.refresh(img2)
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/reorder",
+        json={
+            "items": [
+                {"id": str(img2.id), "sortOrder": 0},
+                {"id": str(img1.id), "sortOrder": 1},
+            ]
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert payload[0]["id"] == str(img2.id)
+    assert payload[0]["sortOrder"] == 0
+    assert payload[1]["id"] == str(img1.id)
+    assert payload[1]["sortOrder"] == 1
+    db_session.refresh(media1)
+    db_session.refresh(media2)
+    assert media1.deleted_at is None
+    assert media2.deleted_at is None
+
+
+def test_admin_can_reorder_project_videos(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Reorder Videos Project",
+        slug="reorder-videos-project",
+        summary="Test video reorder",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+    vid1 = ProjectVideo(
+        project_id=project.id,
+        provider="youtube",
+        external_url="https://www.youtube.com/watch?v=a1",
+        sort_order=0,
+    )
+    vid2 = ProjectVideo(
+        project_id=project.id,
+        provider="vimeo",
+        external_url="https://vimeo.com/222",
+        sort_order=1,
+    )
+    db_session.add_all([vid1, vid2])
+    db_session.commit()
+    db_session.refresh(vid1)
+    db_session.refresh(vid2)
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/videos/reorder",
+        json={
+            "items": [
+                {"id": str(vid2.id), "sortOrder": 0},
+                {"id": str(vid1.id), "sortOrder": 1},
+            ]
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert payload[0]["id"] == str(vid2.id)
+    assert payload[0]["sortOrder"] == 0
+    assert payload[1]["id"] == str(vid1.id)
+    assert payload[1]["sortOrder"] == 1
+
+
+def test_reorder_rejects_duplicate_ids(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Dup IDs Project",
+        slug="dup-ids-project",
+        summary="Duplicate test",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="dup.png",
+        original_filename="dup.png",
+        storage_path="uploads/dup.png",
+        public_url="http://testserver/uploads/dup.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project, media])
+    db_session.commit()
+    img = ProjectImage(project_id=project.id, media_asset_id=media.id, sort_order=0)
+    db_session.add(img)
+    db_session.commit()
+    db_session.refresh(img)
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/reorder",
+        json={
+            "items": [
+                {"id": str(img.id), "sortOrder": 0},
+                {"id": str(img.id), "sortOrder": 1},
+            ]
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+
+
+def test_reorder_rejects_duplicate_sort_orders(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Duplicate Positions",
+        slug="duplicate-positions",
+        summary="Reject duplicate positions",
+        status="draft",
+    )
+    media1 = MediaAsset(
+        filename="position-1.png",
+        original_filename="position-1.png",
+        storage_path="uploads/position-1.png",
+        public_url="http://testserver/uploads/position-1.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    media2 = MediaAsset(
+        filename="position-2.png",
+        original_filename="position-2.png",
+        storage_path="uploads/position-2.png",
+        public_url="http://testserver/uploads/position-2.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project, media1, media2])
+    db_session.commit()
+    image1 = ProjectImage(project_id=project.id, media_asset_id=media1.id, sort_order=0)
+    image2 = ProjectImage(project_id=project.id, media_asset_id=media2.id, sort_order=1)
+    db_session.add_all([image1, image2])
+    db_session.commit()
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/reorder",
+        json={
+            "items": [
+                {"id": str(image1.id), "sortOrder": 0},
+                {"id": str(image2.id), "sortOrder": 0},
+            ]
+        },
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 422
+    db_session.refresh(image1)
+    db_session.refresh(image2)
+    assert (image1.sort_order, image2.sort_order) == (0, 1)
+
+
+def test_reorder_requires_complete_project_media_list(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Complete Reorder",
+        slug="complete-reorder",
+        summary="Require all active items",
+        status="draft",
+    )
+    video1 = ProjectVideo(
+        project=project,
+        provider="youtube",
+        external_url="https://www.youtube.com/watch?v=complete1",
+        sort_order=0,
+    )
+    video2 = ProjectVideo(
+        project=project,
+        provider="vimeo",
+        external_url="https://vimeo.com/987654",
+        sort_order=1,
+    )
+    db_session.add_all([project, video1, video2])
+    db_session.commit()
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/videos/reorder",
+        json={"items": [{"id": str(video2.id), "sortOrder": 0}]},
+        headers=auth_headers(admin_user),
+    )
+
+    assert response.status_code == 422
+    assert response.json()["errors"][0]["code"] == "invalid_reorder_ids"
+    db_session.refresh(video1)
+    db_session.refresh(video2)
+    assert (video1.sort_order, video2.sort_order) == (0, 1)
+
+
+def test_reorder_rejects_ids_from_another_project(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project1 = Project(
+        title="Project One",
+        slug="project-one",
+        summary="First",
+        status="draft",
+    )
+    project2 = Project(
+        title="Project Two",
+        slug="project-two",
+        summary="Second",
+        status="draft",
+    )
+    media = MediaAsset(
+        filename="foreign.png",
+        original_filename="foreign.png",
+        storage_path="uploads/foreign.png",
+        public_url="http://testserver/uploads/foreign.png",
+        content_type="image/png",
+        size_bytes=128,
+    )
+    db_session.add_all([project1, project2, media])
+    db_session.commit()
+    img = ProjectImage(project_id=project2.id, media_asset_id=media.id, sort_order=0)
+    db_session.add(img)
+    db_session.commit()
+    db_session.refresh(img)
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project1.id}/images/reorder",
+        json={"items": [{"id": str(img.id), "sortOrder": 0}]},
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["errors"][0]["code"] == "invalid_reorder_ids"
+
+
+def test_reorder_rejects_missing_ids(
+    client: TestClient,
+    db_session: Session,
+    admin_user: User,
+) -> None:
+    project = Project(
+        title="Missing IDs Project",
+        slug="missing-ids-project",
+        summary="Missing test",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+    headers = auth_headers(admin_user)
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/reorder",
+        json={"items": [{"id": "00000000-0000-0000-0000-000000000001", "sortOrder": 0}]},
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["errors"][0]["code"] == "invalid_reorder_ids"
+
+
+def test_reorder_requires_admin(client: TestClient, db_session: Session) -> None:
+    project = Project(
+        title="Auth Reorder",
+        slug="auth-reorder",
+        summary="Needs admin",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/reorder",
+        json={"items": [{"id": "00000000-0000-0000-0000-000000000001", "sortOrder": 0}]},
+    )
+    assert response.status_code == 401
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/videos/reorder",
+        json={"items": [{"id": "00000000-0000-0000-0000-000000000001", "sortOrder": 0}]},
+    )
+    assert response.status_code == 401
+
+
+def test_image_update_requires_admin(client: TestClient, db_session: Session) -> None:
+    project = Project(
+        title="Auth Image Update",
+        slug="auth-image-update",
+        summary="Needs admin",
+        status="draft",
+    )
+    db_session.add(project)
+    db_session.commit()
+
+    response = client.patch(
+        f"/api/v1/projects/{project.id}/images/00000000-0000-0000-0000-000000000001",
+        json={"caption": "Blocked"},
+    )
+    assert response.status_code == 401

@@ -302,13 +302,17 @@ Paginated data:
 | `GET` | `/api/v1/projects/{id}/images` | admin | List project images |
 | `POST` | `/api/v1/projects/{id}/images` | admin | Upload project image |
 | `POST` | `/api/v1/projects/{id}/images/attach` | admin | Attach a Media Library image |
+| `PATCH` | `/api/v1/projects/{id}/images/{imageId}` | admin | Update image metadata |
+| `PATCH` | `/api/v1/projects/{id}/images/reorder` | admin | Bulk reorder project images |
 | `PATCH` | `/api/v1/projects/{id}/cover-image` | admin | Set or clear cover image |
 | `DELETE` | `/api/v1/projects/{id}/images/{imageId}` | admin | Delete project image |
 
 - Upload body: `multipart/form-data` with `file`, `caption`, `sortOrder`
 - Attach body: `{ "mediaAssetId": "uuid", "caption": "optional", "sortOrder": 0 }`
+- Update body: `{ "caption": "string or null", "sortOrder": 0 }` (all fields optional)
+- Reorder body: `{ "items": [{ "id": "uuid", "sortOrder": 0 }] }` — must include every active project image with unique contiguous positions starting at zero
 - Cover body: `{ "imageId": "uuid" }`; use `null` to clear
-- Responses: `ProjectImage`, `Project`, or `{ "deleted": true }`
+- Responses: `ProjectImage`, `ProjectImage[]`, `Project`, or `{ "deleted": true }`
 - Errors: `401`, `403`, `404`, `409`, `413`, `422`
 
 ### Project Videos
@@ -319,11 +323,13 @@ Paginated data:
 | `POST` | `/api/v1/projects/{id}/videos/attach` | admin | Attach a Media Library video |
 | `POST` | `/api/v1/projects/{id}/videos/external` | admin | Add a YouTube or Vimeo video |
 | `PATCH` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Update video metadata |
+| `PATCH` | `/api/v1/projects/{id}/videos/reorder` | admin | Bulk reorder project videos |
 | `DELETE` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Remove a project video |
 
 - Attach body: `mediaAssetId`, optional `title`, `caption`, `sortOrder`
 - External body: `externalUrl`, optional `title`, `caption`, `sortOrder`
 - Update body: optional `title`, `caption`, `sortOrder`
+- Reorder body: `{ "items": [{ "id": "uuid", "sortOrder": 0 }] }` — must include every active project video with unique contiguous positions starting at zero
 - Supported external providers: YouTube and Vimeo
 - Removing a project video does not delete its Media Library asset
 - Errors: `401`, `403`, `404`, `409`, `422`

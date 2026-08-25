@@ -143,6 +143,34 @@ class ProjectVideoUpdateRequest(ApiSchema):
     sort_order: int | None = Field(default=None, ge=0)
 
 
+class ProjectImageUpdateRequest(ApiSchema):
+    caption: str | None = Field(default=None, max_length=255)
+    sort_order: int | None = Field(default=None, ge=0)
+
+
+class ReorderItem(ApiSchema):
+    id: UUID
+    sort_order: int = Field(ge=0)
+
+
+class ReorderRequest(ApiSchema):
+    items: list[ReorderItem] = Field(min_length=1)
+
+    @field_validator("items")
+    @classmethod
+    def unique_ids(cls, value: list[ReorderItem]) -> list[ReorderItem]:
+        ids = [item.id for item in value]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Duplicate IDs are not allowed.")
+
+        sort_orders = [item.sort_order for item in value]
+        if len(sort_orders) != len(set(sort_orders)):
+            raise ValueError("Duplicate sort orders are not allowed.")
+        if set(sort_orders) != set(range(len(value))):
+            raise ValueError("Sort orders must be contiguous and start at zero.")
+        return value
+
+
 class ProjectPayload(ApiSchema):
     id: UUID
     title: str

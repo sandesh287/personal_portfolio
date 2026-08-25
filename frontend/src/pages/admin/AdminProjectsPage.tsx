@@ -9,6 +9,7 @@ import {
   Loader2,
   Plus,
   RefreshCw,
+  Save,
   Search,
   Trash2,
   Upload,
@@ -33,6 +34,7 @@ import {
 } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { SortableList } from "@/components/ui/SortableList";
 import { useMediaList } from "@/features/media";
 import {
   Table,
@@ -54,6 +56,9 @@ import {
   useProjectCategories,
   useProjectImages,
   useProjectVideos,
+  useReorderProjectImages,
+  useReorderProjectVideos,
+  useUpdateProjectImage,
   useUpdateProjectVideo,
   useTechnologies,
   useSetProjectCoverImage,
@@ -64,6 +69,7 @@ import type {
   Project,
   ProjectCategory,
   ProjectCreatePayload,
+  ProjectImage,
   ProjectStatus,
   ProjectVideo,
   Technology,
@@ -383,11 +389,15 @@ function ProjectMediaModal({
   const uploadImage = useUploadProjectImage();
   const setCoverImage = useSetProjectCoverImage();
   const deleteImage = useDeleteProjectImage();
+  const updateImage = useUpdateProjectImage();
+  const reorderImages = useReorderProjectImages();
   const isSubmitting =
     attachImage.isPending ||
     uploadImage.isPending ||
     setCoverImage.isPending ||
-    deleteImage.isPending;
+    deleteImage.isPending ||
+    updateImage.isPending ||
+    reorderImages.isPending;
   const attachedMediaIds = useMemo(
     () => new Set(imagesQuery.data?.map((image) => image.mediaAssetId) ?? []),
     [imagesQuery.data],
@@ -635,102 +645,15 @@ function ProjectMediaModal({
               ) : null}
             </section>
 
-            <section className="min-w-0">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">Project gallery</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {imagesQuery.data?.length ?? 0} attached
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => void handleSetCover(null)}
-                  disabled={!project.coverImageId || isSubmitting}
-                >
-                  Clear cover
-                </Button>
-              </div>
-
-              {imagesQuery.isLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-24" />
-                  <Skeleton className="h-24" />
-                </div>
-              ) : null}
-
-              {imagesQuery.isError ? (
-                <EmptyState title="Gallery could not be loaded" description={getErrorMessage(imagesQuery.error)} />
-              ) : null}
-
-              {imagesQuery.data?.length === 0 ? (
-                <EmptyState
-                  title="No images attached"
-                  description="Add an image from the library to build this project gallery."
-                />
-              ) : null}
-
-              {imagesQuery.data && imagesQuery.data.length > 0 ? (
-                <div className="space-y-3">
-                  {imagesQuery.data.map((image) => {
-                    const isCover = project.coverImageId === image.mediaAssetId;
-
-                    return (
-                      <article
-                        key={image.id}
-                        className={cn(
-                          "flex gap-3 rounded-md border bg-background p-2",
-                          isCover ? "border-primary" : "border-border",
-                        )}
-                      >
-                        {image.url ? (
-                          <img
-                            src={image.url}
-                            alt={image.caption ?? ""}
-                            className="h-20 w-24 shrink-0 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-20 w-24 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
-                            <ImageIcon className="h-6 w-6" aria-hidden="true" />
-                          </div>
-                        )}
-                        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
-                          <div>
-                            <p className="truncate text-sm font-medium text-foreground">
-                              {image.caption || "Project image"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">Order {image.sortOrder}</p>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            <Button
-                              type="button"
-                              variant={isCover ? "primary" : "secondary"}
-                              size="sm"
-                              onClick={() => void handleSetCover(image.id)}
-                              disabled={isCover || isSubmitting}
-                            >
-                              {isCover ? "Cover" : "Set cover"}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => void handleDeleteImage(image.id)}
-                              disabled={isSubmitting}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : null}
-            </section>
+            <ProjectGallerySection
+              project={project}
+              imagesQuery={imagesQuery}
+              isSubmitting={isSubmitting}
+              onSetCover={handleSetCover}
+              onDeleteImage={handleDeleteImage}
+              updateImage={updateImage}
+              reorderImages={reorderImages}
+            />
           </div>
             </>
           ) : (
@@ -750,7 +673,8 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editCaption, setEditCaption] = useState("");
-  const [editSortOrder, setEditSortOrder] = useState(0);
+  const [orderedVideos, setOrderedVideos] = useState<ProjectVideo[]>([]);
+  const [hasOrderChanged, setHasOrderChanged] = useState(false);
   const videosQuery = useProjectVideos(project.id);
   const libraryQuery = useMediaList(
     {
@@ -767,6 +691,7 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
   const createExternalVideo = useCreateExternalProjectVideo();
   const deleteVideo = useDeleteProjectVideo();
   const updateVideo = useUpdateProjectVideo();
+  const reorderVideos = useReorderProjectVideos();
   const attachedMediaIds = useMemo(
     () => new Set(videosQuery.data?.flatMap((video) => video.mediaAssetId ?? []) ?? []),
     [videosQuery.data],
@@ -775,13 +700,23 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
     attachVideo.isPending ||
     createExternalVideo.isPending ||
     deleteVideo.isPending ||
-    updateVideo.isPending;
+    updateVideo.isPending ||
+    reorderVideos.isPending;
+
+  useEffect(() => {
+    if (videosQuery.data) {
+      setOrderedVideos((current) =>
+        hasOrderChanged
+          ? mergeRefreshedItemsPreservingOrder(current, videosQuery.data)
+          : videosQuery.data,
+      );
+    }
+  }, [hasOrderChanged, videosQuery.data]);
 
   function startEditing(video: ProjectVideo) {
     setEditingVideoId(video.id);
     setEditTitle(video.title ?? "");
     setEditCaption(video.caption ?? "");
-    setEditSortOrder(video.sortOrder);
   }
 
   async function handleUpdate() {
@@ -794,7 +729,6 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
         videoId: editingVideoId,
         title: editTitle.trim() || null,
         caption: editCaption.trim() || null,
-        sortOrder: editSortOrder,
       });
       setEditingVideoId(null);
       toast.success("Video details updated.");
@@ -844,6 +778,19 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
       toast.success("Video removed from project.");
     } catch (error) {
       toast.error(getErrorMessage(error, "Video could not be removed."));
+    }
+  }
+
+  async function handleSaveVideoOrder() {
+    try {
+      await reorderVideos.mutateAsync({
+        projectId: project.id,
+        items: orderedVideos.map((v, index) => ({ id: v.id, sortOrder: index })),
+      });
+      setHasOrderChanged(false);
+      toast.success("Video order saved.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Video order could not be saved."));
     }
   }
 
@@ -957,9 +904,22 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
         </section>
 
         <section className="min-w-0">
-          <div className="mb-3">
-            <h3 className="text-sm font-semibold text-foreground">Project videos</h3>
-            <p className="text-xs text-muted-foreground">{videosQuery.data?.length ?? 0} attached</p>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Project videos</h3>
+              <p className="text-xs text-muted-foreground">{orderedVideos.length} attached</p>
+            </div>
+            {hasOrderChanged ? (
+              <Button
+                type="button"
+                size="sm"
+                leftIcon={<Save className="h-3.5 w-3.5" />}
+                isLoading={reorderVideos.isPending}
+                onClick={() => void handleSaveVideoOrder()}
+              >
+                Save order
+              </Button>
+            ) : null}
           </div>
           {videosQuery.isLoading ? (
             <div className="space-y-3">
@@ -970,16 +930,22 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
           {videosQuery.isError ? (
             <EmptyState title="Videos could not be loaded" description={getErrorMessage(videosQuery.error)} />
           ) : null}
-          {videosQuery.data?.length === 0 ? (
+          {!videosQuery.isLoading && orderedVideos.length === 0 && !videosQuery.isError ? (
             <EmptyState
               title="No project videos"
               description="Add a library video or an external YouTube/Vimeo link."
             />
           ) : null}
-          {videosQuery.data?.length ? (
-            <div className="space-y-3">
-              {videosQuery.data.map((video) => (
-                <article key={video.id} className="flex gap-3 rounded-md border border-border bg-background p-3">
+          {orderedVideos.length > 0 ? (
+            <SortableList
+              items={orderedVideos}
+              onReorder={(reordered) => {
+                setOrderedVideos(reordered);
+                setHasOrderChanged(true);
+              }}
+              disabled={isSubmitting}
+              renderItem={(video) => (
+                <article className="flex gap-3 rounded-md border border-border bg-background p-3">
                   <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
                     <Film className="h-6 w-6" aria-hidden="true" />
                   </div>
@@ -994,7 +960,7 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
                                 ? "YouTube video"
                                 : "Vimeo video")}
                         </p>
-                        <p className="text-xs text-muted-foreground">{video.provider} | Order {video.sortOrder}</p>
+                        <p className="text-xs text-muted-foreground">{video.provider}</p>
                       </div>
                       {video.url ? (
                         <Button
@@ -1021,14 +987,6 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
                           placeholder="Optional caption"
                         />
                         <div className="flex items-center gap-2">
-                          <TextInput
-                            type="number"
-                            min={0}
-                            value={editSortOrder}
-                            onChange={(event) => setEditSortOrder(Number(event.target.value))}
-                            className="w-20"
-                            aria-label="Video order"
-                          />
                           <Button
                             type="button"
                             size="sm"
@@ -1072,13 +1030,246 @@ function ProjectVideosWorkspace({ project, isOpen }: { project: Project; isOpen:
                     )}
                   </div>
                 </article>
-              ))}
-            </div>
+              )}
+            />
           ) : null}
         </section>
       </div>
     </div>
   );
+}
+
+function ProjectGallerySection({
+  project,
+  imagesQuery,
+  isSubmitting,
+  onSetCover,
+  onDeleteImage,
+  updateImage,
+  reorderImages,
+}: {
+  project: Project;
+  imagesQuery: ReturnType<typeof useProjectImages>;
+  isSubmitting: boolean;
+  onSetCover: (imageId: string | null) => void;
+  onDeleteImage: (imageId: string) => void;
+  updateImage: ReturnType<typeof useUpdateProjectImage>;
+  reorderImages: ReturnType<typeof useReorderProjectImages>;
+}) {
+  const [orderedImages, setOrderedImages] = useState<ProjectImage[]>([]);
+  const [hasOrderChanged, setHasOrderChanged] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const [editCaption, setEditCaption] = useState("");
+
+  useEffect(() => {
+    if (imagesQuery.data) {
+      setOrderedImages((current) =>
+        hasOrderChanged
+          ? mergeRefreshedItemsPreservingOrder(current, imagesQuery.data)
+          : imagesQuery.data,
+      );
+    }
+  }, [hasOrderChanged, imagesQuery.data]);
+
+  function startEditingImage(image: ProjectImage) {
+    setEditingImageId(image.id);
+    setEditCaption(image.caption ?? "");
+  }
+
+  async function handleSaveCaption(imageId: string) {
+    try {
+      await updateImage.mutateAsync({
+        projectId: project.id,
+        imageId,
+        caption: editCaption.trim() || null,
+      });
+      setEditingImageId(null);
+      toast.success("Image caption updated.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Caption could not be updated."));
+    }
+  }
+
+  async function handleSaveImageOrder() {
+    try {
+      await reorderImages.mutateAsync({
+        projectId: project.id,
+        items: orderedImages.map((img, index) => ({ id: img.id, sortOrder: index })),
+      });
+      setHasOrderChanged(false);
+      toast.success("Image order saved.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Image order could not be saved."));
+    }
+  }
+
+  return (
+    <section className="min-w-0">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">Project gallery</h3>
+          <p className="text-xs text-muted-foreground">
+            {orderedImages.length} attached
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {hasOrderChanged ? (
+            <Button
+              type="button"
+              size="sm"
+              leftIcon={<Save className="h-3.5 w-3.5" />}
+              isLoading={reorderImages.isPending}
+              onClick={() => void handleSaveImageOrder()}
+            >
+              Save order
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => void onSetCover(null)}
+            disabled={!project.coverImageId || isSubmitting}
+          >
+            Clear cover
+          </Button>
+        </div>
+      </div>
+
+      {imagesQuery.isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+      ) : null}
+
+      {imagesQuery.isError ? (
+        <EmptyState title="Gallery could not be loaded" description={getErrorMessage(imagesQuery.error)} />
+      ) : null}
+
+      {!imagesQuery.isLoading && orderedImages.length === 0 && !imagesQuery.isError ? (
+        <EmptyState
+          title="No images attached"
+          description="Add an image from the library to build this project gallery."
+        />
+      ) : null}
+
+      {orderedImages.length > 0 ? (
+        <SortableList
+          items={orderedImages}
+          onReorder={(reordered) => {
+            setOrderedImages(reordered);
+            setHasOrderChanged(true);
+          }}
+          disabled={isSubmitting}
+          renderItem={(image) => {
+            const isCover = project.coverImageId === image.mediaAssetId;
+            return (
+              <article
+                className={cn(
+                  "flex gap-3 rounded-md border bg-background p-2",
+                  isCover ? "border-primary" : "border-border",
+                )}
+              >
+                {image.url ? (
+                  <img
+                    src={image.url}
+                    alt={image.caption ?? ""}
+                    className="h-20 w-24 shrink-0 rounded object-cover"
+                  />
+                ) : (
+                  <div className="flex h-20 w-24 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
+                    <ImageIcon className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                )}
+                <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+                  {editingImageId === image.id ? (
+                    <div className="space-y-2">
+                      <TextInput
+                        value={editCaption}
+                        onChange={(event) => setEditCaption(event.target.value)}
+                        placeholder="Image caption"
+                      />
+                      <div className="flex gap-1.5">
+                        <Button
+                          type="button"
+                          size="sm"
+                          isLoading={updateImage.isPending}
+                          onClick={() => void handleSaveCaption(image.id)}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingImageId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {image.caption || "Project image"}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <Button
+                          type="button"
+                          variant={isCover ? "primary" : "secondary"}
+                          size="sm"
+                          onClick={() => void onSetCover(image.id)}
+                          disabled={isCover || isSubmitting}
+                        >
+                          {isCover ? "Cover" : "Set cover"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={isSubmitting}
+                          onClick={() => startEditingImage(image)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void onDeleteImage(image.id)}
+                          disabled={isSubmitting}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </article>
+            );
+          }}
+        />
+      ) : null}
+    </section>
+  );
+}
+
+function mergeRefreshedItemsPreservingOrder<T extends { id: string }>(
+  current: T[],
+  refreshed: T[],
+) {
+  const refreshedById = new Map(refreshed.map((item) => [item.id, item]));
+  const currentIds = new Set(current.map((item) => item.id));
+  const retainedItems = current.flatMap((item) => {
+    const refreshedItem = refreshedById.get(item.id);
+    return refreshedItem ? [refreshedItem] : [];
+  });
+  const newItems = refreshed.filter((item) => !currentIds.has(item.id));
+  return [...retainedItems, ...newItems];
 }
 
 function ProjectFormModal({

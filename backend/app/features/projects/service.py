@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from app.core.exceptions import ApiError
@@ -12,11 +13,13 @@ from app.features.projects.schemas import (
     ProjectFilters,
     ProjectImageAttachRequest,
     ProjectImagePayload,
+    ProjectImageUpdateRequest,
     ProjectPayload,
     ProjectUpdateRequest,
     ProjectVideoAttachRequest,
     ProjectVideoPayload,
     ProjectVideoUpdateRequest,
+    ReorderRequest,
     TechnologyCreateRequest,
     TechnologyPayload,
     TechnologyUpdateRequest,
@@ -482,6 +485,71 @@ class ProjectService(BaseService):
         self.project_repository.db.commit()
         self.project_repository.db.refresh(video)
         return ProjectVideoPayload.model_validate(video)
+
+    def update_project_image(
+        self,
+        project_id: UUID,
+        image_id: UUID,
+        payload: ProjectImageUpdateRequest,
+    ) -> ProjectImagePayload:
+        self._get_project(project_id)
+        image = self.project_repository.get_project_image(project_id, image_id)
+        if image is None:
+            raise ApiError(
+                status_code=404,
+                message="Project image not found.",
+                code="project_image_not_found",
+            )
+        for field, value in payload.model_dump(exclude_unset=True).items():
+            setattr(image, field, value)
+        self.project_repository.db.commit()
+        self.project_repository.db.refresh(image)
+        return ProjectImagePayload.model_validate(image)
+
+    def reorder_project_images(
+        self,
+        project_id: UUID,
+        payload: ReorderRequest,
+    ) -> list[ProjectImagePayload]:
+        self._get_project(project_id)
+        images = self.project_repository.list_project_images(project_id)
+        ordered_images = self._apply_media_reorder(images, payload, "images")
+        response = [ProjectImagePayload.model_validate(image) for image in ordered_images]
+        self.project_repository.db.commit()
+        return response
+
+    def reorder_project_videos(
+        self,
+        project_id: UUID,
+        payload: ReorderRequest,
+    ) -> list[ProjectVideoPayload]:
+        self._get_project(project_id)
+        videos = self.project_repository.list_project_videos(project_id)
+        ordered_videos = self._apply_media_reorder(videos, payload, "videos")
+        response = [ProjectVideoPayload.model_validate(video) for video in ordered_videos]
+        self.project_repository.db.commit()
+        return response
+
+    def _apply_media_reorder(
+        self,
+        entities: Sequence[ProjectImage | ProjectVideo],
+        payload: ReorderRequest,
+        resource_name: str,
+    ) -> list[ProjectImage | ProjectVideo]:
+        existing_ids = {entity.id for entity in entities}
+        submitted_ids = {item.id for item in payload.items}
+        if existing_ids != submitted_ids:
+            raise ApiError(
+                status_code=422,
+                message=f"Reorder request must contain every active project {resource_name} item.",
+                code="invalid_reorder_ids",
+            )
+
+        order_map = {item.id: item.sort_order for item in payload.items}
+        for entity in entities:
+            entity.sort_order = order_map[entity.id]
+        self.project_repository.db.flush()
+        return sorted(entities, key=lambda entity: entity.sort_order)
 
     def _get_project(self, project_id: UUID) -> Project:
         project = self.project_repository.get_project_by_id(project_id)
