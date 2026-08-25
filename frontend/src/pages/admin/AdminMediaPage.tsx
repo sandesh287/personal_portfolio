@@ -174,14 +174,14 @@ export function AdminMediaPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Media Library</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">Media Library</h1>
           <p className="text-muted-foreground">
             Manage uploaded assets for projects, blog posts, and more
           </p>
         </div>
-        <Button onClick={handleOpenUpload}>
+        <Button onClick={handleOpenUpload} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Upload Media
         </Button>
@@ -202,7 +202,7 @@ export function AdminMediaPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex gap-4">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -222,7 +222,7 @@ export function AdminMediaPage() {
                 setContentTypeFilter(e.target.value);
                 setPage(1);
               }}
-              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:w-auto"
             >
               <option value="">All Types</option>
               <option value="image">Images</option>
@@ -232,7 +232,7 @@ export function AdminMediaPage() {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <Skeleton key={i} className="h-48 w-full" />
               ))}
@@ -263,7 +263,7 @@ export function AdminMediaPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                 {data?.items?.map((media) => (
                   <Card key={media.id} className="overflow-hidden">
                     <div className="aspect-square bg-muted flex items-center justify-center p-4">
@@ -314,7 +314,7 @@ export function AdminMediaPage() {
               </div>
 
               {data?.meta && data.meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-between">
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted-foreground">
                     Page {data.meta.page} of {data.meta.totalPages}
                   </p>

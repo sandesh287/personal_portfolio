@@ -80,7 +80,10 @@ Paginated data:
 - `403 Forbidden`: valid token without required role
 - `404 Not Found`: resource not found
 - `409 Conflict`: duplicate slug/email/key
-- `413 Payload Too Large`: upload exceeds configured limit
+- `413 Payload Too Large`: upload exceeds its type-specific configured limit. Defaults are
+  10 MiB for images, 100 MiB for videos, and 20 MiB for PDF documents; deployments can
+  override these with `MAX_IMAGE_UPLOAD_SIZE_MB`, `MAX_VIDEO_UPLOAD_SIZE_MB`, and
+  `MAX_DOCUMENT_UPLOAD_SIZE_MB`.
 - `422 Unprocessable Entity`: validation error
 - `429 Too Many Requests`: rate limited
 - `500 Internal Server Error`: unexpected server error

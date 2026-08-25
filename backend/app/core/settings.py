@@ -21,7 +21,9 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 30
     upload_root: str = "uploads"
     public_base_url: str = "http://127.0.0.1:8000"
-    max_upload_size_mb: int = 20
+    max_image_upload_size_mb: int = 10
+    max_video_upload_size_mb: int = 100
+    max_document_upload_size_mb: int = 20
     rate_limit_requests: int = 120
     rate_limit_window_seconds: int = 60
     github_username: str | None = None

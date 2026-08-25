@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { NavLink } from "react-router";
+import { X } from "lucide-react";
 
+import { Button } from "@/components/ui/Button";
 import type { NavigationItem } from "@/constants/navigation";
 import { cn } from "@/utils/cn";
 
@@ -9,11 +12,18 @@ interface SidebarProps {
   subtitle?: string;
   items: NavigationItem[];
   footer?: ReactNode;
+  className?: string;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ title, subtitle, items, footer }: SidebarProps) {
+export function Sidebar({ title, subtitle, items, footer, className, onNavigate }: SidebarProps) {
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-sidebar">
+    <aside
+      className={cn(
+        "flex h-full w-64 shrink-0 flex-col border-r border-border bg-sidebar",
+        className,
+      )}
+    >
       <header className="border-b border-border p-4">
         <h1 className="text-sm font-semibold text-foreground">{title}</h1>
         {subtitle ? <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p> : null}
@@ -24,6 +34,7 @@ export function Sidebar({ title, subtitle, items, footer }: SidebarProps) {
             key={item.href}
             to={item.href}
             end={item.href === "/admin" || item.href === "/"}
+            onClick={onNavigate}
             className={({ isActive }) =>
               cn(
                 "flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors",
@@ -40,5 +51,47 @@ export function Sidebar({ title, subtitle, items, footer }: SidebarProps) {
       </nav>
       {footer ? <footer className="border-t border-border p-3">{footer}</footer> : null}
     </aside>
+  );
+}
+
+interface SidebarDrawerProps extends Omit<SidebarProps, "className" | "onNavigate"> {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function SidebarDrawer({ isOpen, onClose, ...sidebarProps }: SidebarDrawerProps) {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/60"
+        aria-label="Close navigation"
+        onClick={onClose}
+      />
+      <div className="relative h-full w-64 max-w-[85vw] shadow-xl">
+        <Sidebar {...sidebarProps} className="w-full" onNavigate={onClose} />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute right-2 top-2"
+          leftIcon={<X className="h-4 w-4" aria-hidden="true" />}
+          onClick={onClose}
+        >
+          Close navigation
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -2,12 +2,12 @@ import logging
 from uuid import UUID
 
 from app.core.exceptions import ApiError
-from app.core.settings import settings
 from app.features.media.repository import MediaRepository
 from app.features.media.schemas import MediaAssetSchema, MediaAssetUpdate
 from app.models.media_asset import MediaAsset
 from app.schemas.base import PaginatedPayload
 from app.storage.base import StorageProvider
+from app.storage.upload_policy import classify_upload, validate_upload_size
 from app.utils.pagination import PaginationParams
 from fastapi import UploadFile
 
@@ -15,9 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class MediaService:
-    ALLOWED_CONTENT_TYPES = ("image/", "video/")
-    ALLOWED_EXACT_CONTENT_TYPES = {"application/pdf"}
-
     def __init__(self, repository: MediaRepository, storage: StorageProvider) -> None:
         self.repository = repository
         self.storage = storage
@@ -31,15 +28,10 @@ class MediaService:
     ) -> MediaAssetSchema:
         original_filename = file.filename or "unnamed"
         content_type = file.content_type or "application/octet-stream"
-        self._validate_content_type(content_type)
+        classify_upload(content_type)
 
         content = await file.read()
-        if len(content) > settings.max_upload_size_mb * 1024 * 1024:
-            raise ApiError(
-                status_code=413,
-                message="Uploaded file exceeds the configured size limit.",
-                code="upload_too_large",
-            )
+        validate_upload_size(content_type, len(content))
 
         stored = await self.storage.save(original_filename, content_type, content)
         media = MediaAsset(
@@ -126,14 +118,3 @@ class MediaService:
                 status_code=404, message="Media asset not found.", code="media_not_found"
             )
         return media
-
-    def _validate_content_type(self, content_type: str) -> None:
-        if content_type in self.ALLOWED_EXACT_CONTENT_TYPES:
-            return
-        if any(content_type.startswith(prefix) for prefix in self.ALLOWED_CONTENT_TYPES):
-            return
-        raise ApiError(
-            status_code=422,
-            message="Only image, video, and PDF files are supported.",
-            code="unsupported_media_type",
-        )

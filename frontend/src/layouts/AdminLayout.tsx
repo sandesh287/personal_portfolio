@@ -1,11 +1,12 @@
 import { Outlet } from "react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { Button } from "@/components/ui/Button";
-import { Sidebar } from "@/components/ui/Sidebar";
+import { Sidebar, SidebarDrawer } from "@/components/ui/Sidebar";
 import { Toolbar, ToolbarGroup } from "@/components/ui/Toolbar";
 import { adminNavigation } from "@/constants/navigation";
 import { routes } from "@/constants/routes";
@@ -13,6 +14,7 @@ import { useLogout } from "@/features/auth";
 import { useAuthStore } from "@/stores/authStore";
 
 export function AdminLayout() {
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const navigate = useNavigate();
   const refreshToken = useAuthStore((state) => state.refreshToken);
   const logout = useLogout();
@@ -30,12 +32,36 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <Sidebar title="Admin" subtitle="Content Control" items={adminNavigation} />
+      <Sidebar
+        title="Admin"
+        subtitle="Content Control"
+        items={adminNavigation}
+        className="hidden lg:flex"
+      />
+      <SidebarDrawer
+        title="Admin"
+        subtitle="Content Control"
+        items={adminNavigation}
+        isOpen={isNavigationOpen}
+        onClose={() => setIsNavigationOpen(false)}
+      />
       <main className="flex min-w-0 flex-1 flex-col">
         <Toolbar>
-          <ToolbarGroup>
-            <span className="text-sm font-medium">Admin Dashboard</span>
-            <span className="text-xs text-muted-foreground">Protected workspace</span>
+          <ToolbarGroup className="min-w-0">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              leftIcon={<Menu className="h-5 w-5" aria-hidden="true" />}
+              onClick={() => setIsNavigationOpen(true)}
+            >
+              Open navigation
+            </Button>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">Admin Dashboard</p>
+              <p className="hidden text-xs text-muted-foreground sm:block">Protected workspace</p>
+            </div>
           </ToolbarGroup>
           <ToolbarGroup>
             <ThemeToggle />
@@ -43,15 +69,15 @@ export function AdminLayout() {
               type="button"
               variant="ghost"
               size="icon"
+              leftIcon={<LogOut className="h-4 w-4" aria-hidden="true" />}
               onClick={() => void handleLogout()}
               isLoading={logout.isPending}
             >
-              <LogOut className="h-4 w-4" />
               Sign out
             </Button>
           </ToolbarGroup>
         </Toolbar>
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
           <Outlet />
         </div>
       </main>
