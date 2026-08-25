@@ -63,7 +63,7 @@ export function ProjectsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-md border border-border bg-background p-2 text-center">
+          <div className="grid w-full grid-cols-3 gap-1 rounded-md border border-border bg-background p-2 text-center sm:w-auto sm:gap-2">
             <Metric label="Projects" value={meta?.totalItems ?? projects.length} />
             <Metric label="Featured" value={projects.filter((project) => project.featured).length} />
             <Metric label="Tech" value={technologies.length} />
@@ -178,8 +178,8 @@ function ProjectRow({ project }: { project: Project }) {
     project.images[0]?.url;
 
   return (
-    <article className="group flex flex-col gap-4 rounded-md border border-border bg-background p-4 transition-colors hover:border-primary/60 sm:flex-row">
-      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+    <article className="group flex flex-col gap-4 rounded-md border border-border bg-background p-3 transition-colors hover:border-primary/60 sm:flex-row sm:p-4">
+      <div className="aspect-video w-full shrink-0 overflow-hidden rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground sm:h-16 sm:w-16 sm:aspect-auto">
         {coverImage ? (
           <img src={coverImage} alt="" className="h-full w-full object-cover" />
         ) : (
@@ -193,7 +193,9 @@ function ProjectRow({ project }: { project: Project }) {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="truncate text-lg font-semibold text-foreground">{project.title}</h2>
+              <h2 className="min-w-0 break-words text-lg font-semibold text-foreground sm:truncate">
+                {project.title}
+              </h2>
               {project.featured ? (
                 <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   <Star className="h-3 w-3" aria-hidden="true" />
@@ -219,10 +221,10 @@ function ProjectRow({ project }: { project: Project }) {
           ))}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link
             to={routes.projectDetails.replace(":slug", project.slug)}
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            className="inline-flex min-h-10 items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             Open project
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -232,7 +234,7 @@ function ProjectRow({ project }: { project: Project }) {
               href={project.repositoryUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex min-h-10 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
             >
               <Github className="h-4 w-4" aria-hidden="true" />
               Source
@@ -243,7 +245,7 @@ function ProjectRow({ project }: { project: Project }) {
               href={project.liveUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex min-h-10 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
             >
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               Live
@@ -282,7 +284,7 @@ function ProjectListSkeleton() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 px-3">
+    <div className="min-w-0 px-1 sm:min-w-20 sm:px-3">
       <p className="text-lg font-semibold text-foreground">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
@@ -303,7 +305,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "h-8 rounded-full border px-3 text-xs font-medium transition-colors",
+        "h-10 shrink-0 rounded-full border px-3 text-xs font-medium transition-colors sm:h-8",
         isActive
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground",
@@ -332,25 +334,29 @@ function FilterGroup<TItem extends ProjectCategory | Technology>({
   onChange: (id: string | undefined) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="w-20 text-xs font-medium uppercase text-muted-foreground">{label}</span>
-      <FilterChip label={allLabel} isActive={!activeId} onClick={() => onChange(undefined)} />
-      {isLoading ? (
-        <>
-          <Skeleton className="h-8 w-20 rounded-full" />
-          <Skeleton className="h-8 w-24 rounded-full" />
-          <Skeleton className="h-8 w-16 rounded-full" />
-        </>
-      ) : (
-        items.map((item) => (
-          <FilterChip
-            key={item.id}
-            label={getItemLabel(item)}
-            isActive={activeId === item.id}
-            onClick={() => onChange(item.id)}
-          />
-        ))
-      )}
+    <div className="min-w-0 sm:flex sm:items-center sm:gap-2">
+      <span className="mb-2 block text-xs font-medium uppercase text-muted-foreground sm:mb-0 sm:w-20 sm:shrink-0">
+        {label}
+      </span>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <FilterChip label={allLabel} isActive={!activeId} onClick={() => onChange(undefined)} />
+        {isLoading ? (
+          <>
+            <Skeleton className="h-10 w-20 shrink-0 rounded-full sm:h-8" />
+            <Skeleton className="h-10 w-24 shrink-0 rounded-full sm:h-8" />
+            <Skeleton className="h-10 w-16 shrink-0 rounded-full sm:h-8" />
+          </>
+        ) : (
+          items.map((item) => (
+            <FilterChip
+              key={item.id}
+              label={getItemLabel(item)}
+              isActive={activeId === item.id}
+              onClick={() => onChange(item.id)}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 }

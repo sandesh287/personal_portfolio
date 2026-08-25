@@ -3,9 +3,7 @@ import {
   CalendarDays,
   Code2,
   ExternalLink,
-  Film,
   Github,
-  ImageIcon,
   Layers3,
 } from "lucide-react";
 import { Link, useParams } from "react-router";
@@ -13,6 +11,7 @@ import { Link, useParams } from "react-router";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { routes } from "@/constants/routes";
+import { ProjectMediaGallery } from "@/features/projects/components/ProjectMediaGallery";
 import { useProjectDetails } from "@/features/projects";
 import type { Project } from "@/features/projects";
 import { cn } from "@/utils/cn";
@@ -76,19 +75,22 @@ export function ProjectDetailsPage() {
             </div>
           </div>
 
-          <nav className="mt-6 space-y-1" aria-label="Project sections">
+          <nav
+            className="mt-4 flex gap-1 overflow-x-auto pb-1 lg:mt-6 lg:block lg:space-y-1 lg:overflow-visible lg:pb-0"
+            aria-label="Project sections"
+          >
             {["Overview", "Tech Stack", "Details", "Media"].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="flex h-9 items-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex h-10 shrink-0 items-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:h-9"
               >
                 {item}
               </a>
             ))}
           </nav>
 
-          <div className="mt-6 space-y-2 border-t border-border pt-4">
+          <div className="mt-4 grid gap-2 border-t border-border pt-4 sm:grid-cols-3 lg:mt-6 lg:block lg:space-y-2">
             <ProjectLink href={project.liveUrl} label="Launch demo" icon="external" isPrimary />
             <ProjectLink href={project.repositoryUrl} label="View source" icon="github" />
             <ProjectLink href={project.caseStudyUrl} label="Read case study" icon="external" />
@@ -99,7 +101,7 @@ export function ProjectDetailsPage() {
           <ProjectHero project={project} />
           <ProjectTechStack project={project} />
           <ProjectDetails project={project} />
-          <ProjectMedia project={project} />
+          <ProjectMediaGallery project={project} />
         </main>
       </div>
     </section>
@@ -112,13 +114,17 @@ function ProjectHero({ project }: { project: Project }) {
     project.images[0]?.url;
 
   return (
-    <section id="overview" className="border-b border-border p-4 lg:p-6">
+    <section id="overview" className="scroll-mt-16 border-b border-border p-4 lg:p-6">
       <div className="overflow-hidden rounded-md border border-border bg-background">
         {heroImage ? (
-          <img src={heroImage} alt="" className="h-64 w-full object-cover" />
+          <img
+            src={heroImage}
+            alt={`${project.title} cover`}
+            className="aspect-video max-h-96 w-full object-cover"
+          />
         ) : (
-          <div className="flex h-64 items-center justify-center bg-muted">
-            <div className="grid h-40 w-64 grid-cols-4 gap-2 rounded-md border border-border bg-surface p-3">
+          <div className="flex aspect-video max-h-96 min-h-48 items-center justify-center bg-muted">
+            <div className="grid h-32 w-52 grid-cols-4 gap-2 rounded-md border border-border bg-surface p-3 sm:h-40 sm:w-64">
               {Array.from({ length: 16 }).map((_, index) => (
                 <span
                   key={index}
@@ -143,13 +149,15 @@ function ProjectHero({ project }: { project: Project }) {
               </span>
             ) : null}
           </div>
-          <h1 className="mt-3 text-3xl font-semibold text-foreground">{project.title}</h1>
+          <h1 className="mt-3 break-words text-2xl font-semibold text-foreground sm:text-3xl">
+            {project.title}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
             {project.summary}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           {project.liveUrl ? (
             <a
               href={project.liveUrl}
@@ -180,7 +188,7 @@ function ProjectHero({ project }: { project: Project }) {
 
 function ProjectTechStack({ project }: { project: Project }) {
   return (
-    <section id="tech-stack" className="border-b border-border p-4 lg:p-6">
+    <section id="tech-stack" className="scroll-mt-16 border-b border-border p-4 lg:p-6">
       <h2 className="text-xl font-semibold text-foreground">Tech Stack</h2>
       {project.technologies.length > 0 ? (
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -211,7 +219,10 @@ function ProjectTechStack({ project }: { project: Project }) {
 
 function ProjectDetails({ project }: { project: Project }) {
   return (
-    <section id="details" className="grid gap-4 border-b border-border p-4 lg:grid-cols-3 lg:p-6">
+    <section
+      id="details"
+      className="grid scroll-mt-16 gap-4 border-b border-border p-4 lg:grid-cols-3 lg:p-6"
+    >
       <div className="lg:col-span-2">
         <h2 className="text-xl font-semibold text-foreground">Details</h2>
         <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
@@ -227,123 +238,6 @@ function ProjectDetails({ project }: { project: Project }) {
       </dl>
     </section>
   );
-}
-
-function ProjectMedia({ project }: { project: Project }) {
-  const hasMedia = project.images.length > 0 || project.videos.length > 0;
-
-  return (
-    <section id="media" className="p-4 lg:p-6">
-      <h2 className="text-xl font-semibold text-foreground">Media</h2>
-      {project.images.length > 0 ? (
-        <div className="mt-4">
-          <h3 className="text-sm font-semibold text-foreground">Screenshots</h3>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {project.images.map((image) => (
-              <figure
-                key={image.id}
-                className="overflow-hidden rounded-md border border-border bg-background"
-              >
-                {image.url ? (
-                  <img
-                    src={image.url}
-                    alt={image.caption ?? ""}
-                    className="h-52 w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-52 items-center justify-center bg-muted text-muted-foreground">
-                    <ImageIcon className="h-8 w-8" aria-hidden="true" />
-                  </div>
-                )}
-                {image.caption ? (
-                  <figcaption className="border-t border-border p-3 text-sm text-muted-foreground">
-                    {image.caption}
-                  </figcaption>
-                ) : null}
-              </figure>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {project.videos.length > 0 ? (
-        <div className="mt-6">
-          <h3 className="text-sm font-semibold text-foreground">Videos</h3>
-          <div className="mt-3 grid gap-3 lg:grid-cols-2">
-            {project.videos.map((video) => {
-              const embedUrl = getVideoEmbedUrl(video.provider, video.externalUrl);
-              return (
-                <figure
-                  key={video.id}
-                  className="overflow-hidden rounded-md border border-border bg-background"
-                >
-                  {video.provider === "local" && video.url ? (
-                    <video controls preload="metadata" className="aspect-video w-full bg-black">
-                      <source src={video.url} />
-                    </video>
-                  ) : embedUrl ? (
-                    <iframe
-                      src={embedUrl}
-                      title={video.title || `${video.provider} project video`}
-                      className="aspect-video w-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="flex aspect-video items-center justify-center bg-muted text-muted-foreground">
-                      <Film className="h-8 w-8" aria-hidden="true" />
-                    </div>
-                  )}
-                  {video.title || video.caption ? (
-                    <figcaption className="border-t border-border p-3">
-                      {video.title ? (
-                        <p className="text-sm font-medium text-foreground">{video.title}</p>
-                      ) : null}
-                      {video.caption ? (
-                        <p className="mt-1 text-sm text-muted-foreground">{video.caption}</p>
-                      ) : null}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-
-      {!hasMedia ? (
-        <div className="mt-4">
-          <EmptyState
-            title="No project media yet"
-            description="Screenshots and demos will appear here once they are uploaded from the admin workspace."
-          />
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
-function getVideoEmbedUrl(provider: string, externalUrl: string | null) {
-  if (!externalUrl) {
-    return null;
-  }
-
-  const url = new URL(externalUrl);
-  if (provider === "youtube") {
-    const videoId =
-      url.hostname === "youtu.be"
-        ? url.pathname.split("/").filter(Boolean)[0]
-        : url.searchParams.get("v") ??
-          url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1];
-    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null;
-  }
-
-  if (provider === "vimeo") {
-    const videoId = url.pathname.split("/").filter(Boolean).find((part) => /^\d+$/.test(part));
-    return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
-  }
-
-  return null;
 }
 
 function ProjectDetailsSkeleton() {
