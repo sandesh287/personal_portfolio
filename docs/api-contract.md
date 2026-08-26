@@ -449,37 +449,33 @@ Future admin CRUD endpoints:
 - Create/update body: `name`, `slug`, `category`, `level`, `icon`, `color`, `description`, `sortOrder`
 - Errors: `401`, `403`, `404`, `409`, `422`
 
-## Experience
+## Experience And Education
 
-- Model fields: `id`, `company`, `role`, `location`, `employmentType`, `startDate`, `endDate`, `current`, `summary`, `highlights`, `technologyIds`, `sortOrder`
-
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/experiences` | public | List experience |
-| `GET` | `/api/v1/experiences/{id}` | public | Experience details |
-| `POST` | `/api/v1/experiences` | admin | Create experience |
-| `PATCH` | `/api/v1/experiences/{id}` | admin | Update experience |
-| `DELETE` | `/api/v1/experiences/{id}` | admin | Delete experience |
-
-- List query: `page`, `pageSize`, `search`, `current`, `sort`, `order`
-- Create/update body: `company`, `role`, `location`, `employmentType`, `startDate`, `endDate`, `current`, `summary`, `highlights`, `technologyIds`, `sortOrder`
-- Errors: `401`, `403`, `404`, `422`
-
-## Education
-
-- Model fields: `id`, `institution`, `degree`, `fieldOfStudy`, `location`, `startDate`, `endDate`, `current`, `summary`, `sortOrder`
+- Experience fields: `id`, `company`, `role`, `employmentType`, `location`, `startDate`,
+  `endDate`, `current`, `summary`, `achievements`, `technologies`, `companyUrl`, `sortOrder`,
+  `published`, `createdAt`, `updatedAt`
+- Education fields: `id`, `institution`, `degree`, `fieldOfStudy`, `location`, `startDate`,
+  `endDate`, `current`, `description`, `achievements`, `institutionUrl`, `sortOrder`,
+  `published`, `createdAt`, `updatedAt`
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/education` | public | List education |
-| `GET` | `/api/v1/education/{id}` | public | Education details |
-| `POST` | `/api/v1/education` | admin | Create education |
-| `PATCH` | `/api/v1/education/{id}` | admin | Update education |
-| `DELETE` | `/api/v1/education/{id}` | admin | Delete education |
+| `GET` | `/api/v1/experience` | public | List published experience |
+| `GET` | `/api/v1/experience/education` | public | List published education |
+| `GET` | `/api/v1/experience/admin` | admin | List all experience |
+| `POST` | `/api/v1/experience/admin` | admin | Create experience |
+| `PATCH` | `/api/v1/experience/admin/{id}` | admin | Update experience |
+| `DELETE` | `/api/v1/experience/admin/{id}` | admin | Soft-delete experience |
+| `GET` | `/api/v1/experience/admin/education` | admin | List all education |
+| `POST` | `/api/v1/experience/admin/education` | admin | Create education |
+| `PATCH` | `/api/v1/experience/admin/education/{id}` | admin | Update education |
+| `DELETE` | `/api/v1/experience/admin/education/{id}` | admin | Soft-delete education |
 
-- List query: `page`, `pageSize`, `search`, `current`, `sort`, `order`
-- Create/update body: `institution`, `degree`, `fieldOfStudy`, `location`, `startDate`, `endDate`, `current`, `summary`, `sortOrder`
-- Errors: `401`, `403`, `404`, `422`
+- List query: optional `search`
+- Arrays preserve display order and reject blank or duplicate values.
+- `current=true` requires `endDate=null`; `endDate` cannot precede `startDate`.
+- Public endpoints return only records with `published=true`.
+- Errors: `401`, `403`, `404`, `422`, `429`
 
 ## Resume
 

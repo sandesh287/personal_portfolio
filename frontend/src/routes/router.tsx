@@ -45,6 +45,18 @@ const AdminBlogPage = lazy(() =>
   })),
 );
 
+const AdminExperiencePage = lazy(() =>
+  import("@/pages/admin/AdminExperiencePage").then((module) => ({
+    default: module.AdminExperiencePage,
+  })),
+);
+
+const ExperiencePage = lazy(() =>
+  import("@/pages/experience/ExperiencePage").then((module) => ({
+    default: module.ExperiencePage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -84,7 +96,7 @@ export const router = createBrowserRouter([
           { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
           { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
           { path: "/skills", element: <PlaceholderPage title="Skills Graph" /> },
-          { path: "/experience", element: <PlaceholderPage title="Developer Profile" /> },
+          { path: "/experience", element: <LazyRoute component={ExperiencePage} /> },
           { path: "/contact", element: <PlaceholderPage title="Communication Terminal" /> },
         ],
       },
@@ -113,7 +125,7 @@ export const router = createBrowserRouter([
           },
           { path: "blog", element: <LazyRoute component={AdminBlogPage} /> },
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
-          { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },
+          { path: "experience", element: <LazyRoute component={AdminExperiencePage} /> },
           { path: "resume", element: <PlaceholderPage title="Resume Admin" /> },
           { path: "media", element: <LazyRoute component={AdminMediaPage} /> },
           { path: "messages", element: <PlaceholderPage title="Messages" /> },

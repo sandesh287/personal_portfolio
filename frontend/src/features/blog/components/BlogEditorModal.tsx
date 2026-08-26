@@ -365,7 +365,7 @@ export function BlogEditorModal({
               </aside>
             </div>
 
-            <footer className="sticky bottom-0 z-10 -mx-4 mt-6 flex flex-col-reverse gap-2 border-t border-border bg-surface px-4 pb-1 pt-4 sm:flex-row sm:justify-end">
+            <footer className="sticky -bottom-3 z-10 -mx-3 -mb-3 mt-6 flex flex-col-reverse gap-2 border-t border-border bg-surface px-3 pb-3 pt-4 sm:-bottom-4 sm:-mx-4 sm:-mb-4 sm:flex-row sm:justify-end sm:px-4 sm:pb-4">
               <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
                 Cancel
               </Button>
