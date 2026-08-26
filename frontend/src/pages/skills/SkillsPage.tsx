@@ -1,7 +1,8 @@
-import { Code2, Layers3, Search, X } from "lucide-react";
+import { Layers3, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { EmptyState } from "@/components/common/EmptyState";
+import { SkillIcon } from "@/components/icons/SkillIcon";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGroupedSkills } from "@/features/skills";
@@ -166,7 +167,7 @@ function SkillNode({
         className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface"
         style={{ color: skill.color ?? undefined }}
       >
-        <Code2 className="h-5 w-5" aria-hidden="true" />
+        <SkillIcon identifier={skill.icon} />
       </span>
       <span className="max-w-full break-words text-sm font-medium text-foreground">
         {skill.name}
@@ -183,7 +184,7 @@ function SkillDetails({ skill, onClose }: { skill: Skill | null; onClose: () => 
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-primary">
-            <Code2 className="h-5 w-5" aria-hidden="true" />
+            <SkillIcon identifier={skill.icon} />
           </span>
           <div className="min-w-0">
             <h2 className="break-words text-lg font-semibold text-foreground">{skill.name}</h2>

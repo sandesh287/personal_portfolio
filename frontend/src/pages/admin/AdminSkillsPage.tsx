@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Code2, Edit3, Plus, Search, Trash2 } from "lucide-react";
+import { Edit3, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { EmptyState } from "@/components/common/EmptyState";
+import { SkillIcon, skillIconIdentifiers } from "@/components/icons/SkillIcon";
 import { FormActions } from "@/components/form/FormActions";
 import { FormField, TextInput } from "@/components/form/FormField";
 import { SelectField } from "@/components/form/SelectField";
@@ -172,7 +173,7 @@ export function AdminSkillsPage() {
                           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface"
                           style={{ color: skill.color ?? undefined }}
                         >
-                          <Code2 className="h-4 w-4" aria-hidden="true" />
+                          <SkillIcon identifier={skill.icon} className="h-4 w-4" />
                         </span>
                         <div className="min-w-0">
                           <p className="font-medium text-foreground">{skill.name}</p>
@@ -358,7 +359,12 @@ function SkillFormModal({
         </FormField>
         <div className="grid gap-4 sm:grid-cols-3">
           <FormField label="Icon">
-            <TextInput {...register("icon")} placeholder="code" />
+            <TextInput {...register("icon")} list="skill-icons" placeholder="react" />
+            <datalist id="skill-icons">
+              {skillIconIdentifiers.map((identifier) => (
+                <option key={identifier} value={identifier} />
+              ))}
+            </datalist>
           </FormField>
           <FormField label="Color">
             <TextInput {...register("color")} placeholder="#0058bc" />
