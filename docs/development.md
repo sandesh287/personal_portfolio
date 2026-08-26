@@ -91,6 +91,27 @@ The frontend usually runs at:
 http://localhost:5173
 ```
 
+## Authentication Cookies
+
+Development uses an HttpOnly refresh cookie that works across localhost ports:
+
+```env
+REFRESH_COOKIE_NAME=portfolio_refresh_token
+REFRESH_COOKIE_SECURE=false
+REFRESH_COOKIE_SAMESITE=lax
+```
+
+For a Vercel frontend using a separately hosted HTTPS backend, configure the backend with:
+
+```env
+REFRESH_COOKIE_SECURE=true
+REFRESH_COOKIE_SAMESITE=none
+BACKEND_CORS_ORIGINS=["https://your-portfolio.vercel.app"]
+```
+
+The frontend API client must retain `withCredentials: true`. Access tokens live only in browser
+memory; refresh tokens are inaccessible to JavaScript and rotate through the HttpOnly cookie.
+
 ## Reference Design Files
 
 The `design/` folder contains the Google Stitch reference HTML files and theme markdown files.

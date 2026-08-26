@@ -13,6 +13,7 @@ let refreshRequest: Promise<AuthTokens> | null = null;
 
 export const httpClient = axios.create({
   baseURL: env.VITE_API_BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -32,28 +33,21 @@ httpClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const request = error.config as RetryableRequestConfig | undefined;
-    const authState = useAuthStore.getState();
     const isTokenRequest =
       request?.url === "/auth/login" ||
       request?.url === "/auth/refresh" ||
       request?.url === "/auth/logout";
 
-    if (
-      error.response?.status !== 401 ||
-      !request ||
-      request._retry ||
-      isTokenRequest ||
-      !authState.refreshToken
-    ) {
+    if (error.response?.status !== 401 || !request || request._retry || isTokenRequest) {
       return Promise.reject(error);
     }
 
     request._retry = true;
 
     try {
-      refreshRequest ??= refreshAccessToken(authState.refreshToken);
+      refreshRequest ??= refreshAccessToken();
       const tokens = await refreshRequest;
-      useAuthStore.getState().setSession(tokens.accessToken, tokens.refreshToken, tokens.user);
+      useAuthStore.getState().setSession(tokens.accessToken, tokens.user);
       request.headers.Authorization = `Bearer ${tokens.accessToken}`;
       return await httpClient.request(request);
     } catch (refreshError) {
@@ -65,11 +59,11 @@ httpClient.interceptors.response.use(
   },
 );
 
-async function refreshAccessToken(refreshToken: string): Promise<AuthTokens> {
+async function refreshAccessToken(): Promise<AuthTokens> {
   const response = await axios.post<ApiResponse<AuthTokens>>(
     `${env.VITE_API_BASE_URL}/auth/refresh`,
-    { refreshToken },
-    { headers: { "Content-Type": "application/json" } },
+    undefined,
+    { headers: { "Content-Type": "application/json" }, withCredentials: true },
   );
   return response.data.data;
 }

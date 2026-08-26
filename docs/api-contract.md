@@ -166,7 +166,6 @@ Paginated data:
 ```json
 {
   "accessToken": "jwt",
-  "refreshToken": "jwt",
   "tokenType": "bearer",
   "expiresIn": 3600,
   "user": {}
@@ -174,39 +173,30 @@ Paginated data:
 ```
 
 - Errors: `401`, `422`, `429`
+- Side effect: sets a 90-day `HttpOnly` refresh cookie scoped to `/api/v1/auth`. The refresh token is never returned in JSON.
 
 ### Refresh Token
 
 - Method: `POST`
 - URL: `/api/v1/auth/refresh`
-- Authorization: public, requires valid refresh token
+- Authorization: public, requires the refresh cookie
 - Refresh tokens remain valid for 90 days, rotate on every successful refresh, and can be revoked by logout. Access tokens remain valid for 60 minutes.
-- Request body:
-
-```json
-{
-  "refreshToken": "jwt"
-}
-```
+- Request body: none
 
 - Response `200`: same token schema as login
-- Errors: `401`, `422`, `429`
+- Side effect: rotates the `HttpOnly` refresh cookie
+- Errors: `401`, `403`, `429`
 
 ### Logout
 
 - Method: `POST`
 - URL: `/api/v1/auth/logout`
-- Authorization: admin
-- Request body:
-
-```json
-{
-  "refreshToken": "jwt"
-}
-```
+- Authorization: refresh cookie when present; an access token is not required
+- Request body: none
 
 - Response `200`: `{ "loggedOut": true }`
-- Errors: `401`, `403`, `422`
+- Side effect: revokes the server-side refresh token and clears the cookie
+- Errors: `403`, `429`
 
 ### Current User
 

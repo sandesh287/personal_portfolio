@@ -16,9 +16,14 @@ def test_login_returns_token_pair(client: TestClient, admin_user: object) -> Non
     assert payload["success"] is True
     assert payload["data"]["tokenType"] == "bearer"
     assert payload["data"]["accessToken"]
-    assert payload["data"]["refreshToken"]
+    assert "refreshToken" not in payload["data"]
     assert payload["data"]["expiresIn"] == 3600
     assert payload["data"]["user"]["email"] == "admin@sandesh.dev"
+    set_cookie = response.headers["set-cookie"]
+    assert "portfolio_refresh_token=" in set_cookie
+    assert "HttpOnly" in set_cookie
+    assert "SameSite=lax" in set_cookie
+    assert "Path=/api/v1/auth" in set_cookie
 
 
 def test_login_rejects_invalid_credentials(client: TestClient, admin_user: object) -> None:
@@ -49,16 +54,17 @@ def test_refresh_rotates_refresh_token(
     db_session: Session,
     admin_user: object,
 ) -> None:
-    login_response = client.post(
+    client.post(
         "/api/v1/auth/login",
         json={"email": "admin@sandesh.dev", "password": "secure-password"},
     )
-    refresh_token = login_response.json()["data"]["refreshToken"]
+    original_cookie = client.cookies.get("portfolio_refresh_token")
 
-    response = client.post("/api/v1/auth/refresh", json={"refreshToken": refresh_token})
+    response = client.post("/api/v1/auth/refresh")
 
     assert response.status_code == 200
-    assert response.json()["data"]["refreshToken"] != refresh_token
+    assert "refreshToken" not in response.json()["data"]
+    assert client.cookies.get("portfolio_refresh_token") != original_cookie
     assert db_session.query(RefreshToken).count() == 2
     assert db_session.query(RefreshToken).filter(RefreshToken.revoked_at.is_not(None)).count() == 1
     active_token = db_session.query(RefreshToken).filter(RefreshToken.revoked_at.is_(None)).one()
@@ -75,15 +81,27 @@ def test_logout_revokes_refresh_token(client: TestClient, admin_user: object) ->
 
     response = client.post(
         "/api/v1/auth/logout",
-        json={"refreshToken": data["refreshToken"]},
         headers={"Authorization": f"Bearer {data['accessToken']}"},
     )
 
     assert response.status_code == 200
     assert response.json()["data"]["loggedOut"] is True
 
-    refresh_response = client.post(
-        "/api/v1/auth/refresh",
-        json={"refreshToken": data["refreshToken"]},
-    )
+    assert client.cookies.get("portfolio_refresh_token") is None
+
+    refresh_response = client.post("/api/v1/auth/refresh")
     assert refresh_response.status_code == 401
+
+
+def test_auth_cookie_endpoints_reject_unknown_browser_origin(
+    client: TestClient,
+    admin_user: object,
+) -> None:
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "admin@sandesh.dev", "password": "secure-password"},
+        headers={"Origin": "https://attacker.example"},
+    )
+
+    assert response.status_code == 403
+    assert response.json()["errors"][0]["code"] == "origin_not_allowed"

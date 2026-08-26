@@ -49,6 +49,10 @@ This document captures the initial production architecture for the dynamic devel
 
 The system uses feature-based architecture, versioned APIs, typed request/response contracts, and a clean separation between transport, business logic, persistence, and external providers.
 
+Admin authentication keeps short-lived JWT access tokens in frontend memory. Rotating refresh tokens
+are stored only in Secure, HttpOnly cookies and backed by revocable hashed database records. Browser
+origins are validated on login, refresh, and logout requests.
+
 ## Media Storage
 
 The active media backend is selected with `STORAGE_PROVIDER`:

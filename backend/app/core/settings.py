@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 90
+    refresh_cookie_name: str = "portfolio_refresh_token"
+    refresh_cookie_secure: bool = False
+    refresh_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     upload_root: str = "uploads"
     public_base_url: str = "http://127.0.0.1:8000"
     storage_provider: Literal["local", "cloudinary"] = "local"
@@ -41,6 +44,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_storage_configuration(self) -> Self:
+        if self.refresh_cookie_samesite == "none" and not self.refresh_cookie_secure:
+            raise ValueError("SameSite=None refresh cookies must also be Secure.")
         if self.storage_provider != "cloudinary":
             return self
 

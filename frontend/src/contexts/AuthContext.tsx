@@ -6,7 +6,6 @@ import { useAuthStore } from "@/stores/authStore";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const refreshToken = useAuthStore((state) => state.refreshToken);
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isAuthReady = useAuthStore((state) => state.isAuthReady);
@@ -18,7 +17,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       accessToken,
-      refreshToken,
       user,
       isAuthenticated,
       isAuthReady,
@@ -32,7 +30,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearSession,
       isAuthenticated,
       isAuthReady,
-      refreshToken,
       setAccessToken,
       setAuthReady,
       setSession,

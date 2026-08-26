@@ -5,17 +5,8 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface RefreshTokenPayload {
-  refreshToken: string;
-}
-
-export interface LogoutPayload {
-  refreshToken: string;
-}
-
 export interface AuthTokens {
   accessToken: string;
-  refreshToken: string;
   tokenType: "bearer";
   expiresIn: number;
   user: AuthUser;

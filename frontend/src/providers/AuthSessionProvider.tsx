@@ -16,11 +16,6 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     const state = useAuthStore.getState();
 
     async function bootstrapSession() {
-      if (!state.refreshToken) {
-        state.setAuthReady(true);
-        return;
-      }
-
       try {
         if (state.accessToken) {
           await authApi.currentUser();
@@ -28,8 +23,9 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const tokens = await authApi.refresh({ refreshToken: state.refreshToken });
-        state.setSession(tokens.accessToken, tokens.refreshToken, tokens.user);
+        window.localStorage.removeItem("sandesh-admin-auth");
+        const tokens = await authApi.refresh();
+        state.setSession(tokens.accessToken, tokens.user);
       } catch {
         state.clearSession();
       }

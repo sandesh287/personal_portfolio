@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 import { authApi } from "./api";
 import { authQueryKeys } from "./queryKeys";
-import type { LoginPayload, LogoutPayload, RefreshTokenPayload } from "./types";
+import type { LoginPayload } from "./types";
 
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -13,7 +13,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: async (tokens) => {
-      setSession(tokens.accessToken, tokens.refreshToken, tokens.user);
+      setSession(tokens.accessToken, tokens.user);
       await queryClient.invalidateQueries({ queryKey: authQueryKeys.all });
     },
   });
@@ -23,9 +23,9 @@ export function useRefreshSession() {
   const setSession = useAuthStore((state) => state.setSession);
 
   return useMutation({
-    mutationFn: (payload: RefreshTokenPayload) => authApi.refresh(payload),
+    mutationFn: () => authApi.refresh(),
     onSuccess: (tokens) => {
-      setSession(tokens.accessToken, tokens.refreshToken, tokens.user);
+      setSession(tokens.accessToken, tokens.user);
     },
   });
 }
@@ -44,7 +44,7 @@ export function useLogout() {
   const clearSession = useAuthStore((state) => state.clearSession);
 
   return useMutation({
-    mutationFn: (payload: LogoutPayload) => authApi.logout(payload),
+    mutationFn: () => authApi.logout(),
     onSettled: async () => {
       clearSession();
       await queryClient.clear();

@@ -11,21 +11,14 @@ import { Toolbar, ToolbarGroup } from "@/components/ui/Toolbar";
 import { adminNavigation } from "@/constants/navigation";
 import { routes } from "@/constants/routes";
 import { useLogout } from "@/features/auth";
-import { useAuthStore } from "@/stores/authStore";
 
 export function AdminLayout() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const navigate = useNavigate();
-  const refreshToken = useAuthStore((state) => state.refreshToken);
   const logout = useLogout();
 
   async function handleLogout() {
-    if (!refreshToken) {
-      navigate(routes.adminLogin, { replace: true });
-      return;
-    }
-
-    await logout.mutateAsync({ refreshToken });
+    await logout.mutateAsync();
     toast.success("Signed out.");
     navigate(routes.adminLogin, { replace: true });
   }

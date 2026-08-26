@@ -3,7 +3,7 @@ import { httpClient } from "@/services/httpClient";
 import type { ApiResponse } from "@/types/api";
 import type { AuthUser } from "@/types/auth";
 
-import type { AuthTokens, LoginPayload, LogoutPayload, RefreshTokenPayload } from "./types";
+import type { AuthTokens, LoginPayload } from "./types";
 
 const AUTH_ENDPOINT = "/auth";
 
@@ -16,11 +16,8 @@ export const authApi = {
     return response.data.data;
   },
 
-  async refresh(payload: RefreshTokenPayload) {
-    const response = await httpClient.post<ApiResponse<AuthTokens>>(
-      `${AUTH_ENDPOINT}/refresh`,
-      payload,
-    );
+  async refresh() {
+    const response = await httpClient.post<ApiResponse<AuthTokens>>(`${AUTH_ENDPOINT}/refresh`);
     return response.data.data;
   },
 
@@ -28,10 +25,9 @@ export const authApi = {
     return getApiData<AuthUser>(`${AUTH_ENDPOINT}/me`);
   },
 
-  async logout(payload: LogoutPayload) {
-    const response = await httpClient.post<ApiResponse<{ deleted: boolean }>>(
+  async logout() {
+    const response = await httpClient.post<ApiResponse<{ loggedOut: boolean }>>(
       `${AUTH_ENDPOINT}/logout`,
-      payload,
     );
     return response.data.data;
   },

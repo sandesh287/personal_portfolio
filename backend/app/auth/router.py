@@ -1,45 +1,72 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Cookie, Depends, Request, Response
 
 from app.auth.dependencies import CurrentUser, require_admin
 from app.auth.schemas import (
+    AuthSession,
     AuthTokens,
     CurrentUserPayload,
     LoginRequest,
-    LogoutRequest,
-    RefreshTokenRequest,
 )
 from app.auth.service import AuthService
+from app.core.exceptions import ApiError
+from app.core.settings import settings
 from app.schemas.base import ApiResponse
 from app.services.dependencies import get_auth_service
 
 router = APIRouter()
 
 
-@router.post("/login", response_model=ApiResponse[AuthTokens])
+@router.post("/login", response_model=ApiResponse[AuthSession])
 async def login(
     payload: LoginRequest,
+    request: Request,
+    response: Response,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
-) -> ApiResponse[AuthTokens]:
-    return ApiResponse(data=auth_service.login(payload.email, payload.password))
+) -> ApiResponse[AuthSession]:
+    _validate_browser_origin(request)
+    tokens = auth_service.login(payload.email, payload.password)
+    _set_refresh_cookie(response, tokens.refresh_token)
+    return ApiResponse(data=_build_auth_session(tokens))
 
 
-@router.post("/refresh", response_model=ApiResponse[AuthTokens])
+@router.post("/refresh", response_model=ApiResponse[AuthSession])
 async def refresh_token(
-    payload: RefreshTokenRequest,
+    request: Request,
+    response: Response,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
-) -> ApiResponse[AuthTokens]:
-    return ApiResponse(data=auth_service.refresh(payload.refresh_token))
+    refresh_token: Annotated[str | None, Cookie(alias=settings.refresh_cookie_name)] = None,
+) -> ApiResponse[AuthSession]:
+    _validate_browser_origin(request)
+    if refresh_token is None:
+        raise ApiError(
+            status_code=401,
+            message="Refresh session is missing.",
+            code="missing_refresh_token",
+        )
+    tokens = auth_service.refresh(refresh_token)
+    _set_refresh_cookie(response, tokens.refresh_token)
+    return ApiResponse(data=_build_auth_session(tokens))
 
 
 @router.post("/logout", response_model=ApiResponse[dict[str, bool]])
 async def logout(
-    payload: LogoutRequest,
-    _: Annotated[CurrentUser, Depends(require_admin)],
+    request: Request,
+    response: Response,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    refresh_token: Annotated[str | None, Cookie(alias=settings.refresh_cookie_name)] = None,
 ) -> ApiResponse[dict[str, bool]]:
-    return ApiResponse(data=auth_service.logout(payload.refresh_token))
+    _validate_browser_origin(request)
+    result = auth_service.logout(refresh_token) if refresh_token else {"loggedOut": True}
+    response.delete_cookie(
+        key=settings.refresh_cookie_name,
+        path=f"{settings.api_v1_prefix}/auth",
+        secure=settings.refresh_cookie_secure,
+        httponly=True,
+        samesite=settings.refresh_cookie_samesite,
+    )
+    return ApiResponse(data=result)
 
 
 @router.get("/me", response_model=ApiResponse[CurrentUserPayload])
@@ -55,3 +82,30 @@ async def read_current_user(
         ),
         message="Authenticated user resolved.",
     )
+
+
+def _build_auth_session(tokens: AuthTokens) -> AuthSession:
+    return AuthSession(
+        access_token=tokens.access_token,
+        token_type=tokens.token_type,
+        expires_in=tokens.expires_in,
+        user=tokens.user,
+    )
+
+
+def _set_refresh_cookie(response: Response, refresh_token: str) -> None:
+    response.set_cookie(
+        key=settings.refresh_cookie_name,
+        value=refresh_token,
+        max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
+        path=f"{settings.api_v1_prefix}/auth",
+        secure=settings.refresh_cookie_secure,
+        httponly=True,
+        samesite=settings.refresh_cookie_samesite,
+    )
+
+
+def _validate_browser_origin(request: Request) -> None:
+    origin = request.headers.get("origin")
+    if origin and origin not in settings.backend_cors_origins:
+        raise ApiError(status_code=403, message="Origin is not allowed.", code="origin_not_allowed")

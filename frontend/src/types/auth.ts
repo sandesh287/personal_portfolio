@@ -8,7 +8,6 @@ export interface AuthUser {
 
 export interface AuthState {
   accessToken: string | null;
-  refreshToken: string | null;
   user: AuthUser | null;
   isAuthenticated: boolean;
   isAuthReady: boolean;
