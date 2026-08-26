@@ -113,6 +113,34 @@ async def test_cloudinary_provider_returns_image_dimensions_and_placeholder(
 
 
 @pytest.mark.asyncio
+async def test_cloudinary_provider_uploads_pdf_as_image_resource(
+    cloudinary_settings: Settings,
+) -> None:
+    uploader = FakeCloudinaryUploader()
+    uploader.response = {
+        "public_id": "sandesh-portfolio/resume-123",
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/resume-123.pdf",
+        "bytes": 4096,
+    }
+    provider = CloudinaryStorageProvider(
+        cloudinary_settings,
+        uploader=uploader,
+        configure=lambda **_: None,
+    )
+
+    stored = await provider.save("resume.pdf", "application/pdf", b"%PDF-1.7")
+
+    assert stored.path == "cloudinary|image|sandesh-portfolio/resume-123"
+    assert uploader.upload_options == {
+        "resource_type": "image",
+        "use_filename": True,
+        "unique_filename": True,
+        "overwrite": False,
+        "folder": "sandesh-portfolio",
+    }
+
+
+@pytest.mark.asyncio
 async def test_cloudinary_provider_fetches_existing_image_metadata(
     cloudinary_settings: Settings,
 ) -> None:

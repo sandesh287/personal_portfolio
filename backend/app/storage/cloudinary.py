@@ -138,8 +138,8 @@ def _get_cloudinary_resource_type(content_type: str) -> str:
     upload_kind = classify_upload(content_type)
     if upload_kind is UploadKind.VIDEO:
         return "video"
-    if upload_kind is UploadKind.DOCUMENT:
-        return "raw"
+    # Cloudinary treats PDFs as image assets, enabling inline delivery and page previews.
+    # Password-protected PDFs are intentionally unsupported by the resume upload flow.
     return "image"
 
 
