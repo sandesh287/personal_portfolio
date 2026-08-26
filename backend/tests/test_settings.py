@@ -34,6 +34,7 @@ def test_admin_can_update_settings_and_public_endpoint_reflects_changes(
             "githubUrl": "https://github.com/sandesh",
             "analyticsEnabled": True,
             "githubActivityVisible": False,
+            "homeNotesVisible": False,
         },
     )
     public = client.get("/api/v1/settings/public")
@@ -41,6 +42,7 @@ def test_admin_can_update_settings_and_public_endpoint_reflects_changes(
     assert response.status_code == 200
     assert response.json()["data"]["analyticsEnabled"] is True
     assert response.json()["data"]["githubActivityVisible"] is False
+    assert response.json()["data"]["homeNotesVisible"] is False
     assert public.json()["data"]["contactEmail"] == "hello@sandesh.dev"
     assert db_session.scalar(select(Setting).where(Setting.key == "site_title")) is not None
 

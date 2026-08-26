@@ -39,6 +39,13 @@ SETTING_DEFINITIONS: dict[str, SettingDefinition] = {
     "locale": SettingDefinition("en", "Primary content locale."),
     "resume_enabled": SettingDefinition(True, "Whether the public resume is visible."),
     "analytics_enabled": SettingDefinition(False, "Whether analytics collection is enabled."),
+    "home_profile_visible": SettingDefinition(True, "Show the homepage profile workspace."),
+    "home_quick_links_visible": SettingDefinition(True, "Show homepage workspace shortcuts."),
+    "home_projects_visible": SettingDefinition(True, "Show featured projects on the homepage."),
+    "home_notes_visible": SettingDefinition(True, "Show engineering notes on the homepage."),
+    "home_skills_visible": SettingDefinition(True, "Show the skills summary on the homepage."),
+    "home_experience_visible": SettingDefinition(True, "Show current experience on the homepage."),
+    "home_github_visible": SettingDefinition(True, "Show GitHub activity on the homepage."),
     "seo_description": SettingDefinition(
         "Sandesh's software development portfolio and engineering notes.",
         "Search engine description.",

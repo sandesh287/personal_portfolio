@@ -4,8 +4,8 @@ import { githubApi } from "./api";
 import { githubQueryKeys } from "./queryKeys";
 import type { GitHubActivityParams, GitHubRepositoryParams } from "./types";
 
-export function useGitHubSummary() {
-  return useQuery({ queryKey: githubQueryKeys.summary(), queryFn: githubApi.summary });
+export function useGitHubSummary(enabled = true) {
+  return useQuery({ queryKey: githubQueryKeys.summary(), queryFn: githubApi.summary, enabled });
 }
 
 export function useGitHubRepositories(params: GitHubRepositoryParams, enabled = true) {

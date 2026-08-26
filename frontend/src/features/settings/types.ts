@@ -18,6 +18,13 @@ export interface PublicSettings {
   locale: string;
   resumeEnabled: boolean;
   analyticsEnabled: boolean;
+  homeProfileVisible: boolean;
+  homeQuickLinksVisible: boolean;
+  homeProjectsVisible: boolean;
+  homeNotesVisible: boolean;
+  homeSkillsVisible: boolean;
+  homeExperienceVisible: boolean;
+  homeGithubVisible: boolean;
   seoDescription: string;
   searchEngineIndexing: boolean;
 }

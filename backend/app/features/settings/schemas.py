@@ -22,6 +22,13 @@ class SettingsPayload(ApiSchema):
     locale: str
     resume_enabled: bool
     analytics_enabled: bool
+    home_profile_visible: bool
+    home_quick_links_visible: bool
+    home_projects_visible: bool
+    home_notes_visible: bool
+    home_skills_visible: bool
+    home_experience_visible: bool
+    home_github_visible: bool
     seo_description: str
     search_engine_indexing: bool
 
@@ -52,5 +59,12 @@ class SettingsUpdateRequest(ApiSchema):
     locale: str | None = Field(default=None, min_length=2, max_length=20)
     resume_enabled: bool | None = None
     analytics_enabled: bool | None = None
+    home_profile_visible: bool | None = None
+    home_quick_links_visible: bool | None = None
+    home_projects_visible: bool | None = None
+    home_notes_visible: bool | None = None
+    home_skills_visible: bool | None = None
+    home_experience_visible: bool | None = None
+    home_github_visible: bool | None = None
     seo_description: str | None = Field(default=None, min_length=20, max_length=320)
     search_engine_indexing: bool | None = None

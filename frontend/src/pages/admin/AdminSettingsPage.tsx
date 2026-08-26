@@ -37,6 +37,13 @@ const settingsSchema = z.object({
   locale: z.string().min(2).max(20),
   resumeEnabled: z.boolean(),
   analyticsEnabled: z.boolean(),
+  homeProfileVisible: z.boolean(),
+  homeQuickLinksVisible: z.boolean(),
+  homeProjectsVisible: z.boolean(),
+  homeNotesVisible: z.boolean(),
+  homeSkillsVisible: z.boolean(),
+  homeExperienceVisible: z.boolean(),
+  homeGithubVisible: z.boolean(),
   seoDescription: z.string().min(20).max(320),
   searchEngineIndexing: z.boolean(),
 });
@@ -310,6 +317,41 @@ function FeatureFields({ form }: { form: SettingsForm }) {
         label="Analytics"
         description="Enable analytics when its integration is configured."
         registration={form.register("analyticsEnabled")}
+      />
+      <ToggleField
+        label="Homepage profile"
+        description="Show the primary identity and availability workspace."
+        registration={form.register("homeProfileVisible")}
+      />
+      <ToggleField
+        label="Homepage shortcuts"
+        description="Show quick-launch links to the main public workspaces."
+        registration={form.register("homeQuickLinksVisible")}
+      />
+      <ToggleField
+        label="Homepage projects"
+        description="Show featured projects and their visual previews."
+        registration={form.register("homeProjectsVisible")}
+      />
+      <ToggleField
+        label="Homepage notes"
+        description="Show recently featured engineering notes."
+        registration={form.register("homeNotesVisible")}
+      />
+      <ToggleField
+        label="Homepage skills"
+        description="Show the skills and technology summary."
+        registration={form.register("homeSkillsVisible")}
+      />
+      <ToggleField
+        label="Homepage experience"
+        description="Show current or latest professional experience."
+        registration={form.register("homeExperienceVisible")}
+      />
+      <ToggleField
+        label="Homepage GitHub activity"
+        description="Show cached GitHub statistics and recent activity."
+        registration={form.register("homeGithubVisible")}
       />
     </div>
   );

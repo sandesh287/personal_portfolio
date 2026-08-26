@@ -5,7 +5,6 @@ import { AdminLayout } from "@/layouts/AdminLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { WorkspaceLayout } from "@/layouts/WorkspaceLayout";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { LazyRoute } from "@/routes/LazyRoute";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
@@ -13,6 +12,10 @@ const AdminLoginPage = lazy(() =>
   import("@/pages/admin/AdminLoginPage").then((module) => ({
     default: module.AdminLoginPage,
   })),
+);
+
+const HomePage = lazy(() =>
+  import("@/pages/home/HomePage").then((module) => ({ default: module.HomePage })),
 );
 
 const AdminDashboardPage = lazy(() =>
@@ -134,7 +137,7 @@ export const router = createBrowserRouter([
       {
         element: <WorkspaceLayout />,
         children: [
-          { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
+          { path: "/", element: <LazyRoute component={HomePage} /> },
           { path: "/projects", element: <LazyRoute component={ProjectsPage} /> },
           { path: "/projects/:slug", element: <LazyRoute component={ProjectDetailsPage} /> },
           { path: "/blog", element: <LazyRoute component={BlogPage} /> },

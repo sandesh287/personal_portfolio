@@ -657,6 +657,11 @@ The public settings resource also exposes `githubProfileVisible`, `githubStatsVi
 `githubRepositoriesVisible`, `githubInspectorVisible`, and `githubActivityVisible`. Admins can
 control each GitHub Explorer region independently through the existing settings update endpoint.
 
+Homepage composition is controlled by `homeProfileVisible`, `homeQuickLinksVisible`,
+`homeProjectsVisible`, `homeNotesVisible`, `homeSkillsVisible`, `homeExperienceVisible`, and
+`homeGithubVisible`. These public booleans let the Landing Workspace omit individual modules
+without requiring a deployment or a separate page-layout API.
+
 ## Analytics
 
 ### Track Event
