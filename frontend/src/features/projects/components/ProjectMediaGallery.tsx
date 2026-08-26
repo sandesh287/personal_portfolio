@@ -27,6 +27,9 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
                 ? getResponsiveImageAttributes(image.url, {
                     widths: [400, 640, 960, 1280],
                     sizes: "(min-width: 640px) calc((100vw - 22rem) / 2), calc(100vw - 3rem)",
+                    imageWidth: image.imageWidth,
+                    imageHeight: image.imageHeight,
+                    placeholderUrl: image.placeholderUrl,
                   })
                 : null;
               return (
@@ -157,6 +160,10 @@ function ImageLightbox({
   const activeImageAttributes = getResponsiveImageAttributes(activeImage.url, {
     widths: [640, 960, 1280, 1600, 2048],
     sizes: "100vw",
+    imageWidth: activeImage.imageWidth,
+    imageHeight: activeImage.imageHeight,
+    placeholderUrl: activeImage.placeholderUrl,
+    placeholderFit: "contain",
   });
 
   useEffect(() => {

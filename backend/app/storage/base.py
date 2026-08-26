@@ -10,6 +10,9 @@ class StoredFile:
     content_type: str
     size: int
     public_url: str | None = None
+    image_width: int | None = None
+    image_height: int | None = None
+    placeholder_url: str | None = None
 
 
 class StorageProvider(ABC):

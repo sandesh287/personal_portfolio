@@ -108,9 +108,12 @@ Paginated data:
   "id": "uuid",
   "filename": "cover.png",
   "originalFilename": "cover.png",
-  "url": "/uploads/cover.png",
+  "publicUrl": "/uploads/cover.png",
   "contentType": "image/png",
   "sizeBytes": 123456,
+  "imageWidth": 1600,
+  "imageHeight": 900,
+  "placeholderUrl": "https://res.cloudinary.com/example/image/upload/c_limit,w_32/e_blur:1000/f_auto/q_auto:low/cover.png",
   "altText": "Project cover",
   "createdAt": "2026-08-04T00:00:00Z",
   "updatedAt": "2026-08-04T00:00:00Z"
@@ -316,6 +319,7 @@ Paginated data:
 - Reorder body: `{ "items": [{ "id": "uuid", "sortOrder": 0 }] }` — must include every active project image with unique contiguous positions starting at zero
 - Cover body: `{ "imageId": "uuid" }`; use `null` to clear
 - Responses: `ProjectImage`, `ProjectImage[]`, `Project`, or `{ "deleted": true }`
+- `ProjectImage` includes nullable `imageWidth`, `imageHeight`, and `placeholderUrl` fields. Cloudinary image uploads populate these values; legacy and local assets may return `null`.
 - Errors: `401`, `403`, `404`, `409`, `413`, `422`
 
 ### Project Videos

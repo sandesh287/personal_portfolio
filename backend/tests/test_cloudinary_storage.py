@@ -14,16 +14,17 @@ class FakeCloudinaryUploader:
         self.deleted_public_id: str | None = None
         self.delete_options: dict[str, object] | None = None
         self.should_fail = False
+        self.response: dict[str, object] = {
+            "public_id": "sandesh-portfolio/demo-123",
+            "secure_url": "https://res.cloudinary.com/demo/video/upload/demo-123.mp4",
+            "bytes": 14,
+        }
 
     def upload(self, file: object, **options: object) -> Mapping[str, object]:
         if self.should_fail:
             raise RuntimeError("provider unavailable")
         self.upload_options = options
-        return {
-            "public_id": "sandesh-portfolio/demo-123",
-            "secure_url": "https://res.cloudinary.com/demo/video/upload/demo-123.mp4",
-            "bytes": 14,
-        }
+        return self.response
 
     def destroy(self, public_id: str, **options: object) -> Mapping[str, object]:
         self.deleted_public_id = public_id
@@ -66,6 +67,34 @@ async def test_cloudinary_provider_uploads_video_and_returns_persistent_referenc
         "overwrite": False,
         "folder": "sandesh-portfolio",
     }
+
+
+@pytest.mark.asyncio
+async def test_cloudinary_provider_returns_image_dimensions_and_placeholder(
+    cloudinary_settings: Settings,
+) -> None:
+    uploader = FakeCloudinaryUploader()
+    uploader.response = {
+        "public_id": "sandesh-portfolio/cover-123",
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1/cover-123.png",
+        "bytes": 2048,
+        "width": 1600,
+        "height": 900,
+    }
+    provider = CloudinaryStorageProvider(
+        cloudinary_settings,
+        uploader=uploader,
+        configure=lambda **_: None,
+    )
+
+    stored = await provider.save("cover.png", "image/png", b"image-content")
+
+    assert stored.image_width == 1600
+    assert stored.image_height == 900
+    assert stored.placeholder_url == (
+        "https://res.cloudinary.com/demo/image/upload/"
+        "c_limit,w_32/e_blur:1000/f_auto/q_auto:low/v1/cover-123.png"
+    )
 
 
 @pytest.mark.asyncio

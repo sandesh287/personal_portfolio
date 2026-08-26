@@ -18,6 +18,9 @@ class MediaAssetSchema(ApiSchema):
     public_url: str | None
     content_type: str
     size_bytes: int
+    image_width: int | None
+    image_height: int | None
+    placeholder_url: str | None
     alt_text: str | None
     folder: str | None
     created_at: datetime

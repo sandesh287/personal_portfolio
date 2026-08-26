@@ -20,6 +20,9 @@ class MigrationTargetStorage(StorageProvider):
             content_type=content_type,
             size=len(content),
             public_url=f"https://res.cloudinary.com/demo/image/upload/{filename}",
+            image_width=1280,
+            image_height=720,
+            placeholder_url=f"https://res.cloudinary.com/demo/image/upload/w_32/{filename}",
         )
 
     async def delete(self, path: str) -> None:
@@ -86,6 +89,11 @@ async def test_media_migration_updates_record_and_preserves_local_file(
     assert summary.migrated == 1
     assert asset.storage_path == "cloudinary|image|sandesh-portfolio/preview.png"
     assert asset.public_url == "https://res.cloudinary.com/demo/image/upload/preview.png"
+    assert asset.image_width == 1280
+    assert asset.image_height == 720
+    assert asset.placeholder_url == (
+        "https://res.cloudinary.com/demo/image/upload/w_32/preview.png"
+    )
     assert source.exists()
 
 

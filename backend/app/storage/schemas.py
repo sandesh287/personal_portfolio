@@ -7,3 +7,6 @@ class StoredFilePayload(ApiSchema):
     filename: str
     content_type: str
     size: int
+    image_width: int | None = None
+    image_height: int | None = None
+    placeholder_url: str | None = None

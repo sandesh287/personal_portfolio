@@ -79,6 +79,11 @@ class CloudinaryStorageProvider(StorageProvider):
             content_type=content_type,
             size=_optional_int(response, "bytes", len(content)),
             public_url=public_url,
+            image_width=_optional_positive_int(response, "width"),
+            image_height=_optional_positive_int(response, "height"),
+            placeholder_url=(
+                _build_image_placeholder_url(public_url) if resource_type == "image" else None
+            ),
         )
 
     async def delete(self, path: str) -> None:
@@ -128,3 +133,19 @@ def _required_string(response: Mapping[str, object], key: str) -> str:
 def _optional_int(response: Mapping[str, object], key: str, default: int) -> int:
     value = response.get(key)
     return value if isinstance(value, int) else default
+
+
+def _optional_positive_int(response: Mapping[str, object], key: str) -> int | None:
+    value = response.get(key)
+    return value if isinstance(value, int) and value > 0 else None
+
+
+def _build_image_placeholder_url(public_url: str) -> str:
+    upload_path = "/image/upload/"
+    if upload_path not in public_url:
+        return public_url
+    return public_url.replace(
+        upload_path,
+        f"{upload_path}c_limit,w_32/e_blur:1000/f_auto/q_auto:low/",
+        1,
+    )

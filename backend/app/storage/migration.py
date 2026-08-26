@@ -81,16 +81,35 @@ async def migrate_local_media(
             logger.exception("Unable to upload media asset", extra={"media_id": str(asset.id)})
             continue
 
-        previous_values = (asset.storage_path, asset.filename, asset.public_url, asset.size_bytes)
+        previous_values = (
+            asset.storage_path,
+            asset.filename,
+            asset.public_url,
+            asset.size_bytes,
+            asset.image_width,
+            asset.image_height,
+            asset.placeholder_url,
+        )
         asset.storage_path = stored.path
         asset.filename = stored.filename
         asset.public_url = stored.public_url
         asset.size_bytes = stored.size
+        asset.image_width = stored.image_width
+        asset.image_height = stored.image_height
+        asset.placeholder_url = stored.placeholder_url
         try:
             db.commit()
         except Exception:
             db.rollback()
-            asset.storage_path, asset.filename, asset.public_url, asset.size_bytes = previous_values
+            (
+                asset.storage_path,
+                asset.filename,
+                asset.public_url,
+                asset.size_bytes,
+                asset.image_width,
+                asset.image_height,
+                asset.placeholder_url,
+            ) = previous_values
             await target_storage.delete(stored.path)
             summary = replace(summary, failed=summary.failed + 1)
             logger.exception(

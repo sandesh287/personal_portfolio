@@ -5,6 +5,9 @@ export interface MediaAsset {
   publicUrl: string | null;
   contentType: string;
   sizeBytes: number;
+  imageWidth: number | null;
+  imageHeight: number | null;
+  placeholderUrl: string | null;
   altText: string | null;
   folder: string | null;
   createdAt: string;

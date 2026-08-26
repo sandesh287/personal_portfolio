@@ -582,6 +582,9 @@ class ProjectService(BaseService):
             public_url=stored_file.public_url,
             content_type=stored_file.content_type,
             size_bytes=stored_file.size,
+            image_width=stored_file.image_width,
+            image_height=stored_file.image_height,
+            placeholder_url=stored_file.placeholder_url,
         )
         project_image = ProjectImage(
             project_id=project.id,
@@ -598,6 +601,9 @@ class ProjectService(BaseService):
             url=media_asset.public_url,
             caption=project_image.caption,
             sort_order=project_image.sort_order,
+            image_width=media_asset.image_width,
+            image_height=media_asset.image_height,
+            placeholder_url=media_asset.placeholder_url,
         )
 
     def _validate_category(self, category_id: UUID | None) -> None:

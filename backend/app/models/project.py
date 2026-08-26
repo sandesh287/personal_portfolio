@@ -104,6 +104,18 @@ class ProjectImage(BaseModel):
     def url(self) -> str | None:
         return self.media_asset.public_url
 
+    @property
+    def image_width(self) -> int | None:
+        return self.media_asset.image_width
+
+    @property
+    def image_height(self) -> int | None:
+        return self.media_asset.image_height
+
+    @property
+    def placeholder_url(self) -> str | None:
+        return self.media_asset.placeholder_url
+
 
 class ProjectVideo(BaseModel):
     __tablename__ = "project_videos"

@@ -178,12 +178,15 @@ export function ProjectsPage() {
 
 function ProjectRow({ project }: { project: Project }) {
   const coverImage =
-    project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
-    project.images[0]?.url;
-  const coverImageAttributes = coverImage
-    ? getResponsiveImageAttributes(coverImage, {
+    project.images.find((image) => image.mediaAssetId === project.coverImageId) ??
+    project.images[0];
+  const coverImageAttributes = coverImage?.url
+    ? getResponsiveImageAttributes(coverImage.url, {
         widths: [160, 320, 640],
         sizes: "(min-width: 640px) 64px, calc(100vw - 3.5rem)",
+        imageWidth: coverImage.imageWidth,
+        imageHeight: coverImage.imageHeight,
+        placeholderUrl: coverImage.placeholderUrl,
       })
     : null;
 

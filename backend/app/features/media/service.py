@@ -49,6 +49,9 @@ class MediaService:
             public_url=stored.public_url,
             content_type=stored.content_type,
             size_bytes=stored.size,
+            image_width=stored.image_width,
+            image_height=stored.image_height,
+            placeholder_url=stored.placeholder_url,
             alt_text=alt_text,
             folder=folder,
         )

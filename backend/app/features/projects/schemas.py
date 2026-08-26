@@ -91,6 +91,9 @@ class ProjectImagePayload(ApiSchema):
     url: str | None = None
     caption: str | None = None
     sort_order: int
+    image_width: int | None = None
+    image_height: int | None = None
+    placeholder_url: str | None = None
 
 
 class ProjectCoverImageRequest(ApiSchema):

@@ -36,6 +36,9 @@ def test_admin_can_upload_and_get_media(client: TestClient, admin_user: User) ->
     assert payload["contentType"] == "image/png"
     assert payload["altText"] == "Portfolio preview"
     assert payload["folder"] == "projects"
+    assert payload["imageWidth"] is None
+    assert payload["imageHeight"] is None
+    assert payload["placeholderUrl"] is None
     assert "storagePath" not in payload
 
     detail = client.get(

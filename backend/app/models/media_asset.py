@@ -13,5 +13,8 @@ class MediaAsset(BaseModel):
     public_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    image_width: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    image_height: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    placeholder_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     alt_text: Mapped[str | None] = mapped_column(String(255), nullable=True)
     folder: Mapped[str | None] = mapped_column(String(120), index=True, nullable=True)

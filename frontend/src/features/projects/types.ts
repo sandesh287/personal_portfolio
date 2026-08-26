@@ -2,12 +2,7 @@ import type { PaginatedPayload } from "@/types/api";
 
 export type ProjectStatus = "draft" | "published" | "archived";
 
-export type ProjectSortField =
-  | "title"
-  | "createdAt"
-  | "updatedAt"
-  | "publishedAt"
-  | "sortOrder";
+export type ProjectSortField = "title" | "createdAt" | "updatedAt" | "publishedAt" | "sortOrder";
 
 export type SortDirection = "asc" | "desc";
 
@@ -35,6 +30,9 @@ export interface ProjectImage {
   url: string | null;
   caption: string | null;
   sortOrder: number;
+  imageWidth: number | null;
+  imageHeight: number | null;
+  placeholderUrl: string | null;
 }
 
 export interface ProjectVideo {

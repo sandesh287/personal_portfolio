@@ -104,13 +104,16 @@ export function ProjectDetailsPage() {
 
 function ProjectHero({ project }: { project: Project }) {
   const heroImage =
-    project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
-    project.images[0]?.url;
-  const heroImageAttributes = heroImage
-    ? getResponsiveImageAttributes(heroImage, {
+    project.images.find((image) => image.mediaAssetId === project.coverImageId) ??
+    project.images[0];
+  const heroImageAttributes = heroImage?.url
+    ? getResponsiveImageAttributes(heroImage.url, {
         widths: [480, 768, 1024, 1440, 1920],
         sizes:
           "(min-width: 1280px) calc(100vw - 38rem), (min-width: 1024px) calc(100vw - 34rem), calc(100vw - 3rem)",
+        imageWidth: heroImage.imageWidth,
+        imageHeight: heroImage.imageHeight,
+        placeholderUrl: heroImage.placeholderUrl,
       })
     : null;
 
