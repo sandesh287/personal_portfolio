@@ -135,6 +135,12 @@ Never expose `CLOUDINARY_API_SECRET` in the frontend or commit it to Git. Restar
 changing providers. Existing local files are not automatically migrated; new uploads use the active
 provider. Cloudinary's free-plan limits should be reviewed before changing upload size settings.
 
+Cloudinary Free product environments block PDF delivery by default. Resume viewing requires the
+**Allow delivery of PDF and ZIP files** option under the product environment's **Settings >
+Security** page. Uploading can succeed while delivery still returns HTTP `401` when this option is
+disabled. Existing PDF URLs begin working after the setting is enabled; they do not need to be
+uploaded again.
+
 Preview migration of existing local media records and files:
 
 ```powershell

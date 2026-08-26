@@ -494,10 +494,11 @@ Resume management needs version history rather than replacing a single media row
 | --- | --- | --- |
 | `id` | UUID | PK |
 | `media_asset_id` | UUID | NOT NULL, FK `media_assets(id)` |
-| `title` | VARCHAR(180) | NOT NULL |
-| `version` | VARCHAR(80) | NOT NULL |
+| `title` | VARCHAR(160) | NOT NULL |
+| `version` | VARCHAR(40) | NOT NULL |
 | `is_active` | BOOLEAN | NOT NULL, default `false` |
 | `download_count` | INTEGER | NOT NULL, default `0` |
+| `notes` | TEXT | NULL |
 | audit columns | mixed | global convention |
 
 Indexes:

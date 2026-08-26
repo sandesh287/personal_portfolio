@@ -497,7 +497,7 @@ Future admin CRUD endpoints:
 - Method: `GET`
 - URL: `/api/v1/resume/download`
 - Authorization: public
-- Response `200`: file response
+- Response `307`: redirect to the active file in the configured storage provider; increments the download count
 - Errors: `404`, `429`
 
 ### Resume Versions
@@ -506,11 +506,13 @@ Future admin CRUD endpoints:
 | --- | --- | --- | --- |
 | `GET` | `/api/v1/resume/versions` | admin | List versions |
 | `POST` | `/api/v1/resume/versions` | admin | Upload new version |
-| `PATCH` | `/api/v1/resume/versions/{id}` | admin | Update metadata or active flag |
+| `PATCH` | `/api/v1/resume/versions/{id}` | admin | Update title, version, or notes |
+| `POST` | `/api/v1/resume/versions/{id}/activate` | admin | Make a version active |
 | `DELETE` | `/api/v1/resume/versions/{id}` | admin | Delete version |
 
-- Upload body: `multipart/form-data` with `file`, `title`, `version`, `isActive`
-- Errors: `401`, `403`, `404`, `413`, `422`
+- Upload body: `multipart/form-data` with PDF `file`, `title`, `version`, optional `notes`, and `isActive`
+- The first uploaded version becomes active automatically. The active version must be replaced before deletion.
+- Errors: `401`, `403`, `404`, `409`, `413`, `422`
 
 ## Media Library
 
