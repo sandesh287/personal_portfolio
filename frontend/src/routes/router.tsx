@@ -53,6 +53,16 @@ const ProjectsPage = lazy(() =>
   import("@/pages/projects/ProjectsPage").then((module) => ({ default: module.ProjectsPage })),
 );
 
+const BlogPage = lazy(() =>
+  import("@/pages/blog/BlogPage").then((module) => ({ default: module.BlogPage })),
+);
+
+const BlogDetailsPage = lazy(() =>
+  import("@/pages/blog/BlogDetailsPage").then((module) => ({
+    default: module.BlogDetailsPage,
+  })),
+);
+
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
@@ -63,8 +73,8 @@ export const router = createBrowserRouter([
           { path: "/", element: <PlaceholderPage title="Landing Workspace" /> },
           { path: "/projects", element: <LazyRoute component={ProjectsPage} /> },
           { path: "/projects/:slug", element: <LazyRoute component={ProjectDetailsPage} /> },
-          { path: "/blog", element: <PlaceholderPage title="Engineering Notes" /> },
-          { path: "/blog/:slug", element: <PlaceholderPage title="Engineering Note" /> },
+          { path: "/blog", element: <LazyRoute component={BlogPage} /> },
+          { path: "/blog/:slug", element: <LazyRoute component={BlogDetailsPage} /> },
           { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
           { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
           { path: "/skills", element: <PlaceholderPage title="Skills Graph" /> },
