@@ -1,6 +1,7 @@
 from functools import lru_cache
+from typing import Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +22,11 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 30
     upload_root: str = "uploads"
     public_base_url: str = "http://127.0.0.1:8000"
+    storage_provider: Literal["local", "cloudinary"] = "local"
+    cloudinary_cloud_name: str | None = None
+    cloudinary_api_key: str | None = None
+    cloudinary_api_secret: str | None = None
+    cloudinary_folder: str = "sandesh-portfolio"
     max_image_upload_size_mb: int = 10
     max_video_upload_size_mb: int = 100
     max_document_upload_size_mb: int = 20
@@ -32,6 +38,23 @@ class Settings(BaseSettings):
     admin_password: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    @model_validator(mode="after")
+    def validate_storage_configuration(self) -> Self:
+        if self.storage_provider != "cloudinary":
+            return self
+
+        required_values = (
+            self.cloudinary_cloud_name,
+            self.cloudinary_api_key,
+            self.cloudinary_api_secret,
+        )
+        if not all(required_values):
+            raise ValueError(
+                "Cloudinary storage requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, "
+                "and CLOUDINARY_API_SECRET."
+            )
+        return self
 
 
 @lru_cache

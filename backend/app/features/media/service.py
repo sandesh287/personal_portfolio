@@ -7,6 +7,7 @@ from app.features.media.schemas import MediaAssetSchema, MediaAssetUpdate
 from app.models.media_asset import MediaAsset
 from app.schemas.base import PaginatedPayload
 from app.storage.base import StorageProvider
+from app.storage.cloudinary import CloudinaryStorageError
 from app.storage.upload_policy import classify_upload, validate_upload_size
 from app.utils.pagination import PaginationParams
 from fastapi import UploadFile
@@ -33,7 +34,14 @@ class MediaService:
         content = await file.read()
         validate_upload_size(content_type, len(content))
 
-        stored = await self.storage.save(original_filename, content_type, content)
+        try:
+            stored = await self.storage.save(original_filename, content_type, content)
+        except CloudinaryStorageError as exc:
+            raise ApiError(
+                status_code=502,
+                message="Cloud storage could not save the uploaded file.",
+                code="storage_upload_failed",
+            ) from exc
         media = MediaAsset(
             filename=stored.filename,
             original_filename=original_filename,
@@ -105,7 +113,7 @@ class MediaService:
         self.repository.db.commit()
         try:
             await self.storage.delete(media.storage_path)
-        except OSError:
+        except (OSError, CloudinaryStorageError):
             logger.exception(
                 "Unable to remove stored media file", extra={"media_id": str(media_id)}
             )

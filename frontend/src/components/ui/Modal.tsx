@@ -37,7 +37,11 @@ export function Modal({ title, description, isOpen, onClose, children, className
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4">
-      <button className="absolute inset-0 cursor-default" aria-label="Close modal" onClick={onClose} />
+      <button
+        className="absolute inset-0 cursor-default"
+        aria-label="Close modal"
+        onClick={onClose}
+      />
       <section
         aria-modal="true"
         role="dialog"
@@ -50,10 +54,17 @@ export function Modal({ title, description, isOpen, onClose, children, className
         <header className="flex shrink-0 items-start justify-between gap-3 border-b border-border p-3 sm:p-4">
           <div>
             <h2 className="text-base font-semibold">{title}</h2>
-            {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+            {description ? (
+              <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            ) : null}
           </div>
-          <Button type="button" variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            leftIcon={<X className="h-4 w-4" aria-hidden="true" />}
+            onClick={onClose}
+          >
             Close modal
           </Button>
         </header>

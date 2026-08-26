@@ -39,7 +39,7 @@ This document captures the initial production architecture for the dynamic devel
 - `app/repositories/`: Reusable data access abstractions.
 - `app/schemas/`: Shared Pydantic v2 schemas.
 - `app/services/`: Cross-feature business services.
-- `app/storage/`: Storage provider interface and local implementation.
+- `app/storage/`: Storage provider interface with local-development and Cloudinary implementations.
 - `app/tasks/`: Background jobs and scheduled sync entry points.
 - `app/utils/`: Pure backend utilities.
 - `alembic/`: Database migrations.
@@ -48,3 +48,14 @@ This document captures the initial production architecture for the dynamic devel
 ## Architecture Direction
 
 The system uses feature-based architecture, versioned APIs, typed request/response contracts, and a clean separation between transport, business logic, persistence, and external providers.
+
+## Media Storage
+
+The active media backend is selected with `STORAGE_PROVIDER`:
+
+- `local` stores files under `UPLOAD_ROOT` and is the development default.
+- `cloudinary` stores persistent assets in Cloudinary and returns CDN-backed secure URLs.
+
+Media and project services depend only on `StorageProvider`. Cloudinary resource type and public ID
+are encoded in the private `storage_path` field so physical deletion remains provider-aware without
+exposing provider details through the public API.
