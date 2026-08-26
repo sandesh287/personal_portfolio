@@ -1,11 +1,4 @@
-import {
-  ArrowLeft,
-  CalendarDays,
-  Code2,
-  ExternalLink,
-  Github,
-  Layers3,
-} from "lucide-react";
+import { ArrowLeft, CalendarDays, Code2, ExternalLink, Github, Layers3 } from "lucide-react";
 import { Link, useParams } from "react-router";
 
 import { EmptyState } from "@/components/common/EmptyState";
@@ -15,6 +8,7 @@ import { ProjectMediaGallery } from "@/features/projects/components/ProjectMedia
 import { useProjectDetails } from "@/features/projects";
 import type { Project } from "@/features/projects";
 import { cn } from "@/utils/cn";
+import { getResponsiveImageAttributes } from "@/utils/cloudinaryImage";
 import { getErrorMessage } from "@/utils/errors";
 
 export function ProjectDetailsPage() {
@@ -112,14 +106,23 @@ function ProjectHero({ project }: { project: Project }) {
   const heroImage =
     project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
     project.images[0]?.url;
+  const heroImageAttributes = heroImage
+    ? getResponsiveImageAttributes(heroImage, {
+        widths: [480, 768, 1024, 1440, 1920],
+        sizes:
+          "(min-width: 1280px) calc(100vw - 38rem), (min-width: 1024px) calc(100vw - 34rem), calc(100vw - 3rem)",
+      })
+    : null;
 
   return (
     <section id="overview" className="scroll-mt-16 border-b border-border p-4 lg:p-6">
       <div className="overflow-hidden rounded-md border border-border bg-background">
-        {heroImage ? (
+        {heroImageAttributes ? (
           <img
-            src={heroImage}
+            {...heroImageAttributes}
             alt={`${project.title} cover`}
+            fetchPriority="high"
+            decoding="async"
             className="aspect-video max-h-96 w-full object-cover"
           />
         ) : (

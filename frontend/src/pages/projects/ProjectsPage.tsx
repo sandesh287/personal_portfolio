@@ -9,6 +9,7 @@ import { routes } from "@/constants/routes";
 import { useProjectCategories, useProjects, useTechnologies } from "@/features/projects";
 import type { Project, ProjectCategory, Technology } from "@/features/projects";
 import { cn } from "@/utils/cn";
+import { getResponsiveImageAttributes } from "@/utils/cloudinaryImage";
 import { getErrorMessage } from "@/utils/errors";
 
 const PAGE_SIZE = 8;
@@ -65,7 +66,10 @@ export function ProjectsPage() {
 
           <div className="grid w-full grid-cols-3 gap-1 rounded-md border border-border bg-background p-2 text-center sm:w-auto sm:gap-2">
             <Metric label="Projects" value={meta?.totalItems ?? projects.length} />
-            <Metric label="Featured" value={projects.filter((project) => project.featured).length} />
+            <Metric
+              label="Featured"
+              value={projects.filter((project) => project.featured).length}
+            />
             <Metric label="Tech" value={technologies.length} />
           </div>
         </div>
@@ -176,12 +180,24 @@ function ProjectRow({ project }: { project: Project }) {
   const coverImage =
     project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
     project.images[0]?.url;
+  const coverImageAttributes = coverImage
+    ? getResponsiveImageAttributes(coverImage, {
+        widths: [160, 320, 640],
+        sizes: "(min-width: 640px) 64px, calc(100vw - 3.5rem)",
+      })
+    : null;
 
   return (
     <article className="group flex flex-col gap-4 rounded-md border border-border bg-background p-3 transition-colors hover:border-primary/60 sm:flex-row sm:p-4">
       <div className="aspect-video w-full shrink-0 overflow-hidden rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground sm:h-16 sm:w-16 sm:aspect-auto">
-        {coverImage ? (
-          <img src={coverImage} alt="" className="h-full w-full object-cover" />
+        {coverImageAttributes ? (
+          <img
+            {...coverImageAttributes}
+            alt={`${project.title} cover`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <Code2 className="h-5 w-5" aria-hidden="true" />

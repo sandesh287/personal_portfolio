@@ -5,11 +5,12 @@ import { createPortal } from "react-dom";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/Button";
 import type { Project, ProjectImage } from "@/features/projects/types";
+import { getResponsiveImageAttributes } from "@/utils/cloudinaryImage";
 
 export function ProjectMediaGallery({ project }: { project: Project }) {
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
-  const viewableImages = project.images.filter(
-    (image): image is ProjectImage & { url: string } => Boolean(image.url),
+  const viewableImages = project.images.filter((image): image is ProjectImage & { url: string } =>
+    Boolean(image.url),
   );
   const hasMedia = project.images.length > 0 || project.videos.length > 0;
 
@@ -22,12 +23,18 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {project.images.map((image) => {
               const viewableIndex = viewableImages.findIndex((item) => item.id === image.id);
+              const imageAttributes = image.url
+                ? getResponsiveImageAttributes(image.url, {
+                    widths: [400, 640, 960, 1280],
+                    sizes: "(min-width: 640px) calc((100vw - 22rem) / 2), calc(100vw - 3rem)",
+                  })
+                : null;
               return (
                 <figure
                   key={image.id}
                   className="min-w-0 overflow-hidden rounded-md border border-border bg-background"
                 >
-                  {image.url ? (
+                  {imageAttributes ? (
                     <button
                       type="button"
                       className="group relative block w-full overflow-hidden bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
@@ -35,7 +42,7 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
                       aria-label={`Open ${image.caption || "project screenshot"}`}
                     >
                       <img
-                        src={image.url}
+                        {...imageAttributes}
                         alt={image.caption ?? "Project screenshot"}
                         loading="lazy"
                         className="aspect-video w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
@@ -147,6 +154,10 @@ function ImageLightbox({
   const touchStartX = useRef<number | null>(null);
   const activeImage = images[activeIndex];
   const hasMultipleImages = images.length > 1;
+  const activeImageAttributes = getResponsiveImageAttributes(activeImage.url, {
+    widths: [640, 960, 1280, 1600, 2048],
+    sizes: "100vw",
+  });
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -215,8 +226,9 @@ function ImageLightbox({
         onTouchEnd={handleTouchEnd}
       >
         <img
-          src={activeImage.url}
+          {...activeImageAttributes}
           alt={activeImage.caption ?? "Project screenshot"}
+          decoding="async"
           className="max-h-full max-w-full select-none object-contain"
         />
         {hasMultipleImages ? (
@@ -288,12 +300,15 @@ function getVideoEmbedUrl(provider: string, externalUrl: string | null) {
       const videoId =
         url.hostname === "youtu.be"
           ? url.pathname.split("/").filter(Boolean)[0]
-          : url.searchParams.get("v") ?? url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1];
+          : (url.searchParams.get("v") ?? url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1]);
       return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null;
     }
 
     if (provider === "vimeo") {
-      const videoId = url.pathname.split("/").filter(Boolean).find((part) => /^\d+$/.test(part));
+      const videoId = url.pathname
+        .split("/")
+        .filter(Boolean)
+        .find((part) => /^\d+$/.test(part));
       return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
     }
   } catch {
