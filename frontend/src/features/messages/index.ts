@@ -5,6 +5,7 @@ export {
   useMessage,
   useMessages,
   useUpdateMessage,
+  useUnreadMessageCount,
 } from "./hooks";
 export type {
   ContactMessage,

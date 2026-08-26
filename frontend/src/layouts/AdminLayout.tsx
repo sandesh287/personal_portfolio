@@ -11,11 +11,16 @@ import { Toolbar, ToolbarGroup } from "@/components/ui/Toolbar";
 import { adminNavigation } from "@/constants/navigation";
 import { routes } from "@/constants/routes";
 import { useLogout } from "@/features/auth";
+import { useUnreadMessageCount } from "@/features/messages";
 
 export function AdminLayout() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const navigate = useNavigate();
   const logout = useLogout();
+  const unreadMessages = useUnreadMessageCount();
+  const navigationBadges = unreadMessages.data
+    ? { [routes.adminMessages]: unreadMessages.data }
+    : undefined;
 
   async function handleLogout() {
     await logout.mutateAsync();
@@ -30,6 +35,7 @@ export function AdminLayout() {
         subtitle="Content Control"
         items={adminNavigation}
         className="hidden lg:flex"
+        badges={navigationBadges}
       />
       <SidebarDrawer
         title="Admin"
@@ -37,6 +43,7 @@ export function AdminLayout() {
         items={adminNavigation}
         isOpen={isNavigationOpen}
         onClose={() => setIsNavigationOpen(false)}
+        badges={navigationBadges}
       />
       <main className="flex min-w-0 flex-1 flex-col">
         <Toolbar>

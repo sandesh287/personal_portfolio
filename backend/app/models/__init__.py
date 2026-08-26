@@ -14,6 +14,7 @@ from app.models.project import (
 )
 from app.models.refresh_token import RefreshToken
 from app.models.resume import ResumeVersion
+from app.models.setting import Setting
 from app.models.skill import Skill
 from app.models.user import User
 
@@ -35,6 +36,7 @@ __all__ = [
     "ProjectVideo",
     "RefreshToken",
     "ResumeVersion",
+    "Setting",
     "Skill",
     "Technology",
     "User",

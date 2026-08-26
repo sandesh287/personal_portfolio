@@ -511,6 +511,9 @@ Indexes:
 
 Typed key-value settings for public site and admin preferences.
 
+Application code maintains an allowlisted, typed registry and merges defaults for keys that have
+not yet been persisted. This keeps fresh installations usable without a seed migration.
+
 | Column | Type | Constraints |
 | --- | --- | --- |
 | `id` | UUID | PK |

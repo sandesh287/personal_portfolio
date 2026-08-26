@@ -15,6 +15,16 @@ export function useMessages(params: MessageListParams) {
   });
 }
 
+export function useUnreadMessageCount() {
+  const params = { page: 1, pageSize: 1, read: false, archived: false } as const;
+  return useQuery({
+    queryKey: messageQueryKeys.list(params),
+    queryFn: () => messageApi.list(params),
+    select: (data) => data.meta.totalItems,
+    refetchInterval: 30_000,
+  });
+}
+
 export function useMessage(id: string | null) {
   return useQuery({
     queryKey: messageQueryKeys.detail(id ?? ""),

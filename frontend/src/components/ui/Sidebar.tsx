@@ -14,9 +14,18 @@ interface SidebarProps {
   footer?: ReactNode;
   className?: string;
   onNavigate?: () => void;
+  badges?: Partial<Record<string, number>>;
 }
 
-export function Sidebar({ title, subtitle, items, footer, className, onNavigate }: SidebarProps) {
+export function Sidebar({
+  title,
+  subtitle,
+  items,
+  footer,
+  className,
+  onNavigate,
+  badges,
+}: SidebarProps) {
   return (
     <aside
       className={cn(
@@ -46,6 +55,14 @@ export function Sidebar({ title, subtitle, items, footer, className, onNavigate 
           >
             <item.icon className="h-4 w-4" aria-hidden="true" />
             <span>{item.label}</span>
+            {badges?.[item.href] ? (
+              <span
+                className="ml-auto min-w-5 rounded-full bg-destructive px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-destructive-foreground"
+                aria-label={`${badges[item.href]} unread messages`}
+              >
+                {badges[item.href]! > 99 ? "99+" : badges[item.href]}
+              </span>
+            ) : null}
           </NavLink>
         ))}
       </nav>

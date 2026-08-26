@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Clock3, Mail, Send, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Clock3, Code2, Mail, Send, Share2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { FormField, TextInput } from "@/components/form/FormField";
 import { Textarea } from "@/components/form/Textarea";
 import { Button } from "@/components/ui/Button";
 import { useCreateMessage } from "@/features/messages";
+import { usePublicSettings } from "@/features/settings";
 import { getErrorMessage } from "@/utils/errors";
 
 const contactSchema = z.object({
@@ -24,6 +25,7 @@ type ContactValues = z.infer<typeof contactSchema>;
 export function ContactPage() {
   const [receiptId, setReceiptId] = useState<string>();
   const createMessage = useCreateMessage();
+  const settings = usePublicSettings();
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: { name: "", email: "", subject: "", message: "", website: "" },
@@ -64,8 +66,8 @@ export function ContactPage() {
               Welcome to Sandesh&apos;s Communication Terminal
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Send a project inquiry, collaboration proposal, or a simple hello. Your message is
-              stored securely for review in the developer workspace.
+              {settings.data?.tagline ??
+                "Send a project inquiry, collaboration proposal, or a simple hello."}
             </p>
 
             {receiptId ? (
@@ -148,14 +150,39 @@ export function ContactPage() {
           <aside className="border-t border-border bg-muted/50 p-4 sm:p-6 lg:border-l lg:border-t-0">
             <p className="text-xs font-medium uppercase text-muted-foreground">Persistent links</p>
             <div className="mt-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
-              <ContactStatus icon={<Mail className="h-4 w-4" />} label="Direct inbox" />
+              {settings.data?.contactEmail ? (
+                <ContactLink
+                  href={`mailto:${settings.data.contactEmail}`}
+                  icon={<Mail className="h-4 w-4" />}
+                  label={settings.data.contactEmail}
+                />
+              ) : (
+                <ContactStatus icon={<Mail className="h-4 w-4" />} label="Direct inbox" />
+              )}
               <ContactStatus icon={<ShieldCheck className="h-4 w-4" />} label="Secure delivery" />
               <ContactStatus icon={<Clock3 className="h-4 w-4" />} label="Async friendly" />
+              {settings.data?.githubUrl ? (
+                <ContactLink
+                  href={settings.data.githubUrl}
+                  icon={<Code2 className="h-4 w-4" />}
+                  label="GitHub"
+                  external
+                />
+              ) : null}
+              {settings.data?.linkedinUrl ? (
+                <ContactLink
+                  href={settings.data.linkedinUrl}
+                  icon={<Share2 className="h-4 w-4" />}
+                  label="LinkedIn"
+                  external
+                />
+              ) : null}
             </div>
             <div className="mt-8 border-t border-border pt-5">
               <p className="font-mono text-xs text-muted-foreground">STATUS</p>
               <p className="mt-2 flex items-center gap-2 text-sm text-foreground">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" /> Available for collaboration
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                {settings.data?.availabilityStatus ?? "Available for collaboration"}
               </p>
             </div>
           </aside>
@@ -171,5 +198,29 @@ function ContactStatus({ icon, label }: { icon: ReactNode; label: string }) {
       {icon}
       <span>{label}</span>
     </div>
+  );
+}
+
+function ContactLink({
+  href,
+  icon,
+  label,
+  external = false,
+}: {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  external?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      className="flex min-h-10 min-w-0 items-center gap-3 rounded-md px-3 text-sm text-foreground hover:bg-muted"
+    >
+      {icon}
+      <span className="truncate">{label}</span>
+    </a>
   );
 }

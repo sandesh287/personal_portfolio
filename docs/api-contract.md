@@ -606,6 +606,11 @@ Future admin CRUD endpoints:
 
 - Errors: `401`, `403`, `422`
 
+Settings are validated against a server-side registry. Public settings include site identity,
+profile details, social links, availability, feature flags, localization, and SEO preferences.
+Secrets such as GitHub tokens, SMTP credentials, and API keys remain environment variables and are
+never accepted by this API.
+
 ## GitHub Integration
 
 ### Public GitHub Summary

@@ -87,6 +87,12 @@ const AdminMessagesPage = lazy(() =>
   })),
 );
 
+const AdminSettingsPage = lazy(() =>
+  import("@/pages/admin/AdminSettingsPage").then((module) => ({
+    default: module.AdminSettingsPage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -159,7 +165,7 @@ export const router = createBrowserRouter([
           { path: "resume", element: <LazyRoute component={AdminResumePage} /> },
           { path: "media", element: <LazyRoute component={AdminMediaPage} /> },
           { path: "messages", element: <LazyRoute component={AdminMessagesPage} /> },
-          { path: "settings", element: <PlaceholderPage title="Settings" /> },
+          { path: "settings", element: <LazyRoute component={AdminSettingsPage} /> },
         ],
       },
     ],
