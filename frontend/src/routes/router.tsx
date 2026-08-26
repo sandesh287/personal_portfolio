@@ -39,6 +39,12 @@ const AdminMediaPage = lazy(() =>
   })),
 );
 
+const AdminBlogPage = lazy(() =>
+  import("@/pages/admin/AdminBlogPage").then((module) => ({
+    default: module.AdminBlogPage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -105,7 +111,7 @@ export const router = createBrowserRouter([
             path: "technologies",
             element: <LazyRoute component={AdminTechnologiesPage} />,
           },
-          { path: "blog", element: <PlaceholderPage title="Blog Admin" /> },
+          { path: "blog", element: <LazyRoute component={AdminBlogPage} /> },
           { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
           { path: "experience", element: <PlaceholderPage title="Experience Admin" /> },
           { path: "resume", element: <PlaceholderPage title="Resume Admin" /> },
