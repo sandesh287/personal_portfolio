@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/sandesh_portfolio"
     jwt_secret_key: str = "dev-only-change-this-jwt-secret-key-32-plus-characters"
     jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = 15
-    refresh_token_expire_days: int = 30
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 90
     upload_root: str = "uploads"
     public_base_url: str = "http://127.0.0.1:8000"
     storage_provider: Literal["local", "cloudinary"] = "local"

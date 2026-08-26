@@ -3,8 +3,12 @@ from uuid import uuid4
 
 import pytest
 from app.models.media_asset import MediaAsset
-from app.storage.base import StorageProvider, StoredFile
-from app.storage.migration import cleanup_migrated_local_media, migrate_local_media
+from app.storage.base import StorageProvider, StoredFile, StoredImageMetadata
+from app.storage.migration import (
+    backfill_cloudinary_image_metadata,
+    cleanup_migrated_local_media,
+    migrate_local_media,
+)
 from sqlalchemy.orm import Session
 
 
@@ -29,6 +33,19 @@ class MigrationTargetStorage(StorageProvider):
         return None
 
 
+class MetadataReader:
+    def __init__(self) -> None:
+        self.requested_paths: list[str] = []
+
+    async def get_image_metadata(self, path: str) -> StoredImageMetadata | None:
+        self.requested_paths.append(path)
+        return StoredImageMetadata(
+            width=1920,
+            height=1080,
+            placeholder_url="https://res.cloudinary.com/demo/image/upload/w_32/preview.png",
+        )
+
+
 def create_local_asset(db: Session, source: Path) -> MediaAsset:
     asset = MediaAsset(
         filename=source.name,
@@ -42,6 +59,48 @@ def create_local_asset(db: Session, source: Path) -> MediaAsset:
     db.commit()
     db.refresh(asset)
     return asset
+
+
+def create_cloudinary_asset(db: Session, *, with_metadata: bool = False) -> MediaAsset:
+    asset = MediaAsset(
+        filename="preview.png",
+        original_filename="preview.png",
+        storage_path="cloudinary|image|sandesh-portfolio/preview",
+        public_url="https://res.cloudinary.com/demo/image/upload/preview.png",
+        content_type="image/png",
+        size_bytes=100,
+        image_width=1280 if with_metadata else None,
+        image_height=720 if with_metadata else None,
+        placeholder_url="https://example.com/placeholder.png" if with_metadata else None,
+    )
+    db.add(asset)
+    db.commit()
+    db.refresh(asset)
+    return asset
+
+
+@pytest.mark.asyncio
+async def test_cloudinary_metadata_backfill_is_dry_run_and_idempotent(
+    db_session: Session,
+) -> None:
+    incomplete = create_cloudinary_asset(db_session)
+    create_cloudinary_asset(db_session, with_metadata=True)
+    reader = MetadataReader()
+
+    dry_run = await backfill_cloudinary_image_metadata(db_session, reader, apply=False)
+    applied = await backfill_cloudinary_image_metadata(db_session, reader, apply=True)
+    repeated = await backfill_cloudinary_image_metadata(db_session, reader, apply=True)
+
+    db_session.refresh(incomplete)
+    assert dry_run.eligible == 1
+    assert dry_run.updated == 0
+    assert applied.updated == 1
+    assert applied.skipped == 1
+    assert repeated.updated == 0
+    assert repeated.skipped == 2
+    assert reader.requested_paths == ["cloudinary|image|sandesh-portfolio/preview"]
+    assert incomplete.image_width == 1920
+    assert incomplete.image_height == 1080
 
 
 @pytest.mark.asyncio

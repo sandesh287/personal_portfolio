@@ -15,6 +15,13 @@ class StoredFile:
     placeholder_url: str | None = None
 
 
+@dataclass(frozen=True)
+class StoredImageMetadata:
+    width: int
+    height: int
+    placeholder_url: str
+
+
 class StorageProvider(ABC):
     @abstractmethod
     async def save(self, filename: str, content_type: str, content: bytes) -> StoredFile:

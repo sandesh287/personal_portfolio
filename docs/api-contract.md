@@ -168,7 +168,7 @@ Paginated data:
   "accessToken": "jwt",
   "refreshToken": "jwt",
   "tokenType": "bearer",
-  "expiresIn": 900,
+  "expiresIn": 3600,
   "user": {}
 }
 ```
@@ -180,6 +180,7 @@ Paginated data:
 - Method: `POST`
 - URL: `/api/v1/auth/refresh`
 - Authorization: public, requires valid refresh token
+- Refresh tokens remain valid for 90 days, rotate on every successful refresh, and can be revoked by logout. Access tokens remain valid for 60 minutes.
 - Request body:
 
 ```json

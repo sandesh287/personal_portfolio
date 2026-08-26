@@ -32,6 +32,21 @@ class FakeCloudinaryUploader:
         return {"result": "ok"}
 
 
+class FakeCloudinaryResourceApi:
+    def __init__(self) -> None:
+        self.requested_public_id: str | None = None
+        self.options: dict[str, object] | None = None
+
+    def resource(self, public_id: str, **options: object) -> Mapping[str, object]:
+        self.requested_public_id = public_id
+        self.options = options
+        return {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/v1/cover-123.png",
+            "width": 1600,
+            "height": 900,
+        }
+
+
 @pytest.fixture()
 def cloudinary_settings() -> Settings:
     return Settings(
@@ -95,6 +110,27 @@ async def test_cloudinary_provider_returns_image_dimensions_and_placeholder(
         "https://res.cloudinary.com/demo/image/upload/"
         "c_limit,w_32/e_blur:1000/f_auto/q_auto:low/v1/cover-123.png"
     )
+
+
+@pytest.mark.asyncio
+async def test_cloudinary_provider_fetches_existing_image_metadata(
+    cloudinary_settings: Settings,
+) -> None:
+    resource_api = FakeCloudinaryResourceApi()
+    provider = CloudinaryStorageProvider(
+        cloudinary_settings,
+        uploader=FakeCloudinaryUploader(),
+        resource_api=resource_api,
+        configure=lambda **_: None,
+    )
+
+    metadata = await provider.get_image_metadata("cloudinary|image|sandesh-portfolio/cover-123")
+
+    assert metadata is not None
+    assert metadata.width == 1600
+    assert metadata.height == 900
+    assert resource_api.requested_public_id == "sandesh-portfolio/cover-123"
+    assert resource_api.options == {"resource_type": "image"}
 
 
 @pytest.mark.asyncio

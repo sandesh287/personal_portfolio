@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 from app.models.refresh_token import RefreshToken
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -15,6 +17,7 @@ def test_login_returns_token_pair(client: TestClient, admin_user: object) -> Non
     assert payload["data"]["tokenType"] == "bearer"
     assert payload["data"]["accessToken"]
     assert payload["data"]["refreshToken"]
+    assert payload["data"]["expiresIn"] == 3600
     assert payload["data"]["user"]["email"] == "admin@sandesh.dev"
 
 
@@ -58,6 +61,9 @@ def test_refresh_rotates_refresh_token(
     assert response.json()["data"]["refreshToken"] != refresh_token
     assert db_session.query(RefreshToken).count() == 2
     assert db_session.query(RefreshToken).filter(RefreshToken.revoked_at.is_not(None)).count() == 1
+    active_token = db_session.query(RefreshToken).filter(RefreshToken.revoked_at.is_(None)).one()
+    expected_expiry = (datetime.now(UTC) + timedelta(days=90)).replace(tzinfo=None)
+    assert abs((active_token.expires_at - expected_expiry).total_seconds()) < 10
 
 
 def test_logout_revokes_refresh_token(client: TestClient, admin_user: object) -> None:

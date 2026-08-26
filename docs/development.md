@@ -150,3 +150,16 @@ Delete only uniquely matched local copies after reviewing the preview counts:
 Cleanup matches on sanitized filename and exact byte size. Extra local candidates are deleted only
 when SHA-256 hashing confirms they are byte-for-byte identical copies. Same-size files with different
 content, missing matches, and other ambiguous groups are never deleted automatically.
+
+After applying the image metadata database migration, preview metadata backfill for existing
+Cloudinary images:
+
+```powershell
+..\.venv\Scripts\python.exe -m app.cli.backfill_cloudinary_metadata
+```
+
+Apply the idempotent backfill after reviewing the counts:
+
+```powershell
+..\.venv\Scripts\python.exe -m app.cli.backfill_cloudinary_metadata --apply
+```

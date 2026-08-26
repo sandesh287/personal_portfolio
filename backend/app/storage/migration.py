@@ -3,10 +3,11 @@ from collections import defaultdict
 from dataclasses import dataclass, replace
 from hashlib import file_digest
 from pathlib import Path
+from typing import Protocol
 from uuid import UUID
 
 from app.models.media_asset import MediaAsset
-from app.storage.base import StorageProvider
+from app.storage.base import StorageProvider, StoredImageMetadata
 from app.storage.cloudinary import CLOUDINARY_PATH_PREFIX
 from app.storage.upload_policy import validate_upload_size
 from sqlalchemy import select
@@ -32,6 +33,67 @@ class LocalMediaCleanupSummary:
     deleted: int = 0
     missing: int = 0
     ambiguous: int = 0
+
+
+@dataclass(frozen=True)
+class ImageMetadataBackfillSummary:
+    discovered: int = 0
+    eligible: int = 0
+    updated: int = 0
+    skipped: int = 0
+    failed: int = 0
+
+
+class ImageMetadataReader(Protocol):
+    async def get_image_metadata(self, path: str) -> StoredImageMetadata | None: ...
+
+
+async def backfill_cloudinary_image_metadata(
+    db: Session,
+    metadata_reader: ImageMetadataReader,
+    *,
+    apply: bool,
+) -> ImageMetadataBackfillSummary:
+    assets = db.scalars(
+        select(MediaAsset)
+        .where(
+            MediaAsset.deleted_at.is_(None),
+            MediaAsset.storage_path.startswith(f"{CLOUDINARY_PATH_PREFIX}|image|"),
+        )
+        .order_by(MediaAsset.created_at.asc(), MediaAsset.id.asc())
+    ).all()
+    summary = ImageMetadataBackfillSummary(discovered=len(assets))
+
+    for asset in assets:
+        if asset.image_width and asset.image_height and asset.placeholder_url:
+            summary = replace(summary, skipped=summary.skipped + 1)
+            continue
+
+        summary = replace(summary, eligible=summary.eligible + 1)
+        if not apply:
+            continue
+
+        try:
+            metadata = await metadata_reader.get_image_metadata(asset.storage_path)
+            if metadata is None:
+                summary = replace(summary, failed=summary.failed + 1)
+                continue
+            asset.image_width = metadata.width
+            asset.image_height = metadata.height
+            asset.placeholder_url = metadata.placeholder_url
+            db.commit()
+        except Exception:
+            db.rollback()
+            summary = replace(summary, failed=summary.failed + 1)
+            logger.exception(
+                "Unable to backfill Cloudinary image metadata",
+                extra={"media_id": str(asset.id)},
+            )
+            continue
+
+        summary = replace(summary, updated=summary.updated + 1)
+
+    return summary
 
 
 async def migrate_local_media(
