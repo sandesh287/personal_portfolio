@@ -12,6 +12,7 @@ from app.models.project import (
     Technology,
 )
 from app.models.refresh_token import RefreshToken
+from app.models.skill import Skill
 from app.models.user import User
 
 __all__ = [
@@ -30,6 +31,7 @@ __all__ = [
     "ProjectTechnology",
     "ProjectVideo",
     "RefreshToken",
+    "Skill",
     "Technology",
     "User",
 ]

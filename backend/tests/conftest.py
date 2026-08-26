@@ -6,6 +6,7 @@ from app.auth.security import hash_password
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
+from app.middleware.rate_limit import RateLimitMiddleware
 from app.models.user import User
 from app.storage.dependencies import get_storage_provider
 from app.storage.local import LocalStorageProvider
@@ -43,6 +44,12 @@ def client(db_session: Session, tmp_path) -> Generator[TestClient, None, None]:
     app.dependency_overrides[get_storage_provider] = lambda: LocalStorageProvider(str(tmp_path))
 
     with TestClient(app) as test_client:
+        middleware = app.middleware_stack
+        while middleware is not None:
+            if isinstance(middleware, RateLimitMiddleware):
+                middleware.history.clear()
+                break
+            middleware = getattr(middleware, "app", None)
         yield test_client
 
     app.dependency_overrides.clear()

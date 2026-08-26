@@ -57,6 +57,16 @@ const ExperiencePage = lazy(() =>
   })),
 );
 
+const SkillsPage = lazy(() =>
+  import("@/pages/skills/SkillsPage").then((module) => ({ default: module.SkillsPage })),
+);
+
+const AdminSkillsPage = lazy(() =>
+  import("@/pages/admin/AdminSkillsPage").then((module) => ({
+    default: module.AdminSkillsPage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -95,7 +105,7 @@ export const router = createBrowserRouter([
           { path: "/blog/:slug", element: <LazyRoute component={BlogDetailsPage} /> },
           { path: "/resume", element: <PlaceholderPage title="Resume Viewer" /> },
           { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
-          { path: "/skills", element: <PlaceholderPage title="Skills Graph" /> },
+          { path: "/skills", element: <LazyRoute component={SkillsPage} /> },
           { path: "/experience", element: <LazyRoute component={ExperiencePage} /> },
           { path: "/contact", element: <PlaceholderPage title="Communication Terminal" /> },
         ],
@@ -124,7 +134,7 @@ export const router = createBrowserRouter([
             element: <LazyRoute component={AdminTechnologiesPage} />,
           },
           { path: "blog", element: <LazyRoute component={AdminBlogPage} /> },
-          { path: "skills", element: <PlaceholderPage title="Skills Admin" /> },
+          { path: "skills", element: <LazyRoute component={AdminSkillsPage} /> },
           { path: "experience", element: <LazyRoute component={AdminExperiencePage} /> },
           { path: "resume", element: <PlaceholderPage title="Resume Admin" /> },
           { path: "media", element: <LazyRoute component={AdminMediaPage} /> },

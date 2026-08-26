@@ -435,7 +435,8 @@ Future admin CRUD endpoints:
 
 ## Skills
 
-- Model fields: `id`, `name`, `slug`, `category`, `level`, `icon`, `color`, `description`, `sortOrder`
+- Model fields: `id`, `technologyId`, `name`, `slug`, `category`, `level`, `icon`, `color`,
+  `description`, `sortOrder`
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
@@ -446,8 +447,12 @@ Future admin CRUD endpoints:
 | `DELETE` | `/api/v1/skills/{id}` | admin | Delete skill |
 
 - List query: `page`, `pageSize`, `search`, `category`, `level`, `sort`, `order`
-- Create/update body: `name`, `slug`, `category`, `level`, `icon`, `color`, `description`, `sortOrder`
-- Errors: `401`, `403`, `404`, `409`, `422`
+- Grouped response: an object keyed by category with ordered skill arrays.
+- Create/update body: `technologyId`, `name`, `slug`, `category`, `level`, `icon`, `color`,
+  `description`, `sortOrder`
+- Slugs remain reserved after soft deletion. Optional `technologyId` must reference an active
+  Technology record.
+- Errors: `401`, `403`, `404`, `409`, `422`, `429`
 
 ## Experience And Education
 
