@@ -49,6 +49,10 @@ This document captures the initial production architecture for the dynamic devel
 
 The system uses feature-based architecture, versioned APIs, typed request/response contracts, and a clean separation between transport, business logic, persistence, and external providers.
 
+Public AI Lab and Flutter Device Lab routes are specialized projections of the Projects feature.
+They select published projects by category slug and reuse the existing project API, media contracts,
+and admin project workflow rather than introducing parallel content models.
+
 The Blog feature owns posts, categories, and tags under `/api/v1/blog`. Public list contracts use
 summary schemas to avoid transferring article bodies, while protected detail and mutation contracts
 use the complete post schema.

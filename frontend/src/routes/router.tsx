@@ -130,6 +130,14 @@ const ProjectsPage = lazy(() =>
   import("@/pages/projects/ProjectsPage").then((module) => ({ default: module.ProjectsPage })),
 );
 
+const AiLabPage = lazy(() =>
+  import("@/pages/labs/AiLabPage").then((module) => ({ default: module.AiLabPage })),
+);
+
+const FlutterLabPage = lazy(() =>
+  import("@/pages/labs/FlutterLabPage").then((module) => ({ default: module.FlutterLabPage })),
+);
+
 const BlogPage = lazy(() =>
   import("@/pages/blog/BlogPage").then((module) => ({ default: module.BlogPage })),
 );
@@ -150,6 +158,8 @@ export const router = createBrowserRouter([
           { path: "/", element: <LazyRoute component={HomePage} /> },
           { path: "/projects", element: <LazyRoute component={ProjectsPage} /> },
           { path: "/projects/:slug", element: <LazyRoute component={ProjectDetailsPage} /> },
+          { path: "/ai-lab", element: <LazyRoute component={AiLabPage} /> },
+          { path: "/flutter-lab", element: <LazyRoute component={FlutterLabPage} /> },
           { path: "/blog", element: <LazyRoute component={BlogPage} /> },
           { path: "/blog/:slug", element: <LazyRoute component={BlogDetailsPage} /> },
           { path: "/resume", element: <LazyRoute component={ResumePage} /> },

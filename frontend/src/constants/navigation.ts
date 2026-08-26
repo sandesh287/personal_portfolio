@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  BrainCircuit,
   BriefcaseBusiness,
   Code2,
   FileText,
@@ -8,6 +9,7 @@ import {
   Mail,
   Newspaper,
   Settings,
+  Smartphone,
   Sparkles,
   Tags,
   Upload,
@@ -28,6 +30,8 @@ export const workspaceNavigation: NavigationItem[] = [
   { label: "Workspace", href: routes.home, icon: Home },
   { label: "Profile", href: routes.profile, icon: UserRound },
   { label: "Projects", href: routes.projects, icon: Code2 },
+  { label: "AI Lab", href: routes.aiLab, icon: BrainCircuit },
+  { label: "Device Lab", href: routes.flutterLab, icon: Smartphone },
   { label: "Notes", href: routes.blog, icon: Newspaper },
   { label: "Resume", href: routes.resume, icon: FileText },
   { label: "GitHub", href: routes.github, icon: Github },

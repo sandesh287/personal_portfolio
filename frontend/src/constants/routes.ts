@@ -2,6 +2,8 @@ export const routes = {
   home: "/",
   projects: "/projects",
   projectDetails: "/projects/:slug",
+  aiLab: "/ai-lab",
+  flutterLab: "/flutter-lab",
   blog: "/blog",
   blogDetails: "/blog/:slug",
   resume: "/resume",
