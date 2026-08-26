@@ -1,33 +1,34 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { SeoMetadata } from "@/components/common/SeoMetadata";
 import { Button } from "@/components/ui/Button";
 import { Sidebar, SidebarDrawer } from "@/components/ui/Sidebar";
 import { Toolbar, ToolbarGroup } from "@/components/ui/Toolbar";
 import { Window } from "@/components/ui/Window";
 import { workspaceNavigation } from "@/constants/navigation";
-import { routes } from "@/constants/routes";
 import { usePublicSettings } from "@/features/settings";
 import { AnalyticsTracker } from "@/features/analytics/AnalyticsTracker";
 
 export function WorkspaceLayout() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const location = useLocation();
   const settings = usePublicSettings();
   const profileName = settings.data?.profileName ?? "Sandesh Panthee";
   const profileRole = settings.data?.profileRole ?? "Developer Workspace";
-  const navigationItems =
-    settings.data?.resumeEnabled === false
-      ? workspaceNavigation.filter((item) => item.href !== routes.resume)
-      : workspaceNavigation;
+  const navigationItems = workspaceNavigation.filter((item) => {
+    if (!item.visibilitySetting) return true;
+    if (!settings.data) return item.visibilitySetting !== "navigationFlutterLabVisible";
+    return settings.data[item.visibilitySetting];
+  });
+  const routeMetadata = getRouteMetadata(location.pathname, settings.data?.profileName);
+  const hasPageMetadata =
+    location.pathname.startsWith("/projects/") || location.pathname.startsWith("/blog/");
 
   useEffect(() => {
     if (!settings.data) return;
-    document.title = settings.data.siteTitle;
-    document
-      .querySelector<HTMLMetaElement>('meta[name="description"]')
-      ?.setAttribute("content", settings.data.seoDescription);
     document
       .querySelector<HTMLMetaElement>('meta[name="robots"]')
       ?.setAttribute(
@@ -39,6 +40,26 @@ export function WorkspaceLayout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <AnalyticsTracker />
+      {!hasPageMetadata ? (
+        <SeoMetadata
+          title={`${routeMetadata.title} | ${settings.data?.siteTitle ?? "Sandesh Developer Workspace"}`}
+          description={
+            routeMetadata.description ??
+            settings.data?.seoDescription ??
+            "Sandesh's software development portfolio and engineering notes."
+          }
+          path={location.pathname}
+          image={settings.data?.profileImageUrl}
+          siteName={settings.data?.siteTitle}
+          jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: settings.data?.profileName ?? "Sandesh Panthee",
+            url: window.location.origin,
+            jobTitle: settings.data?.profileRole ?? "Software Developer",
+          }}
+        />
+      ) : null}
       <Sidebar
         title={profileName}
         subtitle={profileRole}
@@ -82,4 +103,26 @@ export function WorkspaceLayout() {
       </div>
     </div>
   );
+}
+
+function getRouteMetadata(pathname: string, profileName = "Sandesh") {
+  if (pathname.startsWith("/projects/")) return { title: "Project", description: undefined };
+  if (pathname.startsWith("/blog/")) return { title: "Engineering Note", description: undefined };
+  const routesByPath: Record<string, { title: string; description?: string }> = {
+    "/": {
+      title: profileName,
+      description: "React, Flutter, and data science portfolio workspace.",
+    },
+    "/profile": { title: "Developer Profile" },
+    "/projects": { title: "Projects Explorer" },
+    "/ai-lab": { title: "AI Lab" },
+    "/flutter-lab": { title: "Flutter Device Lab" },
+    "/blog": { title: "Engineering Notes" },
+    "/resume": { title: "Resume" },
+    "/github": { title: "GitHub Explorer" },
+    "/skills": { title: "Skills Graph" },
+    "/experience": { title: "Experience" },
+    "/contact": { title: "Contact" },
+  };
+  return routesByPath[pathname] ?? { title: "Workspace" };
 }

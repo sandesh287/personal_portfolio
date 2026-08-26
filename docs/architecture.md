@@ -53,6 +53,13 @@ Public AI Lab and Flutter Device Lab routes are specialized projections of the P
 They select published projects by category slug and reuse the existing project API, media contracts,
 and admin project workflow rather than introducing parallel content models.
 
+Public navigation visibility is sourced from the existing Settings registry. Routes remain stable
+while the desktop sidebar and mobile drawer are filtered from the same typed setting flags.
+
+SEO metadata is managed by a reusable frontend component that owns canonical, Open Graph, Twitter,
+and JSON-LD tags. Project and blog detail routes derive metadata from their API resources. The
+frontend prebuild generates `robots.txt` and the static-route sitemap from `VITE_SITE_URL`.
+
 The Blog feature owns posts, categories, and tags under `/api/v1/blog`. Public list contracts use
 summary schemas to avoid transferring article bodies, while protected detail and mutation contracts
 use the complete post schema.

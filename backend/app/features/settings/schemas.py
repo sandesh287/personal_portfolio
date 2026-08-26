@@ -29,6 +29,15 @@ class SettingsPayload(ApiSchema):
     timezone: str
     locale: str
     resume_enabled: bool
+    navigation_profile_visible: bool
+    navigation_projects_visible: bool
+    navigation_ai_lab_visible: bool
+    navigation_flutter_lab_visible: bool
+    navigation_blog_visible: bool
+    navigation_github_visible: bool
+    navigation_skills_visible: bool
+    navigation_experience_visible: bool
+    navigation_contact_visible: bool
     analytics_enabled: bool
     home_profile_visible: bool
     home_quick_links_visible: bool
@@ -73,6 +82,15 @@ class SettingsUpdateRequest(ApiSchema):
     timezone: str | None = Field(default=None, min_length=2, max_length=80)
     locale: str | None = Field(default=None, min_length=2, max_length=20)
     resume_enabled: bool | None = None
+    navigation_profile_visible: bool | None = None
+    navigation_projects_visible: bool | None = None
+    navigation_ai_lab_visible: bool | None = None
+    navigation_flutter_lab_visible: bool | None = None
+    navigation_blog_visible: bool | None = None
+    navigation_github_visible: bool | None = None
+    navigation_skills_visible: bool | None = None
+    navigation_experience_visible: bool | None = None
+    navigation_contact_visible: bool | None = None
     analytics_enabled: bool | None = None
     home_profile_visible: bool | None = None
     home_quick_links_visible: bool | None = None

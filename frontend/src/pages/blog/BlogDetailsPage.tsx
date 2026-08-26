@@ -1,8 +1,8 @@
 import { ArrowLeft, BookOpen, CalendarDays, Clock3 } from "lucide-react";
-import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 
 import { EmptyState } from "@/components/common/EmptyState";
+import { SeoMetadata } from "@/components/common/SeoMetadata";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { routes } from "@/constants/routes";
 import { useBlogPost } from "@/features/blog";
@@ -14,20 +14,37 @@ export function BlogDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, error, isError, isLoading } = useBlogPost(slug);
 
-  useEffect(() => {
-    if (!post) return;
-    const previousTitle = document.title;
-    document.title = post.seoTitle || `${post.title} | Sandesh`;
-    return () => {
-      document.title = previousTitle;
-    };
-  }, [post]);
+  const seo = post ? (
+    <SeoMetadata
+      title={post.seoTitle || `${post.title} | Sandesh`}
+      description={post.seoDescription || post.excerpt}
+      path={routes.blogDetails.replace(":slug", post.slug)}
+      image={post.coverImage?.publicUrl}
+      type="article"
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.seoDescription || post.excerpt,
+        datePublished: post.publishedAt,
+        dateModified: post.updatedAt,
+        image: post.coverImage?.publicUrl,
+      }}
+    />
+  ) : null;
 
-  if (isLoading) return <ArticleSkeleton />;
+  if (isLoading)
+    return (
+      <>
+        {seo}
+        <ArticleSkeleton />
+      </>
+    );
 
   if (isError) {
     return (
       <div className="min-h-[calc(100vh-8rem)] bg-surface p-4 sm:p-6">
+        {seo}
         <BackLink />
         <div className="mt-6">
           <EmptyState
@@ -42,6 +59,7 @@ export function BlogDetailsPage() {
   if (!post) {
     return (
       <div className="min-h-[calc(100vh-8rem)] bg-surface p-4 sm:p-6">
+        {seo}
         <BackLink />
         <div className="mt-6">
           <EmptyState title="Engineering note not found" />
@@ -63,6 +81,7 @@ export function BlogDetailsPage() {
 
   return (
     <article className="min-h-[calc(100vh-8rem)] bg-surface">
+      {seo}
       <header className="border-b border-border p-4 sm:p-6 lg:px-8">
         <BackLink />
         <div className="mx-auto mt-8 max-w-5xl">

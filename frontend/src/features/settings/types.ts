@@ -23,6 +23,15 @@ export interface PublicSettings {
   timezone: string;
   locale: string;
   resumeEnabled: boolean;
+  navigationProfileVisible: boolean;
+  navigationProjectsVisible: boolean;
+  navigationAiLabVisible: boolean;
+  navigationFlutterLabVisible: boolean;
+  navigationBlogVisible: boolean;
+  navigationGithubVisible: boolean;
+  navigationSkillsVisible: boolean;
+  navigationExperienceVisible: boolean;
+  navigationContactVisible: boolean;
   analyticsEnabled: boolean;
   homeProfileVisible: boolean;
   homeQuickLinksVisible: boolean;

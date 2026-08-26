@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run generate:seo",
     "build": "tsc -b && vite build",
+    "generate:seo": "node scripts/generate-seo.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",

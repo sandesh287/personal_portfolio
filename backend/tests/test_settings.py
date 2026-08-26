@@ -19,6 +19,8 @@ def test_public_settings_return_defaults_without_database_rows(
     assert response.status_code == 200
     assert response.json()["data"]["siteTitle"] == "Sandesh Developer Workspace"
     assert response.json()["data"]["profileName"] == "Sandesh Panthee"
+    assert response.json()["data"]["navigationAiLabVisible"] is True
+    assert response.json()["data"]["navigationFlutterLabVisible"] is False
     assert db_session.scalar(select(Setting.id)) is None
 
 
@@ -35,6 +37,7 @@ def test_admin_can_update_settings_and_public_endpoint_reflects_changes(
             "analyticsEnabled": True,
             "githubActivityVisible": False,
             "homeNotesVisible": False,
+            "navigationProjectsVisible": False,
             "profileImageUrl": "https://cdn.example.com/profile.jpg",
             "profileBiography": "A sufficiently detailed public developer biography.",
         },
@@ -45,6 +48,7 @@ def test_admin_can_update_settings_and_public_endpoint_reflects_changes(
     assert response.json()["data"]["analyticsEnabled"] is True
     assert response.json()["data"]["githubActivityVisible"] is False
     assert response.json()["data"]["homeNotesVisible"] is False
+    assert response.json()["data"]["navigationProjectsVisible"] is False
     assert public.json()["data"]["profileImageUrl"] == "https://cdn.example.com/profile.jpg"
     assert public.json()["data"]["contactEmail"] == "hello@sandesh.dev"
     assert db_session.scalar(select(Setting).where(Setting.key == "site_title")) is not None

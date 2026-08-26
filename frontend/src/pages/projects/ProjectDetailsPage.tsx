@@ -2,6 +2,7 @@ import { ArrowLeft, CalendarDays, Code2, ExternalLink, Github, Layers3 } from "l
 import { Link, useParams } from "react-router";
 
 import { EmptyState } from "@/components/common/EmptyState";
+import { SeoMetadata } from "@/components/common/SeoMetadata";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { routes } from "@/constants/routes";
 import { ProjectMediaGallery } from "@/features/projects/components/ProjectMediaGallery";
@@ -14,14 +15,44 @@ import { getErrorMessage } from "@/utils/errors";
 export function ProjectDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: project, error, isError, isLoading } = useProjectDetails(slug);
+  const seoImage = project
+    ? (project.images.find((image) => image.mediaAssetId === project.coverImageId)?.url ??
+      project.images[0]?.url)
+    : null;
+
+  const seo = project ? (
+    <SeoMetadata
+      title={`${project.title} | Sandesh`}
+      description={project.summary}
+      path={routes.projectDetails.replace(":slug", project.slug)}
+      image={seoImage}
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: project.title,
+        description: project.summary,
+        url: new URL(
+          routes.projectDetails.replace(":slug", project.slug),
+          window.location.origin,
+        ).toString(),
+        keywords: project.technologies.map((technology) => technology.name),
+      }}
+    />
+  ) : null;
 
   if (isLoading) {
-    return <ProjectDetailsSkeleton />;
+    return (
+      <>
+        {seo}
+        <ProjectDetailsSkeleton />
+      </>
+    );
   }
 
   if (isError) {
     return (
       <section className="min-h-[calc(100vh-8rem)] p-4">
+        {seo}
         <Link
           to={routes.projects}
           className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
@@ -40,6 +71,7 @@ export function ProjectDetailsPage() {
   if (!project) {
     return (
       <section className="min-h-[calc(100vh-8rem)] p-4">
+        {seo}
         <EmptyState title="Project not found" description="No project exists for this route." />
       </section>
     );
@@ -47,6 +79,7 @@ export function ProjectDetailsPage() {
 
   return (
     <section className="min-h-[calc(100vh-8rem)] bg-surface">
+      {seo}
       <header className="border-b border-border p-4">
         <Link
           to={routes.projects}

@@ -24,20 +24,78 @@ export interface NavigationItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  visibilitySetting?: NavigationVisibilitySetting;
 }
+
+export type NavigationVisibilitySetting =
+  | "navigationProfileVisible"
+  | "navigationProjectsVisible"
+  | "navigationAiLabVisible"
+  | "navigationFlutterLabVisible"
+  | "navigationBlogVisible"
+  | "resumeEnabled"
+  | "navigationGithubVisible"
+  | "navigationSkillsVisible"
+  | "navigationExperienceVisible"
+  | "navigationContactVisible";
 
 export const workspaceNavigation: NavigationItem[] = [
   { label: "Workspace", href: routes.home, icon: Home },
-  { label: "Profile", href: routes.profile, icon: UserRound },
-  { label: "Projects", href: routes.projects, icon: Code2 },
-  { label: "AI Lab", href: routes.aiLab, icon: BrainCircuit },
-  { label: "Device Lab", href: routes.flutterLab, icon: Smartphone },
-  { label: "Notes", href: routes.blog, icon: Newspaper },
-  { label: "Resume", href: routes.resume, icon: FileText },
-  { label: "GitHub", href: routes.github, icon: Github },
-  { label: "Skills", href: routes.skills, icon: Sparkles },
-  { label: "Experience", href: routes.experience, icon: BriefcaseBusiness },
-  { label: "Contact", href: routes.contact, icon: Mail },
+  {
+    label: "Profile",
+    href: routes.profile,
+    icon: UserRound,
+    visibilitySetting: "navigationProfileVisible",
+  },
+  {
+    label: "Projects",
+    href: routes.projects,
+    icon: Code2,
+    visibilitySetting: "navigationProjectsVisible",
+  },
+  {
+    label: "AI Lab",
+    href: routes.aiLab,
+    icon: BrainCircuit,
+    visibilitySetting: "navigationAiLabVisible",
+  },
+  {
+    label: "Device Lab",
+    href: routes.flutterLab,
+    icon: Smartphone,
+    visibilitySetting: "navigationFlutterLabVisible",
+  },
+  {
+    label: "Notes",
+    href: routes.blog,
+    icon: Newspaper,
+    visibilitySetting: "navigationBlogVisible",
+  },
+  { label: "Resume", href: routes.resume, icon: FileText, visibilitySetting: "resumeEnabled" },
+  {
+    label: "GitHub",
+    href: routes.github,
+    icon: Github,
+    visibilitySetting: "navigationGithubVisible",
+  },
+  {
+    label: "Skills",
+    href: routes.skills,
+    icon: Sparkles,
+    visibilitySetting: "navigationSkillsVisible",
+  },
+  {
+    label: "Experience",
+    href: routes.experience,
+    icon: BriefcaseBusiness,
+    visibilitySetting: "navigationExperienceVisible",
+  },
+  {
+    label: "Contact",
+    href: routes.contact,
+    icon: Mail,
+    visibilitySetting: "navigationContactVisible",
+  },
 ];
 
 export const adminNavigation: NavigationItem[] = [

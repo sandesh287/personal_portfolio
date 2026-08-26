@@ -294,15 +294,15 @@ Paginated data:
 
 ### Project Images
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/projects/{id}/images` | admin | List project images |
-| `POST` | `/api/v1/projects/{id}/images` | admin | Upload project image |
-| `POST` | `/api/v1/projects/{id}/images/attach` | admin | Attach a Media Library image |
-| `PATCH` | `/api/v1/projects/{id}/images/{imageId}` | admin | Update image metadata |
-| `PATCH` | `/api/v1/projects/{id}/images/reorder` | admin | Bulk reorder project images |
-| `PATCH` | `/api/v1/projects/{id}/cover-image` | admin | Set or clear cover image |
-| `DELETE` | `/api/v1/projects/{id}/images/{imageId}` | admin | Delete project image |
+| Method   | URL                                      | Auth  | Purpose                      |
+| -------- | ---------------------------------------- | ----- | ---------------------------- |
+| `GET`    | `/api/v1/projects/{id}/images`           | admin | List project images          |
+| `POST`   | `/api/v1/projects/{id}/images`           | admin | Upload project image         |
+| `POST`   | `/api/v1/projects/{id}/images/attach`    | admin | Attach a Media Library image |
+| `PATCH`  | `/api/v1/projects/{id}/images/{imageId}` | admin | Update image metadata        |
+| `PATCH`  | `/api/v1/projects/{id}/images/reorder`   | admin | Bulk reorder project images  |
+| `PATCH`  | `/api/v1/projects/{id}/cover-image`      | admin | Set or clear cover image     |
+| `DELETE` | `/api/v1/projects/{id}/images/{imageId}` | admin | Delete project image         |
 
 - Upload body: `multipart/form-data` with `file`, `caption`, `sortOrder`
 - Attach body: `{ "mediaAssetId": "uuid", "caption": "optional", "sortOrder": 0 }`
@@ -315,14 +315,14 @@ Paginated data:
 
 ### Project Videos
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/projects/{id}/videos` | admin | List project videos |
-| `POST` | `/api/v1/projects/{id}/videos/attach` | admin | Attach a Media Library video |
-| `POST` | `/api/v1/projects/{id}/videos/external` | admin | Add a YouTube or Vimeo video |
-| `PATCH` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Update video metadata |
-| `PATCH` | `/api/v1/projects/{id}/videos/reorder` | admin | Bulk reorder project videos |
-| `DELETE` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Remove a project video |
+| Method   | URL                                      | Auth  | Purpose                      |
+| -------- | ---------------------------------------- | ----- | ---------------------------- |
+| `GET`    | `/api/v1/projects/{id}/videos`           | admin | List project videos          |
+| `POST`   | `/api/v1/projects/{id}/videos/attach`    | admin | Attach a Media Library video |
+| `POST`   | `/api/v1/projects/{id}/videos/external`  | admin | Add a YouTube or Vimeo video |
+| `PATCH`  | `/api/v1/projects/{id}/videos/{videoId}` | admin | Update video metadata        |
+| `PATCH`  | `/api/v1/projects/{id}/videos/reorder`   | admin | Bulk reorder project videos  |
+| `DELETE` | `/api/v1/projects/{id}/videos/{videoId}` | admin | Remove a project video       |
 
 - Attach body: `mediaAssetId`, optional `title`, `caption`, `sortOrder`
 - External body: `externalUrl`, optional `title`, `caption`, `sortOrder`
@@ -347,10 +347,10 @@ Paginated data:
 
 Future admin CRUD endpoints:
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `POST` | `/api/v1/projects/categories` | admin | Create category |
-| `PATCH` | `/api/v1/projects/categories/{id}` | admin | Update category |
+| Method   | URL                                | Auth  | Purpose         |
+| -------- | ---------------------------------- | ----- | --------------- |
+| `POST`   | `/api/v1/projects/categories`      | admin | Create category |
+| `PATCH`  | `/api/v1/projects/categories/{id}` | admin | Update category |
 | `DELETE` | `/api/v1/projects/categories/{id}` | admin | Delete category |
 
 - Create/update body: `name`, `slug`, `description`, `sortOrder`
@@ -371,10 +371,10 @@ Future admin CRUD endpoints:
 
 Future admin CRUD endpoints:
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `POST` | `/api/v1/projects/technologies` | admin | Create technology |
-| `PATCH` | `/api/v1/projects/technologies/{id}` | admin | Update technology |
+| Method   | URL                                  | Auth  | Purpose           |
+| -------- | ------------------------------------ | ----- | ----------------- |
+| `POST`   | `/api/v1/projects/technologies`      | admin | Create technology |
+| `PATCH`  | `/api/v1/projects/technologies/{id}` | admin | Update technology |
 | `DELETE` | `/api/v1/projects/technologies/{id}` | admin | Delete technology |
 
 - Create/update body: `name`, `slug`, `category`, `icon`, `color`, `sortOrder`
@@ -386,16 +386,16 @@ Future admin CRUD endpoints:
 - Summary fields: `id`, `title`, `slug`, `excerpt`, `category`, `tags`, `coverImage`, `status`, `featured`, `readingTimeMinutes`, `publishedAt`, `createdAt`, `updatedAt`
 - Detail fields: all summary fields plus `content`, `seoTitle`, and `seoDescription`
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/blog` | public | Paginated published post summaries |
-| `GET` | `/api/v1/blog/featured` | public | Featured published post summaries |
-| `GET` | `/api/v1/blog/{slug}` | public | Published post detail |
-| `GET` | `/api/v1/blog/admin` | admin | Paginated posts across all statuses |
-| `GET` | `/api/v1/blog/admin/{id}` | admin | Post detail across all statuses |
-| `POST` | `/api/v1/blog` | admin | Create post |
-| `PATCH` | `/api/v1/blog/admin/{id}` | admin | Update post |
-| `DELETE` | `/api/v1/blog/admin/{id}` | admin | Soft-delete post |
+| Method   | URL                       | Auth   | Purpose                             |
+| -------- | ------------------------- | ------ | ----------------------------------- |
+| `GET`    | `/api/v1/blog`            | public | Paginated published post summaries  |
+| `GET`    | `/api/v1/blog/featured`   | public | Featured published post summaries   |
+| `GET`    | `/api/v1/blog/{slug}`     | public | Published post detail               |
+| `GET`    | `/api/v1/blog/admin`      | admin  | Paginated posts across all statuses |
+| `GET`    | `/api/v1/blog/admin/{id}` | admin  | Post detail across all statuses     |
+| `POST`   | `/api/v1/blog`            | admin  | Create post                         |
+| `PATCH`  | `/api/v1/blog/admin/{id}` | admin  | Update post                         |
+| `DELETE` | `/api/v1/blog/admin/{id}` | admin  | Soft-delete post                    |
 
 - Public list query: `page`, `pageSize`, `search`, `category`, `tag`, `featured`, `sort`, `order`
 - Admin list additionally accepts `status`
@@ -409,12 +409,12 @@ Future admin CRUD endpoints:
 
 ## Blog Categories
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/blog/categories` | public | Ordered active categories |
-| `POST` | `/api/v1/blog/categories` | admin | Create category |
-| `PATCH` | `/api/v1/blog/categories/{id}` | admin | Update category |
-| `DELETE` | `/api/v1/blog/categories/{id}` | admin | Soft-delete unused category |
+| Method   | URL                            | Auth   | Purpose                     |
+| -------- | ------------------------------ | ------ | --------------------------- |
+| `GET`    | `/api/v1/blog/categories`      | public | Ordered active categories   |
+| `POST`   | `/api/v1/blog/categories`      | admin  | Create category             |
+| `PATCH`  | `/api/v1/blog/categories/{id}` | admin  | Update category             |
+| `DELETE` | `/api/v1/blog/categories/{id}` | admin  | Soft-delete unused category |
 
 - Create/update body: `name`, `slug`, `description`, `sortOrder`
 - Assigned categories cannot be deleted
@@ -422,12 +422,12 @@ Future admin CRUD endpoints:
 
 ## Blog Tags
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/blog/tags` | public | List active tags |
-| `POST` | `/api/v1/blog/tags` | admin | Create tag |
-| `PATCH` | `/api/v1/blog/tags/{id}` | admin | Update tag |
-| `DELETE` | `/api/v1/blog/tags/{id}` | admin | Soft-delete unused tag |
+| Method   | URL                      | Auth   | Purpose                |
+| -------- | ------------------------ | ------ | ---------------------- |
+| `GET`    | `/api/v1/blog/tags`      | public | List active tags       |
+| `POST`   | `/api/v1/blog/tags`      | admin  | Create tag             |
+| `PATCH`  | `/api/v1/blog/tags/{id}` | admin  | Update tag             |
+| `DELETE` | `/api/v1/blog/tags/{id}` | admin  | Soft-delete unused tag |
 
 - Create/update body: `name`, `slug`, `color`
 - Assigned tags cannot be deleted
@@ -438,13 +438,13 @@ Future admin CRUD endpoints:
 - Model fields: `id`, `technologyId`, `name`, `slug`, `category`, `level`, `icon`, `color`,
   `description`, `sortOrder`
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/skills` | public | List skills |
-| `GET` | `/api/v1/skills/grouped` | public | Group by category |
-| `POST` | `/api/v1/skills` | admin | Create skill |
-| `PATCH` | `/api/v1/skills/{id}` | admin | Update skill |
-| `DELETE` | `/api/v1/skills/{id}` | admin | Delete skill |
+| Method   | URL                      | Auth   | Purpose           |
+| -------- | ------------------------ | ------ | ----------------- |
+| `GET`    | `/api/v1/skills`         | public | List skills       |
+| `GET`    | `/api/v1/skills/grouped` | public | Group by category |
+| `POST`   | `/api/v1/skills`         | admin  | Create skill      |
+| `PATCH`  | `/api/v1/skills/{id}`    | admin  | Update skill      |
+| `DELETE` | `/api/v1/skills/{id}`    | admin  | Delete skill      |
 
 - List query: `page`, `pageSize`, `search`, `category`, `level`, `sort`, `order`
 - Grouped response: an object keyed by category with ordered skill arrays.
@@ -465,31 +465,31 @@ Future admin CRUD endpoints:
 
 ### Certifications
 
-| Method | URL | Authorization | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/experience/certifications` | public | List published certifications |
-| `GET` | `/api/v1/experience/admin/certifications` | admin | List all certifications |
-| `POST` | `/api/v1/experience/admin/certifications` | admin | Create certification |
-| `PATCH` | `/api/v1/experience/admin/certifications/{id}` | admin | Update certification |
-| `DELETE` | `/api/v1/experience/admin/certifications/{id}` | admin | Soft delete certification |
+| Method   | URL                                            | Authorization | Purpose                       |
+| -------- | ---------------------------------------------- | ------------- | ----------------------------- |
+| `GET`    | `/api/v1/experience/certifications`            | public        | List published certifications |
+| `GET`    | `/api/v1/experience/admin/certifications`      | admin         | List all certifications       |
+| `POST`   | `/api/v1/experience/admin/certifications`      | admin         | Create certification          |
+| `PATCH`  | `/api/v1/experience/admin/certifications/{id}` | admin         | Update certification          |
+| `DELETE` | `/api/v1/experience/admin/certifications/{id}` | admin         | Soft delete certification     |
 
 Certification fields are `id`, `name`, `issuer`, `credentialId`, `credentialUrl`,
 `credentialMediaId`, `credentialMediaUrl`, `issuedAt`, `expiresAt`, `sortOrder`, `published`,
 `createdAt`, and `updatedAt`. Credential media must reference an active Media Library asset.
 Expiration dates cannot precede issue dates.
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/experience` | public | List published experience |
-| `GET` | `/api/v1/experience/education` | public | List published education |
-| `GET` | `/api/v1/experience/admin` | admin | List all experience |
-| `POST` | `/api/v1/experience/admin` | admin | Create experience |
-| `PATCH` | `/api/v1/experience/admin/{id}` | admin | Update experience |
-| `DELETE` | `/api/v1/experience/admin/{id}` | admin | Soft-delete experience |
-| `GET` | `/api/v1/experience/admin/education` | admin | List all education |
-| `POST` | `/api/v1/experience/admin/education` | admin | Create education |
-| `PATCH` | `/api/v1/experience/admin/education/{id}` | admin | Update education |
-| `DELETE` | `/api/v1/experience/admin/education/{id}` | admin | Soft-delete education |
+| Method   | URL                                       | Auth   | Purpose                   |
+| -------- | ----------------------------------------- | ------ | ------------------------- |
+| `GET`    | `/api/v1/experience`                      | public | List published experience |
+| `GET`    | `/api/v1/experience/education`            | public | List published education  |
+| `GET`    | `/api/v1/experience/admin`                | admin  | List all experience       |
+| `POST`   | `/api/v1/experience/admin`                | admin  | Create experience         |
+| `PATCH`  | `/api/v1/experience/admin/{id}`           | admin  | Update experience         |
+| `DELETE` | `/api/v1/experience/admin/{id}`           | admin  | Soft-delete experience    |
+| `GET`    | `/api/v1/experience/admin/education`      | admin  | List all education        |
+| `POST`   | `/api/v1/experience/admin/education`      | admin  | Create education          |
+| `PATCH`  | `/api/v1/experience/admin/education/{id}` | admin  | Update education          |
+| `DELETE` | `/api/v1/experience/admin/education/{id}` | admin  | Soft-delete education     |
 
 - List query: optional `search`
 - Arrays preserve display order and reject blank or duplicate values.
@@ -517,13 +517,13 @@ Expiration dates cannot precede issue dates.
 
 ### Resume Versions
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/resume/versions` | admin | List versions |
-| `POST` | `/api/v1/resume/versions` | admin | Upload new version |
-| `PATCH` | `/api/v1/resume/versions/{id}` | admin | Update title, version, or notes |
-| `POST` | `/api/v1/resume/versions/{id}/activate` | admin | Make a version active |
-| `DELETE` | `/api/v1/resume/versions/{id}` | admin | Delete version |
+| Method   | URL                                     | Auth  | Purpose                         |
+| -------- | --------------------------------------- | ----- | ------------------------------- |
+| `GET`    | `/api/v1/resume/versions`               | admin | List versions                   |
+| `POST`   | `/api/v1/resume/versions`               | admin | Upload new version              |
+| `PATCH`  | `/api/v1/resume/versions/{id}`          | admin | Update title, version, or notes |
+| `POST`   | `/api/v1/resume/versions/{id}/activate` | admin | Make a version active           |
+| `DELETE` | `/api/v1/resume/versions/{id}`          | admin | Delete version                  |
 
 - Upload body: `multipart/form-data` with PDF `file`, `title`, `version`, optional `notes`, and `isActive`
 - The first uploaded version becomes active automatically. The active version must be replaced before deletion.
@@ -533,13 +533,13 @@ Expiration dates cannot precede issue dates.
 
 **Implemented** - Admin media library foundation with upload, search, and management.
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/media` | admin | List media assets |
-| `GET` | `/api/v1/media/{id}` | admin | Media details |
-| `POST` | `/api/v1/media` | admin | Upload media |
-| `PATCH` | `/api/v1/media/{id}` | admin | Update alt text/metadata |
-| `DELETE` | `/api/v1/media/{id}` | admin | Delete media |
+| Method   | URL                  | Auth  | Purpose                  |
+| -------- | -------------------- | ----- | ------------------------ |
+| `GET`    | `/api/v1/media`      | admin | List media assets        |
+| `GET`    | `/api/v1/media/{id}` | admin | Media details            |
+| `POST`   | `/api/v1/media`      | admin | Upload media             |
+| `PATCH`  | `/api/v1/media/{id}` | admin | Update alt text/metadata |
+| `DELETE` | `/api/v1/media/{id}` | admin | Delete media             |
 
 - List query: `page`, `pageSize`, `search`, `contentType`, `folder`, `sort`, `order`
 - Sort values: `created_at`, `original_filename`, `size_bytes`; order: `asc`, `desc`
@@ -578,12 +578,12 @@ Expiration dates cannot precede issue dates.
 
 ### Admin Messages
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/messages` | admin | List messages |
-| `GET` | `/api/v1/messages/{id}` | admin | Message details |
-| `PATCH` | `/api/v1/messages/{id}` | admin | Mark read/archive/starred |
-| `DELETE` | `/api/v1/messages/{id}` | admin | Delete message |
+| Method   | URL                     | Auth  | Purpose                   |
+| -------- | ----------------------- | ----- | ------------------------- |
+| `GET`    | `/api/v1/messages`      | admin | List messages             |
+| `GET`    | `/api/v1/messages/{id}` | admin | Message details           |
+| `PATCH`  | `/api/v1/messages/{id}` | admin | Mark read/archive/starred |
+| `DELETE` | `/api/v1/messages/{id}` | admin | Delete message            |
 
 - List query: `page`, `pageSize`, `search`, `read`, `archived`, `starred`, `sort`, `order`
 - Update body: `read`, `archived`, `starred`
@@ -601,9 +601,9 @@ Expiration dates cannot precede issue dates.
 
 ### Admin Settings
 
-| Method | URL | Auth | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/v1/settings` | admin | List settings |
+| Method  | URL                | Auth  | Purpose              |
+| ------- | ------------------ | ----- | -------------------- |
+| `GET`   | `/api/v1/settings` | admin | List settings        |
 | `PATCH` | `/api/v1/settings` | admin | Bulk update settings |
 
 - Update body:
@@ -677,6 +677,12 @@ Homepage composition is controlled by `homeProfileVisible`, `homeQuickLinksVisib
 `homeGithubVisible`. These public booleans let the Landing Workspace omit individual modules
 without requiring a deployment or a separate page-layout API.
 
+Public navigation composition is controlled by `navigationProfileVisible`,
+`navigationProjectsVisible`, `navigationAiLabVisible`, `navigationFlutterLabVisible`,
+`navigationBlogVisible`, `resumeEnabled`, `navigationGithubVisible`, `navigationSkillsVisible`,
+`navigationExperienceVisible`, and `navigationContactVisible`. Device Lab is hidden by default;
+admins can expose it later without a deployment.
+
 Developer Profile settings include `profileImageUrl`, admin-only `profileImageMediaId`,
 `profileBiography`, `profilePhilosophy`, `profileCurrentFocus`, `profileLocation`, and
 `profileCertificationsVisible`. The admin selects profile images through the existing Media Library
@@ -745,28 +751,28 @@ stored.
 
 ## Authorization Matrix
 
-| Area | Public Read | Admin Write |
-| --- | --- | --- |
-| Auth login/refresh | yes | no |
-| Current user/logout | no | yes |
-| Projects | yes | yes |
-| Categories | yes | yes |
-| Technologies | yes | yes |
-| Blog posts/tags | yes | yes |
-| Skills | yes | yes |
-| Experience | yes | yes |
-| Education | yes | yes |
-| Resume active/download | yes | no |
-| Resume versions | no | yes |
-| Media library | no | yes |
-| Messages create | yes | no |
-| Messages manage | no | yes |
-| Public settings | yes | no |
-| Admin settings | no | yes |
-| GitHub summary/repos/activity | yes | no |
-| GitHub sync | no | yes |
-| Analytics track event | yes | no |
-| Analytics dashboard | no | yes |
+| Area                          | Public Read | Admin Write |
+| ----------------------------- | ----------- | ----------- |
+| Auth login/refresh            | yes         | no          |
+| Current user/logout           | no          | yes         |
+| Projects                      | yes         | yes         |
+| Categories                    | yes         | yes         |
+| Technologies                  | yes         | yes         |
+| Blog posts/tags               | yes         | yes         |
+| Skills                        | yes         | yes         |
+| Experience                    | yes         | yes         |
+| Education                     | yes         | yes         |
+| Resume active/download        | yes         | no          |
+| Resume versions               | no          | yes         |
+| Media library                 | no          | yes         |
+| Messages create               | yes         | no          |
+| Messages manage               | no          | yes         |
+| Public settings               | yes         | no          |
+| Admin settings                | no          | yes         |
+| GitHub summary/repos/activity | yes         | no          |
+| GitHub sync                   | no          | yes         |
+| Analytics track event         | yes         | no          |
+| Analytics dashboard           | no          | yes         |
 
 ## Naming Rules
 

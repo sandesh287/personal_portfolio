@@ -59,6 +59,19 @@ SETTING_DEFINITIONS: dict[str, SettingDefinition] = {
     "timezone": SettingDefinition("Asia/Kathmandu", "Display timezone."),
     "locale": SettingDefinition("en", "Primary content locale."),
     "resume_enabled": SettingDefinition(True, "Whether the public resume is visible."),
+    "navigation_profile_visible": SettingDefinition(True, "Show Profile in public navigation."),
+    "navigation_projects_visible": SettingDefinition(True, "Show Projects in public navigation."),
+    "navigation_ai_lab_visible": SettingDefinition(True, "Show AI Lab in public navigation."),
+    "navigation_flutter_lab_visible": SettingDefinition(
+        False, "Show Device Lab in public navigation."
+    ),
+    "navigation_blog_visible": SettingDefinition(True, "Show Notes in public navigation."),
+    "navigation_github_visible": SettingDefinition(True, "Show GitHub in public navigation."),
+    "navigation_skills_visible": SettingDefinition(True, "Show Skills in public navigation."),
+    "navigation_experience_visible": SettingDefinition(
+        True, "Show Experience in public navigation."
+    ),
+    "navigation_contact_visible": SettingDefinition(True, "Show Contact in public navigation."),
     "analytics_enabled": SettingDefinition(False, "Whether analytics collection is enabled."),
     "home_profile_visible": SettingDefinition(True, "Show the homepage profile workspace."),
     "home_quick_links_visible": SettingDefinition(True, "Show homepage workspace shortcuts."),

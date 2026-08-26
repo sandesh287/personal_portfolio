@@ -36,6 +36,15 @@ const settingsSchema = z.object({
   timezone: z.string().min(2).max(80),
   locale: z.string().min(2).max(20),
   resumeEnabled: z.boolean(),
+  navigationProfileVisible: z.boolean(),
+  navigationProjectsVisible: z.boolean(),
+  navigationAiLabVisible: z.boolean(),
+  navigationFlutterLabVisible: z.boolean(),
+  navigationBlogVisible: z.boolean(),
+  navigationGithubVisible: z.boolean(),
+  navigationSkillsVisible: z.boolean(),
+  navigationExperienceVisible: z.boolean(),
+  navigationContactVisible: z.boolean(),
   analyticsEnabled: z.boolean(),
   homeProfileVisible: z.boolean(),
   homeQuickLinksVisible: z.boolean(),
@@ -307,52 +316,110 @@ function SocialFields({ form }: { form: SettingsForm }) {
 
 function FeatureFields({ form }: { form: SettingsForm }) {
   return (
-    <div className="divide-y divide-border rounded-md border border-border">
-      <ToggleField
-        label="Public resume"
-        description="Show the Resume workspace and active document."
-        registration={form.register("resumeEnabled")}
-      />
-      <ToggleField
-        label="Analytics"
-        description="Enable analytics when its integration is configured."
-        registration={form.register("analyticsEnabled")}
-      />
-      <ToggleField
-        label="Homepage profile"
-        description="Show the primary identity and availability workspace."
-        registration={form.register("homeProfileVisible")}
-      />
-      <ToggleField
-        label="Homepage shortcuts"
-        description="Show quick-launch links to the main public workspaces."
-        registration={form.register("homeQuickLinksVisible")}
-      />
-      <ToggleField
-        label="Homepage projects"
-        description="Show featured projects and their visual previews."
-        registration={form.register("homeProjectsVisible")}
-      />
-      <ToggleField
-        label="Homepage notes"
-        description="Show recently featured engineering notes."
-        registration={form.register("homeNotesVisible")}
-      />
-      <ToggleField
-        label="Homepage skills"
-        description="Show the skills and technology summary."
-        registration={form.register("homeSkillsVisible")}
-      />
-      <ToggleField
-        label="Homepage experience"
-        description="Show current or latest professional experience."
-        registration={form.register("homeExperienceVisible")}
-      />
-      <ToggleField
-        label="Homepage GitHub activity"
-        description="Show cached GitHub statistics and recent activity."
-        registration={form.register("homeGithubVisible")}
-      />
+    <div className="space-y-5">
+      <section>
+        <h2 className="text-sm font-semibold text-foreground">Workspace navigation</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Choose which destinations appear in the public sidebar and mobile menu.
+        </p>
+        <div className="mt-3 divide-y divide-border rounded-md border border-border">
+          <ToggleField
+            label="Profile"
+            description="Show the public developer profile."
+            registration={form.register("navigationProfileVisible")}
+          />
+          <ToggleField
+            label="Projects"
+            description="Show the projects explorer."
+            registration={form.register("navigationProjectsVisible")}
+          />
+          <ToggleField
+            label="AI Lab"
+            description="Show the AI research workspace."
+            registration={form.register("navigationAiLabVisible")}
+          />
+          <ToggleField
+            label="Device Lab"
+            description="Show the Flutter device workspace."
+            registration={form.register("navigationFlutterLabVisible")}
+          />
+          <ToggleField
+            label="Engineering Notes"
+            description="Show the technical blog workspace."
+            registration={form.register("navigationBlogVisible")}
+          />
+          <ToggleField
+            label="GitHub"
+            description="Show the GitHub explorer."
+            registration={form.register("navigationGithubVisible")}
+          />
+          <ToggleField
+            label="Skills"
+            description="Show the skills graph."
+            registration={form.register("navigationSkillsVisible")}
+          />
+          <ToggleField
+            label="Experience"
+            description="Show professional experience."
+            registration={form.register("navigationExperienceVisible")}
+          />
+          <ToggleField
+            label="Contact"
+            description="Show the communication terminal."
+            registration={form.register("navigationContactVisible")}
+          />
+        </div>
+      </section>
+      <section>
+        <h2 className="text-sm font-semibold text-foreground">Workspace features</h2>
+        <div className="mt-3 divide-y divide-border rounded-md border border-border">
+          <ToggleField
+            label="Public resume"
+            description="Show the Resume workspace and active document."
+            registration={form.register("resumeEnabled")}
+          />
+          <ToggleField
+            label="Analytics"
+            description="Enable analytics when its integration is configured."
+            registration={form.register("analyticsEnabled")}
+          />
+          <ToggleField
+            label="Homepage profile"
+            description="Show the primary identity and availability workspace."
+            registration={form.register("homeProfileVisible")}
+          />
+          <ToggleField
+            label="Homepage shortcuts"
+            description="Show quick-launch links to the main public workspaces."
+            registration={form.register("homeQuickLinksVisible")}
+          />
+          <ToggleField
+            label="Homepage projects"
+            description="Show featured projects and their visual previews."
+            registration={form.register("homeProjectsVisible")}
+          />
+          <ToggleField
+            label="Homepage notes"
+            description="Show recently featured engineering notes."
+            registration={form.register("homeNotesVisible")}
+          />
+          <ToggleField
+            label="Homepage skills"
+            description="Show the skills and technology summary."
+            registration={form.register("homeSkillsVisible")}
+          />
+          <ToggleField
+            label="Homepage experience"
+            description="Show current or latest professional experience."
+            registration={form.register("homeExperienceVisible")}
+          />
+          <ToggleField
+            label="Homepage GitHub activity"
+            description="Show cached GitHub statistics and recent activity."
+            registration={form.register("homeGithubVisible")}
+          />
+        </div>
+      </section>
     </div>
   );
 }
