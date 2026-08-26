@@ -1,24 +1,10 @@
 import { getApiData } from "@/services/api";
 import { httpClient } from "@/services/httpClient";
 import type { ApiResponse, PaginatedPayload } from "@/types/api";
-import type {
-  MediaAsset,
-  MediaAssetCreate,
-  MediaAssetListParams,
-  MediaAssetUpdate,
-} from "./types";
+import { compactParams } from "@/utils/apiParams";
+import type { MediaAsset, MediaAssetCreate, MediaAssetListParams, MediaAssetUpdate } from "./types";
 
 const MEDIA_ENDPOINT = "/media";
-
-function compactParams<TParams extends object>(params?: TParams) {
-  if (!params) {
-    return undefined;
-  }
-
-  return Object.fromEntries(
-    Object.entries(params).filter(([, value]) => value !== undefined && value !== ""),
-  );
-}
 
 export const mediaApi = {
   async list(params: MediaAssetListParams): Promise<PaginatedPayload<MediaAsset>> {

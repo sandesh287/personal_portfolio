@@ -1,6 +1,7 @@
 import { getApiData } from "@/services/api";
 import { httpClient } from "@/services/httpClient";
 import type { ApiResponse } from "@/types/api";
+import { compactParams } from "@/utils/apiParams";
 
 import type {
   AdminProjectListParams,
@@ -30,16 +31,6 @@ import type {
 } from "./types";
 
 const PROJECTS_ENDPOINT = "/projects";
-
-function compactParams<TParams extends object>(params?: TParams) {
-  if (!params) {
-    return undefined;
-  }
-
-  return Object.fromEntries(
-    Object.entries(params).filter(([, value]) => value !== undefined && value !== ""),
-  );
-}
 
 export const projectsApi = {
   list(params?: ProjectListParams) {
