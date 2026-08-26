@@ -618,8 +618,7 @@ never accepted by this API.
 - Method: `GET`
 - URL: `/api/v1/github/summary`
 - Authorization: public
-- Query: `refresh=false`
-- Response `200`: profile, pinned repos, contribution summary, recent events
+- Response `200`: profile, featured public repositories, aggregate repository statistics, recent public events, cache timestamp, and stale status
 - Errors: `404`, `429`, `502`
 
 ### GitHub Repositories
@@ -645,8 +644,14 @@ never accepted by this API.
 - Method: `POST`
 - URL: `/api/v1/github/sync`
 - Authorization: admin
-- Response `202`: `{ "queued": true }`
+- Response `200`: `{ "synced": true, "fetchedAt": "datetime" }`
 - Errors: `401`, `403`, `429`, `502`
+
+Public requests use the configured cache TTL and never force upstream GitHub traffic. Admin sync
+refreshes profile, owned public repositories, and public events immediately. Expired cache data is
+returned with `stale=true` when GitHub is temporarily unavailable or rate limited. Featured
+repositories are selected from owned public repositories by stars and recency; GitHub's REST API
+does not expose a user's pinned repositories or an exact contribution calendar.
 
 ## Analytics
 

@@ -5,6 +5,7 @@ from app.core.settings import settings
 from app.features.analytics.router import router as analytics_router
 from app.features.blog.router import router as blog_router
 from app.features.experience.router import router as experience_router
+from app.features.github.router import router as github_router
 from app.features.media.router import router as media_router
 from app.features.messages.router import router as messages_router
 from app.features.projects.router import router as projects_router
@@ -19,6 +20,7 @@ api_router.include_router(projects_router, prefix="/projects", tags=["projects"]
 api_router.include_router(blog_router, prefix="/blog", tags=["blog"])
 api_router.include_router(skills_router, prefix="/skills", tags=["skills"])
 api_router.include_router(experience_router, prefix="/experience", tags=["experience"])
+api_router.include_router(github_router, prefix="/github", tags=["github"])
 api_router.include_router(resume_router, prefix="/resume", tags=["resume"])
 api_router.include_router(media_router, prefix="/media", tags=["media"])
 api_router.include_router(messages_router, prefix="/messages", tags=["messages"])

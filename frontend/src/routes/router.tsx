@@ -81,6 +81,10 @@ const ContactPage = lazy(() =>
   import("@/pages/contact/ContactPage").then((module) => ({ default: module.ContactPage })),
 );
 
+const GitHubPage = lazy(() =>
+  import("@/pages/github/GitHubPage").then((module) => ({ default: module.GitHubPage })),
+);
+
 const AdminMessagesPage = lazy(() =>
   import("@/pages/admin/AdminMessagesPage").then((module) => ({
     default: module.AdminMessagesPage,
@@ -130,7 +134,7 @@ export const router = createBrowserRouter([
           { path: "/blog", element: <LazyRoute component={BlogPage} /> },
           { path: "/blog/:slug", element: <LazyRoute component={BlogDetailsPage} /> },
           { path: "/resume", element: <LazyRoute component={ResumePage} /> },
-          { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
+          { path: "/github", element: <LazyRoute component={GitHubPage} /> },
           { path: "/skills", element: <LazyRoute component={SkillsPage} /> },
           { path: "/experience", element: <LazyRoute component={ExperiencePage} /> },
           { path: "/contact", element: <LazyRoute component={ContactPage} /> },

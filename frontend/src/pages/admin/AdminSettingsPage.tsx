@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Code2, Eye, Globe2, Save, Search, Share2, UserRound } from "lucide-react";
+import { Code2, Eye, Globe2, RefreshCw, Save, Search, Share2, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm, type UseFormReturn, type UseFormRegisterReturn } from "react-hook-form";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/form/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAdminSettings, useUpdateSettings } from "@/features/settings";
+import { useSyncGitHub } from "@/features/github";
 import { cn } from "@/utils/cn";
 import { getErrorMessage } from "@/utils/errors";
 
@@ -219,6 +220,17 @@ function ProfileFields({ form }: { form: SettingsForm }) {
 }
 
 function SocialFields({ form }: { form: SettingsForm }) {
+  const sync = useSyncGitHub();
+
+  async function refreshGitHub() {
+    try {
+      await sync.mutateAsync();
+      toast.success("GitHub cache refreshed.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "GitHub cache could not be refreshed."));
+    }
+  }
+
   return (
     <>
       <Field form={form} name="githubUsername" label="GitHub username" />
@@ -236,6 +248,20 @@ function SocialFields({ form }: { form: SettingsForm }) {
         type="url"
         placeholder="https://linkedin.com/in/..."
       />
+      <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs leading-5 text-muted-foreground">
+          Save username changes before refreshing the cached profile, repositories, and activity.
+        </p>
+        <Button
+          type="button"
+          variant="secondary"
+          isLoading={sync.isPending}
+          leftIcon={<RefreshCw className="h-4 w-4" />}
+          onClick={() => void refreshGitHub()}
+        >
+          Refresh GitHub
+        </Button>
+      </div>
     </>
   );
 }

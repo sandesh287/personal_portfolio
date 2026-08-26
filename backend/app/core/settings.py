@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     contact_max_links: int = 3
     github_username: str | None = None
     github_token: str | None = None
+    github_cache_ttl_minutes: int = 60
     admin_email: str | None = None
     admin_password: str | None = None
 
