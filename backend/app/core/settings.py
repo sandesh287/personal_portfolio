@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     max_document_upload_size_mb: int = 20
     rate_limit_requests: int = 120
     rate_limit_window_seconds: int = 60
+    contact_rate_limit_submissions: int = 5
+    contact_rate_limit_window_minutes: int = 60
+    contact_duplicate_window_minutes: int = 30
+    contact_max_links: int = 3
     github_username: str | None = None
     github_token: str | None = None
     admin_email: str | None = None

@@ -550,11 +550,15 @@ Future admin CRUD endpoints:
   "email": "visitor@example.com",
   "subject": "Project inquiry",
   "message": "Hello",
-  "source": "communication_terminal"
+  "source": "communication_terminal",
+  "website": ""
 }
 ```
 
 - Response `201`: message receipt `{ "id": "uuid", "received": true }`
+- `website` is an invisible honeypot field and must remain empty for human submissions.
+- Spam controls: content validation, URL-density checks, duplicate suppression, and a persistent
+  per-IP submission window.
 - Errors: `422`, `429`
 
 ### Admin Messages

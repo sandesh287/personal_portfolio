@@ -77,6 +77,16 @@ const AdminResumePage = lazy(() =>
   })),
 );
 
+const ContactPage = lazy(() =>
+  import("@/pages/contact/ContactPage").then((module) => ({ default: module.ContactPage })),
+);
+
+const AdminMessagesPage = lazy(() =>
+  import("@/pages/admin/AdminMessagesPage").then((module) => ({
+    default: module.AdminMessagesPage,
+  })),
+);
+
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -117,7 +127,7 @@ export const router = createBrowserRouter([
           { path: "/github", element: <PlaceholderPage title="GitHub Explorer" /> },
           { path: "/skills", element: <LazyRoute component={SkillsPage} /> },
           { path: "/experience", element: <LazyRoute component={ExperiencePage} /> },
-          { path: "/contact", element: <PlaceholderPage title="Communication Terminal" /> },
+          { path: "/contact", element: <LazyRoute component={ContactPage} /> },
         ],
       },
     ],
@@ -148,7 +158,7 @@ export const router = createBrowserRouter([
           { path: "experience", element: <LazyRoute component={AdminExperiencePage} /> },
           { path: "resume", element: <LazyRoute component={AdminResumePage} /> },
           { path: "media", element: <LazyRoute component={AdminMediaPage} /> },
-          { path: "messages", element: <PlaceholderPage title="Messages" /> },
+          { path: "messages", element: <LazyRoute component={AdminMessagesPage} /> },
           { path: "settings", element: <PlaceholderPage title="Settings" /> },
         ],
       },
