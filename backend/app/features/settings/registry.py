@@ -26,6 +26,11 @@ SETTING_DEFINITIONS: dict[str, SettingDefinition] = {
     "contact_email": SettingDefinition(None, "Public contact email address."),
     "github_username": SettingDefinition(None, "GitHub account username."),
     "github_url": SettingDefinition(None, "Public GitHub profile URL."),
+    "github_profile_visible": SettingDefinition(True, "Show the GitHub profile header."),
+    "github_stats_visible": SettingDefinition(True, "Show GitHub aggregate statistics."),
+    "github_repositories_visible": SettingDefinition(True, "Show the repository explorer."),
+    "github_inspector_visible": SettingDefinition(True, "Show repository details."),
+    "github_activity_visible": SettingDefinition(True, "Show recent public GitHub activity."),
     "linkedin_url": SettingDefinition(None, "Public LinkedIn profile URL."),
     "availability_status": SettingDefinition(
         "Available for collaboration", "Public availability message."

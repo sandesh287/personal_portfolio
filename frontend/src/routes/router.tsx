@@ -15,6 +15,12 @@ const AdminLoginPage = lazy(() =>
   })),
 );
 
+const AdminDashboardPage = lazy(() =>
+  import("@/pages/admin/AdminDashboardPage").then((module) => ({
+    default: module.AdminDashboardPage,
+  })),
+);
+
 const AdminProjectsPage = lazy(() =>
   import("@/pages/admin/AdminProjectsPage").then((module) => ({
     default: module.AdminProjectsPage,
@@ -153,7 +159,7 @@ export const router = createBrowserRouter([
         path: "/admin",
         element: <AdminLayout />,
         children: [
-          { index: true, element: <PlaceholderPage title="Admin Dashboard" /> },
+          { index: true, element: <LazyRoute component={AdminDashboardPage} /> },
           { path: "projects", element: <LazyRoute component={AdminProjectsPage} /> },
           {
             path: "project-categories",

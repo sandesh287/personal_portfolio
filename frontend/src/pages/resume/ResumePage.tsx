@@ -3,6 +3,7 @@ import { Download, ExternalLink, FileText } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { resumeApi, useActiveResume } from "@/features/resume";
+import { analyticsApi } from "@/features/analytics";
 import { getErrorMessage } from "@/utils/errors";
 
 export function ResumePage() {
@@ -45,6 +46,7 @@ export function ResumePage() {
           </a>
           <a
             href={resumeApi.downloadUrl}
+            onClick={() => void analyticsApi.track({ eventName: "resume_downloaded", path: "/resume" }).catch(() => undefined)}
             className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             <Download className="h-4 w-4" aria-hidden="true" /> Download

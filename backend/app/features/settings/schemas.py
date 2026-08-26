@@ -11,6 +11,11 @@ class SettingsPayload(ApiSchema):
     contact_email: EmailStr | None
     github_username: str | None
     github_url: HttpUrl | None
+    github_profile_visible: bool
+    github_stats_visible: bool
+    github_repositories_visible: bool
+    github_inspector_visible: bool
+    github_activity_visible: bool
     linkedin_url: HttpUrl | None
     availability_status: str
     timezone: str
@@ -36,6 +41,11 @@ class SettingsUpdateRequest(ApiSchema):
     contact_email: EmailStr | None = None
     github_username: str | None = Field(default=None, min_length=1, max_length=80)
     github_url: HttpUrl | None = None
+    github_profile_visible: bool | None = None
+    github_stats_visible: bool | None = None
+    github_repositories_visible: bool | None = None
+    github_inspector_visible: bool | None = None
+    github_activity_visible: bool | None = None
     linkedin_url: HttpUrl | None = None
     availability_status: str | None = Field(default=None, min_length=2, max_length=160)
     timezone: str | None = Field(default=None, min_length=2, max_length=80)

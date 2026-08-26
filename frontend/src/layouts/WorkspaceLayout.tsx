@@ -10,6 +10,7 @@ import { Window } from "@/components/ui/Window";
 import { workspaceNavigation } from "@/constants/navigation";
 import { routes } from "@/constants/routes";
 import { usePublicSettings } from "@/features/settings";
+import { AnalyticsTracker } from "@/features/analytics/AnalyticsTracker";
 
 export function WorkspaceLayout() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
@@ -37,6 +38,7 @@ export function WorkspaceLayout() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
+      <AnalyticsTracker />
       <Sidebar
         title={profileName}
         subtitle={profileRole}

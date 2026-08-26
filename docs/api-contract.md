@@ -653,6 +653,10 @@ returned with `stale=true` when GitHub is temporarily unavailable or rate limite
 repositories are selected from owned public repositories by stars and recency; GitHub's REST API
 does not expose a user's pinned repositories or an exact contribution calendar.
 
+The public settings resource also exposes `githubProfileVisible`, `githubStatsVisible`,
+`githubRepositoriesVisible`, `githubInspectorVisible`, and `githubActivityVisible`. Admins can
+control each GitHub Explorer region independently through the existing settings update endpoint.
+
 ## Analytics
 
 ### Track Event
@@ -670,8 +674,12 @@ does not expose a user's pinned repositories or an exact contribution calendar.
 }
 ```
 
-- Response `201`: `{ "tracked": true }`
+- Response `201`: `{ "tracked": true }`. Returns `tracked=false` while analytics is disabled.
 - Errors: `422`, `429`
+
+Only allowlisted portfolio events and application-relative paths are accepted. The client uses a
+random first-party visitor identifier for aggregate unique-visitor counts; raw IP addresses are not
+stored.
 
 ### Dashboard Summary
 

@@ -17,6 +17,7 @@ import { SelectField } from "@/components/form/SelectField";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGitHubActivity, useGitHubRepositories, useGitHubSummary } from "@/features/github";
+import { usePublicSettings } from "@/features/settings";
 import type { GitHubRepository } from "@/features/github";
 import { cn } from "@/utils/cn";
 import { getErrorMessage } from "@/utils/errors";
@@ -31,7 +32,13 @@ export function GitHubPage() {
   const [selected, setSelected] = useState<GitHubRepository | null>(null);
   const deferredSearch = useDeferredValue(search.trim());
   const summary = useGitHubSummary();
-  const allRepositories = useGitHubRepositories({ pageSize: 100, sort: "name", order: "asc" });
+  const settings = usePublicSettings();
+  const repositoriesVisible = settings.data?.githubRepositoriesVisible ?? true;
+  const activityVisible = settings.data?.githubActivityVisible ?? true;
+  const allRepositories = useGitHubRepositories(
+    { pageSize: 100, sort: "name", order: "asc" },
+    repositoriesVisible,
+  );
   const repositories = useGitHubRepositories({
     page,
     pageSize: PAGE_SIZE,
@@ -39,8 +46,8 @@ export function GitHubPage() {
     language: language || undefined,
     sort,
     order: sort === "name" ? "asc" : "desc",
-  });
-  const activity = useGitHubActivity({ pageSize: 20 });
+  }, repositoriesVisible);
+  const activity = useGitHubActivity({ pageSize: 20 }, activityVisible);
   const languages = useMemo(
     () =>
       [
@@ -66,6 +73,13 @@ export function GitHubPage() {
   if (!summary.data) return null;
 
   const profile = summary.data.profile;
+  const visibility = {
+    profile: settings.data?.githubProfileVisible ?? true,
+    stats: settings.data?.githubStatsVisible ?? true,
+    repositories: settings.data?.githubRepositoriesVisible ?? true,
+    inspector: settings.data?.githubInspectorVisible ?? true,
+    activity: settings.data?.githubActivityVisible ?? true,
+  };
   return (
     <section className="min-h-[calc(100dvh-7rem)] bg-surface">
       {summary.data.stale ? (
@@ -74,7 +88,8 @@ export function GitHubPage() {
           GitHub is temporarily unavailable. Showing the latest cached snapshot.
         </div>
       ) : null}
-      <header className="border-b border-border p-4 sm:p-6">
+      {visibility.profile || visibility.stats ? <header className="border-b border-border p-4 sm:p-6">
+        {visibility.profile ? (
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <img
@@ -114,6 +129,8 @@ export function GitHubPage() {
             <Github className="h-4 w-4" /> View profile <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
+        ) : null}
+        {visibility.stats ? (
         <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Stat
             label="Repositories"
@@ -136,9 +153,11 @@ export function GitHubPage() {
             icon={<GitCommitHorizontal className="h-4 w-4" />}
           />
         </div>
-      </header>
+        ) : null}
+      </header> : null}
 
-      <div className="grid min-h-[38rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+      {visibility.repositories ? (
+      <div className={cn("grid min-h-[38rem]", visibility.inspector && "xl:grid-cols-[minmax(0,1fr)_20rem]")}>
         <main className="min-w-0 border-b border-border xl:border-b-0 xl:border-r">
           <div className="flex flex-col gap-3 border-b border-border p-3 sm:p-4 lg:flex-row">
             <label className="relative min-w-0 flex-1">
@@ -247,9 +266,11 @@ export function GitHubPage() {
             </div>
           ) : null}
         </main>
-        <RepositoryInspector repository={selected} />
+        {visibility.inspector ? <RepositoryInspector repository={selected} /> : null}
       </div>
+      ) : null}
 
+      {visibility.activity ? (
       <section className="border-t border-border bg-background">
         <header className="border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold text-foreground">Recent public activity</h2>
@@ -274,6 +295,7 @@ export function GitHubPage() {
           ))}
         </div>
       </section>
+      ) : null}
     </section>
   );
 }

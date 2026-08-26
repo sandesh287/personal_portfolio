@@ -8,17 +8,19 @@ export function useGitHubSummary() {
   return useQuery({ queryKey: githubQueryKeys.summary(), queryFn: githubApi.summary });
 }
 
-export function useGitHubRepositories(params: GitHubRepositoryParams) {
+export function useGitHubRepositories(params: GitHubRepositoryParams, enabled = true) {
   return useQuery({
     queryKey: githubQueryKeys.repositories(params),
     queryFn: () => githubApi.repositories(params),
+    enabled,
   });
 }
 
-export function useGitHubActivity(params: GitHubActivityParams) {
+export function useGitHubActivity(params: GitHubActivityParams, enabled = true) {
   return useQuery({
     queryKey: githubQueryKeys.activity(params),
     queryFn: () => githubApi.activity(params),
+    enabled,
   });
 }
 

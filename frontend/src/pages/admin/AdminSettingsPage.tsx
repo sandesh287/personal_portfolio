@@ -26,6 +26,11 @@ const settingsSchema = z.object({
   contactEmail: optionalEmail,
   githubUsername: z.string().max(80),
   githubUrl: optionalUrl,
+  githubProfileVisible: z.boolean(),
+  githubStatsVisible: z.boolean(),
+  githubRepositoriesVisible: z.boolean(),
+  githubInspectorVisible: z.boolean(),
+  githubActivityVisible: z.boolean(),
   linkedinUrl: optionalUrl,
   availabilityStatus: z.string().min(2).max(160),
   timezone: z.string().min(2).max(80),
@@ -241,6 +246,33 @@ function SocialFields({ form }: { form: SettingsForm }) {
         type="url"
         placeholder="https://github.com/..."
       />
+      <div className="divide-y divide-border rounded-md border border-border">
+        <ToggleField
+          label="Profile header"
+          description="Show your avatar, biography, location, and GitHub profile link."
+          registration={form.register("githubProfileVisible")}
+        />
+        <ToggleField
+          label="Repository statistics"
+          description="Show repository, star, fork, and recent commit totals."
+          registration={form.register("githubStatsVisible")}
+        />
+        <ToggleField
+          label="Repository explorer"
+          description="Show searchable and sortable public repositories."
+          registration={form.register("githubRepositoriesVisible")}
+        />
+        <ToggleField
+          label="Repository inspector"
+          description="Show metadata for the selected repository beside the explorer."
+          registration={form.register("githubInspectorVisible")}
+        />
+        <ToggleField
+          label="Recent activity"
+          description="Show the latest public GitHub events."
+          registration={form.register("githubActivityVisible")}
+        />
+      </div>
       <Field
         form={form}
         name="linkedinUrl"

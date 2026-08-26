@@ -33,12 +33,14 @@ def test_admin_can_update_settings_and_public_endpoint_reflects_changes(
             "contactEmail": "hello@sandesh.dev",
             "githubUrl": "https://github.com/sandesh",
             "analyticsEnabled": True,
+            "githubActivityVisible": False,
         },
     )
     public = client.get("/api/v1/settings/public")
 
     assert response.status_code == 200
     assert response.json()["data"]["analyticsEnabled"] is True
+    assert response.json()["data"]["githubActivityVisible"] is False
     assert public.json()["data"]["contactEmail"] == "hello@sandesh.dev"
     assert db_session.scalar(select(Setting).where(Setting.key == "site_title")) is not None
 

@@ -7,6 +7,11 @@ export interface PublicSettings {
   contactEmail: string | null;
   githubUsername: string | null;
   githubUrl: string | null;
+  githubProfileVisible: boolean;
+  githubStatsVisible: boolean;
+  githubRepositoriesVisible: boolean;
+  githubInspectorVisible: boolean;
+  githubActivityVisible: boolean;
   linkedinUrl: string | null;
   availabilityStatus: string;
   timezone: string;

@@ -9,6 +9,7 @@ import { FormField, TextInput } from "@/components/form/FormField";
 import { Textarea } from "@/components/form/Textarea";
 import { Button } from "@/components/ui/Button";
 import { useCreateMessage } from "@/features/messages";
+import { analyticsApi } from "@/features/analytics";
 import { usePublicSettings } from "@/features/settings";
 import { getErrorMessage } from "@/utils/errors";
 
@@ -39,6 +40,7 @@ export function ContactPage() {
         source: "communication_terminal",
       });
       setReceiptId(receipt.id);
+      void analyticsApi.track({ eventName: "contact_submitted", path: "/contact" }).catch(() => undefined);
       form.reset();
     } catch {
       // Mutation state renders the standardized API error without duplicating toast noise.

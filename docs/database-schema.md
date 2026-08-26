@@ -451,8 +451,7 @@ Contact form and Communication Terminal submissions.
 | `read` | BOOLEAN | NOT NULL, default `false` |
 | `starred` | BOOLEAN | NOT NULL, default `false` |
 | `archived` | BOOLEAN | NOT NULL, default `false` |
-| `ip_address` | INET | NULL |
-| `user_agent` | TEXT | NULL |
+| `visitor_id` | VARCHAR(64) | NULL; random first-party identifier |
 | audit columns | mixed | global convention |
 
 Indexes:
