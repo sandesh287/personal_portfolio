@@ -463,6 +463,21 @@ Future admin CRUD endpoints:
   `endDate`, `current`, `description`, `achievements`, `institutionUrl`, `sortOrder`,
   `published`, `createdAt`, `updatedAt`
 
+### Certifications
+
+| Method | URL | Authorization | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/experience/certifications` | public | List published certifications |
+| `GET` | `/api/v1/experience/admin/certifications` | admin | List all certifications |
+| `POST` | `/api/v1/experience/admin/certifications` | admin | Create certification |
+| `PATCH` | `/api/v1/experience/admin/certifications/{id}` | admin | Update certification |
+| `DELETE` | `/api/v1/experience/admin/certifications/{id}` | admin | Soft delete certification |
+
+Certification fields are `id`, `name`, `issuer`, `credentialId`, `credentialUrl`,
+`credentialMediaId`, `credentialMediaUrl`, `issuedAt`, `expiresAt`, `sortOrder`, `published`,
+`createdAt`, and `updatedAt`. Credential media must reference an active Media Library asset.
+Expiration dates cannot precede issue dates.
+
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
 | `GET` | `/api/v1/experience` | public | List published experience |
@@ -661,6 +676,11 @@ Homepage composition is controlled by `homeProfileVisible`, `homeQuickLinksVisib
 `homeProjectsVisible`, `homeNotesVisible`, `homeSkillsVisible`, `homeExperienceVisible`, and
 `homeGithubVisible`. These public booleans let the Landing Workspace omit individual modules
 without requiring a deployment or a separate page-layout API.
+
+Developer Profile settings include `profileImageUrl`, admin-only `profileImageMediaId`,
+`profileBiography`, `profilePhilosophy`, `profileCurrentFocus`, `profileLocation`, and
+`profileCertificationsVisible`. The admin selects profile images through the existing Media Library
+picker; public clients receive the image URL but not the internal media identifier.
 
 ## Analytics
 

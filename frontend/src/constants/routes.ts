@@ -8,6 +8,7 @@ export const routes = {
   github: "/github",
   skills: "/skills",
   experience: "/experience",
+  profile: "/profile",
   contact: "/contact",
   admin: "/admin",
   adminLogin: "/admin/login",
@@ -21,4 +22,5 @@ export const routes = {
   adminMedia: "/admin/media",
   adminMessages: "/admin/messages",
   adminSettings: "/admin/settings",
+  adminProfile: "/admin/profile",
 } as const;

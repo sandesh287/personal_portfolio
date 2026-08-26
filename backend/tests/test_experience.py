@@ -2,7 +2,8 @@ from datetime import date
 from uuid import UUID
 
 from app.auth.security import create_access_token
-from app.models.experience import Education, Experience
+from app.models.experience import Certification, Education, Experience
+from app.models.media_asset import MediaAsset
 from app.models.user import User
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -142,3 +143,82 @@ def test_admin_education_crud(client: TestClient, db_session: Session, admin_use
 def test_timeline_admin_endpoints_require_authentication(client: TestClient) -> None:
     assert client.get("/api/v1/experience/admin").status_code == 401
     assert client.get("/api/v1/experience/admin/education").status_code == 401
+    assert client.get("/api/v1/experience/admin/certifications").status_code == 401
+
+
+def test_admin_certification_crud_and_public_filtering(
+    client: TestClient, db_session: Session, admin_user: User
+) -> None:
+    media = MediaAsset(
+        filename="credential.png",
+        original_filename="credential.png",
+        storage_path="credentials/credential.png",
+        public_url="https://cdn.example.com/credential.png",
+        content_type="image/png",
+        size_bytes=1024,
+    )
+    db_session.add(media)
+    db_session.commit()
+    headers = auth_headers(admin_user)
+    created = client.post(
+        "/api/v1/experience/admin/certifications",
+        headers=headers,
+        json={
+            "name": "React Advanced",
+            "issuer": "Frontend Institute",
+            "credentialMediaId": str(media.id),
+            "issuedAt": "2025-01-01",
+            "published": False,
+        },
+    )
+
+    assert created.status_code == 201
+    entry_id = created.json()["data"]["id"]
+    assert created.json()["data"]["credentialMediaUrl"] == media.public_url
+    assert client.get("/api/v1/experience/certifications").json()["data"] == []
+
+    updated = client.patch(
+        f"/api/v1/experience/admin/certifications/{entry_id}",
+        headers=headers,
+        json={"published": True, "credentialId": "CERT-123"},
+    )
+    public = client.get("/api/v1/experience/certifications")
+
+    assert updated.status_code == 200
+    assert public.json()["data"][0]["credentialId"] == "CERT-123"
+    assert (
+        client.delete(
+            f"/api/v1/experience/admin/certifications/{entry_id}", headers=headers
+        ).status_code
+        == 200
+    )
+    assert db_session.get(Certification, UUID(entry_id)).deleted_at is not None
+
+
+def test_certification_rejects_invalid_media_and_dates(
+    client: TestClient, admin_user: User
+) -> None:
+    headers = auth_headers(admin_user)
+    invalid_media = client.post(
+        "/api/v1/experience/admin/certifications",
+        headers=headers,
+        json={
+            "name": "Invalid media",
+            "issuer": "Issuer",
+            "credentialMediaId": "12345678-1234-1234-1234-123456789012",
+        },
+    )
+    invalid_dates = client.post(
+        "/api/v1/experience/admin/certifications",
+        headers=headers,
+        json={
+            "name": "Invalid dates",
+            "issuer": "Issuer",
+            "issuedAt": "2025-05-01",
+            "expiresAt": "2025-01-01",
+        },
+    )
+
+    assert invalid_media.status_code == 422
+    assert invalid_media.json()["errors"][0]["code"] == "invalid_credential_media"
+    assert invalid_dates.status_code == 422

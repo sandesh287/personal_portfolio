@@ -18,6 +18,16 @@ const HomePage = lazy(() =>
   import("@/pages/home/HomePage").then((module) => ({ default: module.HomePage })),
 );
 
+const ProfilePage = lazy(() =>
+  import("@/pages/profile/ProfilePage").then((module) => ({ default: module.ProfilePage })),
+);
+
+const AdminProfilePage = lazy(() =>
+  import("@/pages/admin/AdminProfilePage").then((module) => ({
+    default: module.AdminProfilePage,
+  })),
+);
+
 const AdminDashboardPage = lazy(() =>
   import("@/pages/admin/AdminDashboardPage").then((module) => ({
     default: module.AdminDashboardPage,
@@ -146,6 +156,7 @@ export const router = createBrowserRouter([
           { path: "/github", element: <LazyRoute component={GitHubPage} /> },
           { path: "/skills", element: <LazyRoute component={SkillsPage} /> },
           { path: "/experience", element: <LazyRoute component={ExperiencePage} /> },
+          { path: "/profile", element: <LazyRoute component={ProfilePage} /> },
           { path: "/contact", element: <LazyRoute component={ContactPage} /> },
         ],
       },
@@ -179,6 +190,7 @@ export const router = createBrowserRouter([
           { path: "media", element: <LazyRoute component={AdminMediaPage} /> },
           { path: "messages", element: <LazyRoute component={AdminMessagesPage} /> },
           { path: "settings", element: <LazyRoute component={AdminSettingsPage} /> },
+          { path: "profile", element: <LazyRoute component={AdminProfilePage} /> },
         ],
       },
     ],

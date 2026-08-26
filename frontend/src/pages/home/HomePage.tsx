@@ -73,8 +73,8 @@ export function HomePage() {
           role={visibility.profileRole}
           tagline={visibility.tagline}
           availability={visibility.availabilityStatus}
-          avatarUrl={github.data?.profile.avatarUrl}
-          location={github.data?.profile.location}
+          avatarUrl={visibility.profileImageUrl ?? github.data?.profile.avatarUrl}
+          location={visibility.profileLocation || github.data?.profile.location}
         />
       ) : null}
 

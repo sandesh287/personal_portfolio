@@ -26,6 +26,7 @@ export interface NavigationItem {
 
 export const workspaceNavigation: NavigationItem[] = [
   { label: "Workspace", href: routes.home, icon: Home },
+  { label: "Profile", href: routes.profile, icon: UserRound },
   { label: "Projects", href: routes.projects, icon: Code2 },
   { label: "Notes", href: routes.blog, icon: Newspaper },
   { label: "Resume", href: routes.resume, icon: FileText },
@@ -47,5 +48,5 @@ export const adminNavigation: NavigationItem[] = [
   { label: "Media", href: routes.adminMedia, icon: Upload },
   { label: "Messages", href: routes.adminMessages, icon: Mail },
   { label: "Settings", href: routes.adminSettings, icon: Settings },
-  { label: "Profile", href: routes.experience, icon: UserRound },
+  { label: "Profile", href: routes.adminProfile, icon: UserRound },
 ];

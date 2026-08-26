@@ -61,6 +61,52 @@ class EducationPayload(ApiSchema):
     updated_at: datetime
 
 
+class CertificationPayload(ApiSchema):
+    id: UUID
+    credential_media_id: UUID | None
+    credential_media_url: str | None
+    name: str
+    issuer: str
+    credential_id: str | None
+    credential_url: str | None
+    issued_at: date | None
+    expires_at: date | None
+    sort_order: int
+    published: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class CertificationCreateRequest(ApiSchema):
+    credential_media_id: UUID | None = None
+    name: str = Field(min_length=2, max_length=180)
+    issuer: str = Field(min_length=2, max_length=180)
+    credential_id: str | None = Field(default=None, max_length=180)
+    credential_url: str | None = Field(default=None, max_length=1000)
+    issued_at: date | None = None
+    expires_at: date | None = None
+    sort_order: int = Field(default=0, ge=0)
+    published: bool = False
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> "CertificationCreateRequest":
+        if self.issued_at and self.expires_at and self.expires_at < self.issued_at:
+            raise ValueError("Expiration date cannot be earlier than issue date.")
+        return self
+
+
+class CertificationUpdateRequest(ApiSchema):
+    credential_media_id: UUID | None = None
+    name: str | None = Field(default=None, min_length=2, max_length=180)
+    issuer: str | None = Field(default=None, min_length=2, max_length=180)
+    credential_id: str | None = Field(default=None, max_length=180)
+    credential_url: str | None = Field(default=None, max_length=1000)
+    issued_at: date | None = None
+    expires_at: date | None = None
+    sort_order: int | None = Field(default=None, ge=0)
+    published: bool | None = None
+
+
 class ExperienceCreateRequest(TimelineDates):
     company: str = Field(min_length=2, max_length=180)
     role: str = Field(min_length=2, max_length=180)

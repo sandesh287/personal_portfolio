@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from app.schemas.base import ApiSchema
 from pydantic import ConfigDict, EmailStr, Field, HttpUrl
 
@@ -8,6 +10,12 @@ class SettingsPayload(ApiSchema):
     tagline: str
     profile_name: str
     profile_role: str
+    profile_image_url: HttpUrl | None
+    profile_image_media_id: UUID | None = None
+    profile_biography: str
+    profile_philosophy: str
+    profile_current_focus: str
+    profile_location: str
     contact_email: EmailStr | None
     github_username: str | None
     github_url: HttpUrl | None
@@ -29,6 +37,7 @@ class SettingsPayload(ApiSchema):
     home_skills_visible: bool
     home_experience_visible: bool
     home_github_visible: bool
+    profile_certifications_visible: bool
     seo_description: str
     search_engine_indexing: bool
 
@@ -45,6 +54,12 @@ class SettingsUpdateRequest(ApiSchema):
     tagline: str | None = Field(default=None, min_length=2, max_length=500)
     profile_name: str | None = Field(default=None, min_length=2, max_length=160)
     profile_role: str | None = Field(default=None, min_length=2, max_length=160)
+    profile_image_url: HttpUrl | None = None
+    profile_image_media_id: UUID | None = None
+    profile_biography: str | None = Field(default=None, min_length=20, max_length=4000)
+    profile_philosophy: str | None = Field(default=None, min_length=10, max_length=2000)
+    profile_current_focus: str | None = Field(default=None, min_length=2, max_length=500)
+    profile_location: str | None = Field(default=None, min_length=2, max_length=180)
     contact_email: EmailStr | None = None
     github_username: str | None = Field(default=None, min_length=1, max_length=80)
     github_url: HttpUrl | None = None
@@ -66,5 +81,6 @@ class SettingsUpdateRequest(ApiSchema):
     home_skills_visible: bool | None = None
     home_experience_visible: bool | None = None
     home_github_visible: bool | None = None
+    profile_certifications_visible: bool | None = None
     seo_description: str | None = Field(default=None, min_length=20, max_length=320)
     search_engine_indexing: bool | None = None

@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { experienceApi } from "./api";
 import { experienceQueryKeys } from "./queryKeys";
-import type { EducationMutationPayload, ExperienceMutationPayload } from "./types";
+import type {
+  CertificationMutationPayload,
+  EducationMutationPayload,
+  ExperienceMutationPayload,
+} from "./types";
 
 export function useExperiences(search?: string, admin = false) {
   return useQuery({
@@ -16,6 +20,16 @@ export function useEducation(search?: string, admin = false) {
     queryKey: experienceQueryKeys.education(admin, search),
     queryFn: () =>
       admin ? experienceApi.listAdminEducation(search) : experienceApi.listEducation(search),
+  });
+}
+
+export function useCertifications(search?: string, admin = false) {
+  return useQuery({
+    queryKey: experienceQueryKeys.certifications(admin, search),
+    queryFn: () =>
+      admin
+        ? experienceApi.listAdminCertifications(search)
+        : experienceApi.listCertifications(search),
   });
 }
 
@@ -57,4 +71,20 @@ export function useUpdateEducation(id: string) {
 
 export function useDeleteEducation() {
   return useTimelineMutation((id: string) => experienceApi.removeEducation(id));
+}
+
+export function useCreateCertification() {
+  return useTimelineMutation((payload: CertificationMutationPayload) =>
+    experienceApi.createCertification(payload),
+  );
+}
+
+export function useUpdateCertification(id: string) {
+  return useTimelineMutation((payload: Partial<CertificationMutationPayload>) =>
+    experienceApi.updateCertification(id, payload),
+  );
+}
+
+export function useDeleteCertification() {
+  return useTimelineMutation((id: string) => experienceApi.removeCertification(id));
 }

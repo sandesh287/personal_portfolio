@@ -1,9 +1,11 @@
 from datetime import date
+from uuid import UUID
 
-from sqlalchemy import JSON, Boolean, CheckConstraint, Date, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import JSON, Boolean, CheckConstraint, Date, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import BaseModel
+from app.models.media_asset import MediaAsset
 
 
 class Experience(BaseModel):
@@ -51,3 +53,31 @@ class Education(BaseModel):
     institution_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0, index=True, nullable=False)
     published: Mapped[bool] = mapped_column(Boolean, default=False, index=True, nullable=False)
+
+
+class Certification(BaseModel):
+    __tablename__ = "certifications"
+    __table_args__ = (
+        CheckConstraint(
+            "expires_at IS NULL OR issued_at IS NULL OR expires_at >= issued_at",
+            name="certification_dates_valid",
+        ),
+    )
+
+    credential_media_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("media_assets.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    name: Mapped[str] = mapped_column(String(180), nullable=False)
+    issuer: Mapped[str] = mapped_column(String(180), index=True, nullable=False)
+    credential_id: Mapped[str | None] = mapped_column(String(180), nullable=True)
+    credential_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    issued_at: Mapped[date | None] = mapped_column(Date, index=True, nullable=True)
+    expires_at: Mapped[date | None] = mapped_column(Date, nullable=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0, index=True, nullable=False)
+    published: Mapped[bool] = mapped_column(Boolean, default=False, index=True, nullable=False)
+
+    credential_media: Mapped[MediaAsset | None] = relationship(lazy="joined")
+
+    @property
+    def credential_media_url(self) -> str | None:
+        return self.credential_media.public_url if self.credential_media else None

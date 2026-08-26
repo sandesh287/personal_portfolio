@@ -2,8 +2,15 @@ from datetime import date
 from uuid import UUID
 
 from app.core.exceptions import ApiError
-from app.features.experience.repository import EducationRepository, ExperienceRepository
+from app.features.experience.repository import (
+    CertificationRepository,
+    EducationRepository,
+    ExperienceRepository,
+)
 from app.features.experience.schemas import (
+    CertificationCreateRequest,
+    CertificationPayload,
+    CertificationUpdateRequest,
     EducationCreateRequest,
     EducationPayload,
     EducationUpdateRequest,
@@ -11,7 +18,8 @@ from app.features.experience.schemas import (
     ExperiencePayload,
     ExperienceUpdateRequest,
 )
-from app.models.experience import Education, Experience
+from app.models.experience import Certification, Education, Experience
+from app.models.media_asset import MediaAsset
 from app.services.base import BaseService
 
 
@@ -20,9 +28,11 @@ class ExperienceService(BaseService):
         self,
         experience_repository: ExperienceRepository,
         education_repository: EducationRepository,
+        certification_repository: CertificationRepository,
     ) -> None:
         self.experiences = experience_repository
         self.education = education_repository
+        self.certifications = certification_repository
 
     def list_experiences(
         self, *, admin: bool, search: str | None = None
@@ -82,6 +92,44 @@ class ExperienceService(BaseService):
         self.education.db.commit()
         return {"deleted": True}
 
+    def list_certifications(
+        self, *, admin: bool, search: str | None = None
+    ) -> list[CertificationPayload]:
+        entries = self.certifications.list_entries(published_only=not admin, search=search)
+        return [CertificationPayload.model_validate(entry) for entry in entries]
+
+    def create_certification(self, payload: CertificationCreateRequest) -> CertificationPayload:
+        self._validate_credential_media(payload.credential_media_id)
+        entry = Certification(**payload.model_dump())
+        self.certifications.add(entry)
+        self.certifications.db.commit()
+        self.certifications.db.refresh(entry)
+        return CertificationPayload.model_validate(entry)
+
+    def update_certification(
+        self, certification_id: UUID, payload: CertificationUpdateRequest
+    ) -> CertificationPayload:
+        entry = self._get_certification(certification_id)
+        values = payload.model_dump(exclude_unset=True)
+        if "credential_media_id" in values:
+            self._validate_credential_media(values["credential_media_id"])
+        issued_at = values.get("issued_at", entry.issued_at)
+        expires_at = values.get("expires_at", entry.expires_at)
+        if isinstance(issued_at, date) and isinstance(expires_at, date) and expires_at < issued_at:
+            raise ApiError(
+                422, "Expiration date cannot be earlier than issue date.", "invalid_dates"
+            )
+        for field, value in values.items():
+            setattr(entry, field, value)
+        self.certifications.db.commit()
+        self.certifications.db.refresh(entry)
+        return CertificationPayload.model_validate(entry)
+
+    def delete_certification(self, certification_id: UUID) -> dict[str, bool]:
+        self._get_certification(certification_id).mark_deleted()
+        self.certifications.db.commit()
+        return {"deleted": True}
+
     def _get_experience(self, entry_id: UUID) -> Experience:
         entry = self.experiences.get_active(entry_id)
         if entry is None:
@@ -93,6 +141,19 @@ class ExperienceService(BaseService):
         if entry is None:
             raise ApiError(404, "Education entry not found.", "education_not_found")
         return entry
+
+    def _get_certification(self, entry_id: UUID) -> Certification:
+        entry = self.certifications.get_active(entry_id)
+        if entry is None:
+            raise ApiError(404, "Certification not found.", "certification_not_found")
+        return entry
+
+    def _validate_credential_media(self, media_id: object) -> None:
+        if media_id is None:
+            return
+        media = self.certifications.db.get(MediaAsset, media_id)
+        if media is None or media.deleted_at is not None:
+            raise ApiError(422, "Credential media was not found.", "invalid_credential_media")
 
     @staticmethod
     def _validate_dates(

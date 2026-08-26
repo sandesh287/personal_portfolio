@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from app.models.experience import Education, Experience
+from app.models.experience import Certification, Education, Experience
 from app.repositories.base import BaseRepository
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -65,3 +65,32 @@ class EducationRepository(BaseRepository[Education]):
             Education.start_date.desc(),
         )
         return self.db.scalars(statement).all()
+
+
+class CertificationRepository(BaseRepository[Certification]):
+    def __init__(self, db: Session) -> None:
+        super().__init__(db=db, model=Certification)
+
+    def get_active(self, certification_id: UUID) -> Certification | None:
+        return self.db.scalars(
+            self.base_query().where(Certification.id == certification_id)
+        ).first()
+
+    def list_entries(
+        self, *, published_only: bool, search: str | None = None
+    ) -> Sequence[Certification]:
+        statement = self.base_query()
+        if published_only:
+            statement = statement.where(Certification.published.is_(True))
+        if search:
+            pattern = f"%{search.strip()}%"
+            statement = statement.where(
+                or_(Certification.name.ilike(pattern), Certification.issuer.ilike(pattern))
+            )
+        return self.db.scalars(
+            statement.order_by(
+                Certification.sort_order.asc(),
+                Certification.issued_at.desc().nullslast(),
+                Certification.name.asc(),
+            )
+        ).all()

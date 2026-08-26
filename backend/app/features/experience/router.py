@@ -4,6 +4,9 @@ from uuid import UUID
 from app.auth.dependencies import CurrentUser, require_admin
 from app.features.experience.dependencies import get_experience_service
 from app.features.experience.schemas import (
+    CertificationCreateRequest,
+    CertificationPayload,
+    CertificationUpdateRequest,
     EducationCreateRequest,
     EducationPayload,
     EducationUpdateRequest,
@@ -32,6 +35,14 @@ async def list_education(
     search: str | None = None,
 ) -> ApiResponse[list[EducationPayload]]:
     return ApiResponse(data=service.list_education(admin=False, search=search))
+
+
+@router.get("/certifications", response_model=ApiResponse[list[CertificationPayload]])
+async def list_certifications(
+    service: Annotated[ExperienceService, Depends(get_experience_service)],
+    search: str | None = None,
+) -> ApiResponse[list[CertificationPayload]]:
+    return ApiResponse(data=service.list_certifications(admin=False, search=search))
 
 
 @router.get("/admin", response_model=ApiResponse[list[ExperiencePayload]])
@@ -110,3 +121,52 @@ async def delete_education(
     service: Annotated[ExperienceService, Depends(get_experience_service)],
 ) -> ApiResponse[dict[str, bool]]:
     return ApiResponse(data=service.delete_education(education_id), message="Education deleted.")
+
+
+@router.get("/admin/certifications", response_model=ApiResponse[list[CertificationPayload]])
+async def list_admin_certifications(
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    service: Annotated[ExperienceService, Depends(get_experience_service)],
+    search: str | None = None,
+) -> ApiResponse[list[CertificationPayload]]:
+    return ApiResponse(data=service.list_certifications(admin=True, search=search))
+
+
+@router.post(
+    "/admin/certifications", response_model=ApiResponse[CertificationPayload], status_code=201
+)
+async def create_certification(
+    payload: CertificationCreateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    service: Annotated[ExperienceService, Depends(get_experience_service)],
+) -> ApiResponse[CertificationPayload]:
+    return ApiResponse(data=service.create_certification(payload), message="Certification created.")
+
+
+@router.patch(
+    "/admin/certifications/{certification_id}",
+    response_model=ApiResponse[CertificationPayload],
+)
+async def update_certification(
+    certification_id: UUID,
+    payload: CertificationUpdateRequest,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    service: Annotated[ExperienceService, Depends(get_experience_service)],
+) -> ApiResponse[CertificationPayload]:
+    return ApiResponse(
+        data=service.update_certification(certification_id, payload),
+        message="Certification updated.",
+    )
+
+
+@router.delete(
+    "/admin/certifications/{certification_id}", response_model=ApiResponse[dict[str, bool]]
+)
+async def delete_certification(
+    certification_id: UUID,
+    _: Annotated[CurrentUser, Depends(require_admin)],
+    service: Annotated[ExperienceService, Depends(get_experience_service)],
+) -> ApiResponse[dict[str, bool]]:
+    return ApiResponse(
+        data=service.delete_certification(certification_id), message="Certification deleted."
+    )

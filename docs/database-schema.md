@@ -129,6 +129,7 @@ Normalizes project grouping for React, Flutter, Data Science, AI Lab, and future
 | `slug` | VARCHAR(140) | NOT NULL, UNIQUE |
 | `description` | TEXT | NULL |
 | `sort_order` | INTEGER | NOT NULL, default `0` |
+| `published` | BOOLEAN | NOT NULL, default `false` |
 | audit columns | mixed | global convention |
 
 Indexes:

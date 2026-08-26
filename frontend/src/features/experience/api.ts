@@ -6,6 +6,8 @@ import { compactParams } from "@/utils/apiParams";
 import type {
   Education,
   EducationMutationPayload,
+  Certification,
+  CertificationMutationPayload,
   Experience,
   ExperienceMutationPayload,
 } from "./types";
@@ -24,6 +26,14 @@ export const experienceApi = {
   listEducation(search?: string) {
     return getApiData<Education[]>(`${ENDPOINT}/education`, {
       params: compactParams({ search }),
+    });
+  },
+  listCertifications(search?: string) {
+    return getApiData<Certification[]>(`${ENDPOINT}/certifications`, { params: { search } });
+  },
+  listAdminCertifications(search?: string) {
+    return getApiData<Certification[]>(`${ENDPOINT}/admin/certifications`, {
+      params: { search },
     });
   },
   listAdminEducation(search?: string) {
@@ -61,5 +71,22 @@ export const experienceApi = {
   },
   async removeEducation(id: string) {
     await httpClient.delete(`${ENDPOINT}/admin/education/${id}`);
+  },
+  async createCertification(payload: CertificationMutationPayload) {
+    const response = await httpClient.post<ApiResponse<Certification>>(
+      `${ENDPOINT}/admin/certifications`,
+      payload,
+    );
+    return response.data.data;
+  },
+  async updateCertification(id: string, payload: Partial<CertificationMutationPayload>) {
+    const response = await httpClient.patch<ApiResponse<Certification>>(
+      `${ENDPOINT}/admin/certifications/${id}`,
+      payload,
+    );
+    return response.data.data;
+  },
+  async removeCertification(id: string) {
+    await httpClient.delete(`${ENDPOINT}/admin/certifications/${id}`);
   },
 };

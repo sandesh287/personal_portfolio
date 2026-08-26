@@ -29,6 +29,34 @@ export interface Education extends TimelineEntity {
   institutionUrl: string | null;
 }
 
+export interface Certification {
+  id: string;
+  credentialMediaId: string | null;
+  credentialMediaUrl: string | null;
+  name: string;
+  issuer: string;
+  credentialId: string | null;
+  credentialUrl: string | null;
+  issuedAt: string | null;
+  expiresAt: string | null;
+  sortOrder: number;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CertificationMutationPayload {
+  credentialMediaId?: string | null;
+  name: string;
+  issuer: string;
+  credentialId?: string | null;
+  credentialUrl?: string | null;
+  issuedAt?: string | null;
+  expiresAt?: string | null;
+  sortOrder?: number;
+  published?: boolean;
+}
+
 export interface ExperienceMutationPayload {
   company: string;
   role: string;

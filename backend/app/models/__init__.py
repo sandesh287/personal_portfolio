@@ -1,7 +1,7 @@
 from app.models.analytics_event import AnalyticsEvent
 from app.models.audit_log import AuditLog
 from app.models.blog import BlogCategory, BlogPost, BlogPostTag, BlogTag
-from app.models.experience import Education, Experience
+from app.models.experience import Certification, Education, Experience
 from app.models.github_cache import GitHubCache
 from app.models.media_asset import MediaAsset
 from app.models.message import Message
@@ -28,6 +28,7 @@ __all__ = [
     "BlogTag",
     "GitHubCache",
     "Education",
+    "Certification",
     "Experience",
     "MediaAsset",
     "Message",

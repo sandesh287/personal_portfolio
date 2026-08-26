@@ -17,6 +17,9 @@ interface MediaImagePickerModalProps {
   onClose: () => void;
   onSelect: (media: MediaAsset) => void;
   onClear?: () => void;
+  title?: string;
+  description?: string;
+  clearLabel?: string;
 }
 
 export function MediaImagePickerModal({
@@ -25,6 +28,9 @@ export function MediaImagePickerModal({
   onClose,
   onSelect,
   onClear,
+  title = "Choose cover image",
+  description = "Select an image already uploaded to the Media Library.",
+  clearLabel = "Clear cover",
 }: MediaImagePickerModalProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -43,8 +49,8 @@ export function MediaImagePickerModal({
 
   return (
     <Modal
-      title="Choose cover image"
-      description="Select an image already uploaded to the Media Library."
+      title={title}
+      description={description}
       isOpen={isOpen}
       onClose={onClose}
       className="max-w-5xl"
@@ -69,7 +75,7 @@ export function MediaImagePickerModal({
           </label>
           {onClear ? (
             <Button type="button" variant="secondary" onClick={onClear} disabled={!selectedId}>
-              Clear cover
+              {clearLabel}
             </Button>
           ) : null}
         </div>

@@ -23,6 +23,27 @@ SETTING_DEFINITIONS: dict[str, SettingDefinition] = {
     ),
     "profile_name": SettingDefinition("Sandesh Panthee", "Public profile name."),
     "profile_role": SettingDefinition("Software Developer", "Primary professional role."),
+    "profile_image_url": SettingDefinition(
+        None, "Public profile image selected from Media Library."
+    ),
+    "profile_image_media_id": SettingDefinition(
+        None,
+        "Media Library identifier for the public profile image.",
+        is_public=False,
+        scope="admin",
+    ),
+    "profile_biography": SettingDefinition(
+        "I build thoughtful web and mobile products with React, Flutter, and Python.",
+        "Long-form public profile introduction.",
+    ),
+    "profile_philosophy": SettingDefinition(
+        "Build reliable systems, keep interfaces clear, and leave the code easier to understand.",
+        "Public development philosophy.",
+    ),
+    "profile_current_focus": SettingDefinition(
+        "Production-ready web and mobile experiences.", "Current professional focus."
+    ),
+    "profile_location": SettingDefinition("Nepal", "Public profile location."),
     "contact_email": SettingDefinition(None, "Public contact email address."),
     "github_username": SettingDefinition(None, "GitHub account username."),
     "github_url": SettingDefinition(None, "Public GitHub profile URL."),
@@ -46,6 +67,9 @@ SETTING_DEFINITIONS: dict[str, SettingDefinition] = {
     "home_skills_visible": SettingDefinition(True, "Show the skills summary on the homepage."),
     "home_experience_visible": SettingDefinition(True, "Show current experience on the homepage."),
     "home_github_visible": SettingDefinition(True, "Show GitHub activity on the homepage."),
+    "profile_certifications_visible": SettingDefinition(
+        True, "Show published certifications on the public profile."
+    ),
     "seo_description": SettingDefinition(
         "Sandesh's software development portfolio and engineering notes.",
         "Search engine description.",

@@ -4,6 +4,12 @@ export interface PublicSettings {
   tagline: string;
   profileName: string;
   profileRole: string;
+  profileImageUrl: string | null;
+  profileImageMediaId: string | null;
+  profileBiography: string;
+  profilePhilosophy: string;
+  profileCurrentFocus: string;
+  profileLocation: string;
   contactEmail: string | null;
   githubUsername: string | null;
   githubUrl: string | null;
@@ -25,6 +31,7 @@ export interface PublicSettings {
   homeSkillsVisible: boolean;
   homeExperienceVisible: boolean;
   homeGithubVisible: boolean;
+  profileCertificationsVisible: boolean;
   seoDescription: string;
   searchEngineIndexing: boolean;
 }
