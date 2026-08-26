@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
+from app.models.blog import BlogPost
 from app.models.media_asset import MediaAsset
 from app.models.project import Project, ProjectImage, ProjectVideo
 from app.repositories.base import BaseRepository
@@ -67,6 +68,10 @@ class MediaRepository(BaseRepository[MediaAsset]):
             select(ProjectVideo.id).where(
                 ProjectVideo.media_asset_id == media_id,
                 ProjectVideo.deleted_at.is_(None),
+            ),
+            select(BlogPost.id).where(
+                BlogPost.cover_image_id == media_id,
+                BlogPost.deleted_at.is_(None),
             ),
         )
         return any(self.db.scalar(statement.limit(1)) is not None for statement in checks)

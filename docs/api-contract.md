@@ -382,31 +382,56 @@ Future admin CRUD endpoints:
 
 ## Blog / Engineering Notes
 
-- Model fields: `id`, `title`, `slug`, `excerpt`, `content`, `coverImage`, `tags`, `status`, `featured`, `readingTimeMinutes`, `publishedAt`, `seoTitle`, `seoDescription`
+- Base URL: `/api/v1/blog`
+- Summary fields: `id`, `title`, `slug`, `excerpt`, `category`, `tags`, `coverImage`, `status`, `featured`, `readingTimeMinutes`, `publishedAt`, `createdAt`, `updatedAt`
+- Detail fields: all summary fields plus `content`, `seoTitle`, and `seoDescription`
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/blog-posts` | public | List published posts |
-| `GET` | `/api/v1/blog-posts/featured` | public | Featured posts |
-| `GET` | `/api/v1/blog-posts/{slug}` | public | Post details |
-| `POST` | `/api/v1/blog-posts` | admin | Create post |
-| `PATCH` | `/api/v1/blog-posts/{id}` | admin | Update post |
-| `DELETE` | `/api/v1/blog-posts/{id}` | admin | Delete post |
+| `GET` | `/api/v1/blog` | public | Paginated published post summaries |
+| `GET` | `/api/v1/blog/featured` | public | Featured published post summaries |
+| `GET` | `/api/v1/blog/{slug}` | public | Published post detail |
+| `GET` | `/api/v1/blog/admin` | admin | Paginated posts across all statuses |
+| `GET` | `/api/v1/blog/admin/{id}` | admin | Post detail across all statuses |
+| `POST` | `/api/v1/blog` | admin | Create post |
+| `PATCH` | `/api/v1/blog/admin/{id}` | admin | Update post |
+| `DELETE` | `/api/v1/blog/admin/{id}` | admin | Soft-delete post |
 
-- List query: `page`, `pageSize`, `search`, `tag`, `status`, `featured`, `sort`, `order`
-- Create/update body: `title`, `slug`, `excerpt`, `content`, `coverImageId`, `tagIds`, `status`, `featured`, `seoTitle`, `seoDescription`
-- Errors: `401`, `403`, `404`, `409`, `422`
+- Public list query: `page`, `pageSize`, `search`, `category`, `tag`, `featured`, `sort`, `order`
+- Admin list additionally accepts `status`
+- `category` and `tag` filters use taxonomy slugs
+- Sort fields: `title`, `createdAt`, `updatedAt`, `publishedAt`
+- Create/update body: `title`, `slug`, `excerpt`, `content`, `categoryId`, `coverImageId`, `tagIds`, `status`, `featured`, `readingTimeMinutes`, `seoTitle`, `seoDescription`, `publishedAt`
+- Publishing without `publishedAt` assigns the current UTC timestamp
+- Cover images must reference active image assets from the Media Library
+- List responses omit full `content`; detail responses include it
+- Errors: `401`, `403`, `404`, `409`, `422`, `429`
+
+## Blog Categories
+
+| Method | URL | Auth | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/blog/categories` | public | Ordered active categories |
+| `POST` | `/api/v1/blog/categories` | admin | Create category |
+| `PATCH` | `/api/v1/blog/categories/{id}` | admin | Update category |
+| `DELETE` | `/api/v1/blog/categories/{id}` | admin | Soft-delete unused category |
+
+- Create/update body: `name`, `slug`, `description`, `sortOrder`
+- Assigned categories cannot be deleted
+- Errors: `401`, `403`, `404`, `409`, `422`, `429`
 
 ## Blog Tags
 
 | Method | URL | Auth | Purpose |
 | --- | --- | --- | --- |
-| `GET` | `/api/v1/blog-tags` | public | List tags |
-| `POST` | `/api/v1/blog-tags` | admin | Create tag |
-| `PATCH` | `/api/v1/blog-tags/{id}` | admin | Update tag |
-| `DELETE` | `/api/v1/blog-tags/{id}` | admin | Delete tag |
+| `GET` | `/api/v1/blog/tags` | public | List active tags |
+| `POST` | `/api/v1/blog/tags` | admin | Create tag |
+| `PATCH` | `/api/v1/blog/tags/{id}` | admin | Update tag |
+| `DELETE` | `/api/v1/blog/tags/{id}` | admin | Soft-delete unused tag |
 
 - Create/update body: `name`, `slug`, `color`
+- Assigned tags cannot be deleted
+- Errors: `401`, `403`, `404`, `409`, `422`, `429`
 
 ## Skills
 
@@ -695,7 +720,8 @@ Future admin CRUD endpoints:
 
 ## Naming Rules
 
-- Resource URLs use kebab-case plural names: `/blog-posts`, `/project-categories`.
+- Feature-owned resources use concise plural or workspace names such as `/projects`, `/media`, and
+  `/blog`; nested taxonomies remain under their owning feature, for example `/blog/categories`.
 - JSON fields use camelCase.
 - Database fields may use snake_case internally, but API schemas expose camelCase.
 - Admin-only endpoints still live under the resource URL and rely on authorization, not `/admin/*`.
