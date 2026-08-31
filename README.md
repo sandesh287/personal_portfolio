@@ -231,6 +231,17 @@ The intended free-tier deployment shape is:
 - PostgreSQL: Neon
 - Media: Cloudinary
 
+Configure the Vercel frontend project with:
+
+- Root Directory: `frontend`
+- Framework Preset: Vite
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+The SPA fallback in `frontend/vercel.json` rewrites direct requests such as `/admin`, `/projects`,
+and `/blog/some-note` to the root document, allowing React Router to resolve the route. After changing the
+rewrite, redeploy the Vercel project and purge the Cloudflare cache if an earlier 404 was cached.
+
 Production configuration should include the deployed frontend origin in
 `BACKEND_CORS_ORIGINS`, use HTTPS-only refresh cookies, provide a strong JWT secret, set
 `VITE_API_BASE_URL` to the deployed `/api/v1` endpoint, and set `VITE_SITE_URL` to the canonical
